@@ -139,6 +139,8 @@
         controls.addEventListener( 'change', render );
         document.addEventListener( 'mousedown', onMouseDown, false );
         document.addEventListener( 'mouseup', onMouseUp, false );
+        document.addEventListener( 'touchstart', onMouseDown, false );
+        document.addEventListener( 'touchend', onMouseUp, false );
         
         window.addEventListener("resize", onWindowResize);
 
