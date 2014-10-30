@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'bam_futuraCnXBdOb';
+    src: url('./fonts/bam_futura-webfont.eot');
+    src: url('./fonts/bam_futura-webfont.eot?#iefix') format('embedded-opentype'),
+         url('./fonts/bam_futura-webfont.woff') format('woff'),
+         url('./fonts/bam_futura-webfont.ttf') format('truetype'),
+         url('./fonts/bam_futura-webfont.svg#bam_futuraCnXBdOb') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.fontBASIC { font-family: 'bam_futuraCnXBdOb'; }
+.fontMAGIC { font-family: 'bam_futuraCnXBdOb'; }

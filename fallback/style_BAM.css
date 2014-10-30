@@ -1,0 +1,334 @@
+
+html, body {
+	height: 100%;
+	width: 100%;
+
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	color: #FFF;
+		background-color: silver;
+}
+
+/*
+.bgMain {
+	background: url(img/camo004.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+*/
+
+a {
+	color: #FFF;
+	text-decoration: none;
+}
+
+#loadMsg, #one, #msgInput, #btn_style, #btn_action, #three, #urlOutput, #bottomLeft, #bottomRight {
+	font-family: 'camcorder_ms_reg';
+	font-size: 40px;
+	line-height: 40px;
+}
+
+
+#BAMwrapper {
+/*		background-color: yellow; */
+	display: none;
+
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+
+	font-size: 100px;
+	text-align: center;
+	overflow: hidden;
+}
+
+#BAMwrapper a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+#BAMmsg {
+	position: relative;
+/*		background-color: silver; */
+}
+
+
+textarea:focus {
+    outline: 0;
+}
+
+input:focus {
+    outline: 0;
+}
+
+#preloadFonts {
+	visibility: hidden;
+/*		background-color: gray; */
+}
+
+
+#loadWrapper {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	background-color: #FFF;
+}
+
+#loadMsg {
+	height: 80px;
+	width: 192px;
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -96px;
+	margin-top: -40px;
+
+	color: #000;
+}
+
+
+#main {
+/*	background-image: url('../img/formBg.png'); */
+	display: none;
+
+	width: 800px;
+	height: 600px;
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -400px;
+	margin-top: -330px;
+/*		background-color: yellow; */
+}
+
+
+#innerMain {
+/* top, right, bottom, left
+ top, right+left, bottom */
+	margin-top: 20px;
+	margin-left: 40px;
+	margin-right: 40px;
+/*		background-color: silver; */
+}
+
+
+#one {
+	height: 160px;
+	width: 721px;
+/*		background-color: yellow; */
+		position: relative;
+}
+/* safari on iphone */
+#one span {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+
+#two {
+	float: left;
+	margin-left: 120px;
+}
+
+#msgInput {
+	border: 0;
+
+	padding: 0;
+	margin: 0;
+
+	height: 160px;
+	width: 288px;   /* make textarea, but not bg, 1px wider? */
+
+	resize: none;
+}
+
+#btnsStyle {
+	float: left;
+	margin-left: 72px;
+/*		background-color: gray; */
+}
+
+#btn_style {
+	height: 40px;
+	width: 120px;
+}
+/* safari on iphone */
+#btn_style a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.btnON {
+	font-family: 'camcorder_ms_inv';
+}
+
+
+/*
+#btnBASIC a, #btnMAGIC a, #btnJPRDY a, #btnHEART a {
+	display: block;
+	height: 100%;
+	width: 100%;
+	text-decoration: none;
+}
+*/
+
+/*
+#btnBASIC a:hover, #btnMAGIC a:hover, #btnJPRDY a:hover, #btnHEART a:hover {
+	color: #000;
+	background-color: #FFF;
+}
+*/
+
+
+#btnsAction {
+	float: left;
+	margin-top: 40px;
+/*		background-color: gray; */
+}
+/* safari on iphone */
+#btn_action a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.PREVIEW {
+	float: left;
+	height: 40px;
+	width: 192px;
+		margin-left: 216px;
+}
+
+.SAVE {
+	float: left;
+	height: 40px;
+	width: 120px;
+		margin-left: 72px;
+}
+
+.ABOUT {
+	float: left;
+	height: 40px;
+	width: 48px;
+		margin-left: 72px;
+}
+
+
+/*
+#btnPREVIEW a, #btnSAVE a, #btnABOUT a {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+#btnPREVIEW a:hover, #btnSAVE a:hover, #btnABOUT a:hover {
+	color: #000;
+	background-color: #FFF;
+}
+*/
+
+
+#three {
+	clear: left;
+	width: 721px;
+/*	background-color: red; */
+		position: relative;
+}
+/* safari on iphone */
+#three span {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+#four {
+/*	text-align: right; */
+	margin-left: 168px;
+}
+
+#urlOutput {
+	border: 0;
+	color: #000;
+
+	margin: 0;
+	padding: 0;
+
+	height: 40px;
+	width: 552px;
+
+/* needed? */
+	text-align: right;
+	overflow: hidden;
+}
+
+
+/* merge? */
+/*
+#bottomLeftImg {
+	margin: 10px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+#bottomLeftImg a:hover{
+	text-decoration: none;
+}
+*/
+
+#bottomLeft {
+	margin: 10px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+/*	background-color: #000; */
+	font-size: 10px;
+	line-height: 10px;
+}
+
+#bottomBanner {
+/*		background-color: gray; */
+	position: absolute;
+	bottom: 0;
+
+	height: 70px;
+	width: 468px;
+
+	left: 50%;
+	margin-left: -192px;
+}
+
+/* merge? */
+#bottomRight {
+	margin: 10px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+/*	background-color: #000; */
+	font-size: 10px;
+	line-height: 10px;
+}
+
+#bottomLeft a, #bottomRight a {
+	background-color: #000;
+	display: inline;
+	height: 100%;
+	width: 100%;
+}
+
+#bottomLeft a:hover, #bottomRight a:hover {
+	color: #000;
+	background-color: #FFF;
+}
