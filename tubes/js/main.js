@@ -62,9 +62,9 @@
         composer.reset();
         composer.render( scene, camera );
         
+        // composer.pass( dirtPass ) ;
+        // composer.pass( denoisePass ) ;
         composer.pass( multiPassBloomPass );
-        // composer.pass( SSAOPass ) ;
-        // composer.pass( boxBlurPass ) ;
         composer.pass( vignette2Pass ) ;
         
         composer.pass( vignettePass );
@@ -154,6 +154,7 @@
     function update() {
         
         requestAnimationFrame(update);
+        
         controls.update();
 
         if(isMouseDown)
@@ -167,7 +168,7 @@
                 if(meshes[i]) scene.remove(meshes[i]);
 
                 // size = 10;
-                size = Math.round(1.5 * i)
+                size = Math.round(1.8 * i)
 
                 var next = new THREE.Vector3( 0, 0, 0 );
                 var vector = vectors[i][vectors[i].length-1];
@@ -189,12 +190,14 @@
                 tube = new THREE.TubeGeometry(curve, Math.round(vectors[i].length * 3 * 3), size, 3, false);
                 tubeBuffer = new THREE.BufferGeometry().fromGeometry(tube);
                 meshes[i] = new THREE.Mesh(tubeBuffer, material);
-                meshes[i].matrixAutoUpdate = false
+                // meshes[i].matrixAutoUpdate = false
                 scene.add(meshes[i]);
             };
         }
 
         render()
+
+
     };
 
     function render() {
