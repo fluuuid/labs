@@ -69,17 +69,24 @@
         // composer.pass( CGAPass );
         
         composer.pass( vignettePass );
-        composer.pass( vignette2Pass ) ;
-        composer.pass( SSAOPass );
+        // composer.pass( vignette2Pass ) ;
+        // composer.pass( SSAOPass );
 
         composer.toScreen();
+    }
+
+    function getRandomColor()
+    {
+        colors = [0x9b59b6, 0xe74c3c, 0xf1c40f, 0xd35400, 0x1abc9c, 0x95a5a6, 0x3498db]
+        step++;
+        return colors[step%colors.length];
     }
 
     function buildScene() {
         scene = new THREE.Scene();
         //camera = new THREE.OrthographicCamera(window.innerWidth * -0.5, window.innerWidth * 0.5, window.innerHeight * 0.5, window.innerHeight * -0.5, .1, 10000);
-        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 500 );
-        camera.position.z = 220;
+        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 3000 );
+        camera.position.z = 520;
         camera.lookAt(0);
         scene.add( camera );
 
@@ -97,12 +104,12 @@
                 THREE.UniformsLib[ "lights" ],
                 THREE.UniformsLib[ "shadowmap" ],
                 {
-                    "amount"   : { type: 'f', value: .4},
+                    "amount"   : { type: 'f', value: .2},
                     "time"     : { type: 'f', value: 0},
-                    "ambient"  : { type: "c", value: new THREE.Color( 0x60ff00 ) },
-                    "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
-                    "specular" : { type: "c", value: new THREE.Color( 0x111111 ) },
-                    "shininess": { type: "f", value: 10 },
+                    "ambient"  : { type: "c", value: new THREE.Color( 0xff7e00 ) },
+                    "emissive" : { type: "c", value: new THREE.Color( 0xff9000 ) },
+                    "specular" : { type: "c", value: new THREE.Color( 0xe4ff03 ) },
+                    "shininess": { type: "f", value: 50 },
                     "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) }
                 }
 
@@ -157,7 +164,7 @@
 
                 "   mvPosition.x += sin(position.x * time * amount);",
                 "   mvPosition.y += sin(position.y * time * amount);",
-                "   mvPosition.z += cos(position.z * time * amount);",
+                // "   mvPosition.z += cos(position.z * time * amount);",
                 "   gl_Position = projectionMatrix * mvPosition;",
 
                     THREE.ShaderChunk[ "logdepthbuf_vertex" ],
@@ -200,7 +207,7 @@
 
                 "void main() {",
 
-                "   gl_FragColor = vec4( vec3( .0, 1., 1.0 ), opacity );",
+                "   gl_FragColor = vec4( vec3( 1., 1., .0 ), opacity );",
 
                     THREE.ShaderChunk[ "logdepthbuf_fragment" ],
                     THREE.ShaderChunk[ "map_fragment" ],
@@ -230,29 +237,50 @@
             fragmentShader: phongShader.fragmentShader,
             side: THREE.DoubleSide,
             transparent: true,
-            lights: true
+            lights: true,
+            fog : true
             // wireframe: true
 
         } );
 
-        ico = new THREE.IcosahedronGeometry( 50, 3 );
+        ico = new THREE.IcosahedronGeometry( 100, 3 );
         icoBuffer = new THREE.BufferGeometry().fromGeometry(ico);
         mesh = new THREE.Mesh(icoBuffer, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         scene.add(mesh);
 
-        uniforms = {
-            color: { type: "c", value: new THREE.Color( 0xFFFFFF ) }
+        stars = []
+        satellite = new THREE.IcosahedronGeometry( 10, 3 );
+
+        for (var i = 0; i < 20; i++) {
+            stars[i] = new THREE.Mesh(satellite, new THREE.MeshLambertMaterial( {
+                color: getRandomColor(), ambient: 0x005aff
+            } ));
+
+            var size = 300
+
+            stars[i].scale.multiplyScalar(perlin.noise(i + 1, Math.random()) * 4);
+            stars[i].distance = 60 * (i + 1);
+            stars[i].position.x = (Math.random() * size/2 - (size)) * Math.sin(2 * Math.PI);
+            stars[i].position.y = (Math.random() * size/2 - (size/2)) * Math.sin(2 * Math.PI);
+            stars[i].position.z = (Math.random() * size/2 - (size)) * Math.sin(2 * Math.PI);
+            stars[i].castShadow = true;
+            stars[i].receiveShadow = true;
+
+
+            scene.add(stars[i]);
         };
 
         var shaderMaterial = new THREE.ShaderMaterial( {
-            uniforms:       uniforms,
+            uniforms:       {color: { type: "c", value: new THREE.Color( 0xFFFFFF ) }},
             vertexShader:   document.getElementById( 'vertexshader' ).textContent,
             fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
         });
 
 
-        var radius = 200;
-        var particles = 4000;
+        var radius = 1000;
+        var particles = 40000;
         particlesGeom = new THREE.BufferGeometry();
         var positions = new Float32Array( particles * 3 );
 
@@ -270,16 +298,22 @@
         renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
         renderer.autoClearColor = true;
         // renderer.shadowMapEnabled = true;
+        // renderer.shadowMapType = THREE.PCFSoftShadowMap;
         document.body.appendChild( renderer.domElement );
         renderer.setSize( window.innerWidth, window.innerHeight);
 
         clock.start();
 
-        // scene.add(new THREE.AmbientLight( 0x222222 ));
+        scene.add(new THREE.AmbientLight( 0 ));
 
-        f = new THREE.DirectionalLight(0x59bde1, .8);
-        f.position.set(0, 1, 1);
+        f = new THREE.DirectionalLight(0xff8e08, .5);
+        f.position.set(0, 0.1, 0);
+        f.castShadow = true;
         scene.add(f);
+
+        sun = new THREE.PointLight( 0xfff600, 1, 5000 );
+        // sun.castShadow = true;
+        mesh.add(sun);
 
         // var helperLight = new THREE.DirectionalLightHelper(f, 100);
         // scene.add(helperLight);
@@ -288,7 +322,7 @@
     function addControls()
     {
         controls = new THREE.TrackballControls( camera );
-        controls.maxDistance = 500;
+        controls.maxDistance = 1000;
         controls.minDistance = 150;
         controls.dynamicDampingFactor = .15;
         // controls.enabled = false;
@@ -311,8 +345,20 @@
         
         requestAnimationFrame(update);
         mesh.rotation.y += .01;
-        particleSystem.rotation.y += .0005;
-        f.rotation.z += 0.2;
+        particleSystem.rotation.y -= .0005;
+        // f.rotation.z += 0.2;
+
+        for (var i = stars.length - 1; i >= 0; i--) {
+            var speed = clock.getElapsedTime() / stars[i].distance * 10
+            stars[i].position.x += stars[i].distance * Math.cos(2 * Math.PI * speed) - stars[i].position.x;
+            // stars[i].position.y = stars[i].distance * Math.sin(2 * Math.PI * speed);
+            stars[i].position.z += stars[i].distance * Math.sin(2 * Math.PI * speed) - stars[i].position.z;
+            stars[i].lookAt(mesh.position);
+            // stars[i].rotateY(Math.PI / 2);
+            // stars[i].rotation.x += .01;
+            // stars[i].rotateZ(-Math.PI / 2);
+        }
+
         controls.update();
         mesh.material.uniforms.time.value = clock.getElapsedTime();
 
