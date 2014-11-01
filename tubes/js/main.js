@@ -7,9 +7,9 @@
     var projector;
     var step = 0;
 
-    WAGNER.vertexShadersPath = "shaders/vertex-shaders";
-    WAGNER.fragmentShadersPath = "shaders/fragment-shaders";
-    WAGNER.assetsPath = "shaders/assets/";
+    WAGNER.vertexShadersPath = "../shaders/vertex-shaders";
+    WAGNER.fragmentShadersPath = "../shaders/fragment-shaders";
+    WAGNER.assetsPath = "../shaders/assets/";
 
     var dirtPass, 
         barrelBlurPass,

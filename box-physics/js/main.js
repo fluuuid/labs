@@ -3,9 +3,9 @@
     var scene, camera, renderer, controls;
     var material, composer, clock, world;
 
-    WAGNER.vertexShadersPath = "shaders/vertex-shaders";
-    WAGNER.fragmentShadersPath = "shaders/fragment-shaders";
-    WAGNER.assetsPath = "shaders/assets/";
+    WAGNER.vertexShadersPath = "../shaders/vertex-shaders";
+    WAGNER.fragmentShadersPath = "../shaders/fragment-shaders";
+    WAGNER.assetsPath = "../shaders/assets/";
 
     var dirtPass, 
         barrelBlurPass,
