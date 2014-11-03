@@ -63,7 +63,7 @@ $( function(){
 
 	msgMode = true;
 
-	theMSG = "403<br>GET OUT OF HERE"
+	theMSG = "404<br>GET OUT OF HERE"
 	setSTYLE = "MAGIC"
 
 	/*console.log( "theMSG: "+theMSG );
