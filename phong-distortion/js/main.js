@@ -238,12 +238,12 @@
             side: THREE.DoubleSide,
             transparent: true,
             lights: true,
-            fog : true
-            // wireframe: true
+            fog : true,
+            wireframe: true
 
         } );
 
-        ico = new THREE.IcosahedronGeometry( 100, 3 );
+        ico = new THREE.IcosahedronGeometry( 100, 2 );
         icoBuffer = new THREE.BufferGeometry().fromGeometry(ico);
         mesh = new THREE.Mesh(icoBuffer, material);
         mesh.castShadow = true;
@@ -261,7 +261,7 @@
             var size = 300
 
             stars[i].scale.multiplyScalar(perlin.noise(i + 1, Math.random()) * 4);
-            stars[i].distance = 60 * (i + 1);
+            stars[i].distance = 120 * (i + 1);
             stars[i].position.x = (Math.random() * size/2 - (size)) * Math.sin(2 * Math.PI);
             stars[i].position.y = (Math.random() * size/2 - (size/2)) * Math.sin(2 * Math.PI);
             stars[i].position.z = (Math.random() * size/2 - (size)) * Math.sin(2 * Math.PI);
