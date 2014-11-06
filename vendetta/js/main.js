@@ -8,6 +8,8 @@
     var audio;
     var postprocessing = {};
 
+    var badTVParams, rgbParams;
+
     initAudio();
 
     function initAudio() {
@@ -40,7 +42,10 @@
         var passes = [
             // ['vignette', new THREE.ShaderPass( THREE.VignetteShader ), true],
             ["film", new THREE.FilmPass( 0.35, 0.5, 2048, true ), false],
-            ["glitch", new THREE.GlitchPass(), true],
+            ["badtv", new THREE.ShaderPass( THREE.BadTVShader ), false],
+            ["rgbPass", new THREE.ShaderPass( THREE.RGBShiftShader ), false],
+            ['staticPass', new THREE.ShaderPass( THREE.StaticShader ), false],
+            ["glitch", new THREE.GlitchPass(), true]
         ]
 
         for (var i = 0; i < passes.length; i++) {
@@ -49,8 +54,48 @@
             composer.addPass(passes[i][1]);
         };
 
-        // postprocessing['vignette'].uniforms[ "offset" ].value = 0.15;
-        // postprocessing['vignette'].uniforms[ "darkness" ].value = .1;
+        rgbParams = {
+            amount: 0.005,
+            angle: 0.0,
+        }
+
+        badTVParams = {
+            distortion: 50,
+            distortion2: -10,
+            speed: 10.7,
+            rollSpeed: 10.9
+        }
+
+        staticParams = {
+            show: true,
+            amount:1.5,
+            size2:10.0
+        }
+
+        postprocessing['badtv'].uniforms[ "distortion" ].value = badTVParams.distortion;
+        postprocessing['badtv'].uniforms[ "distortion2" ].value = badTVParams.distortion2;
+        postprocessing['badtv'].uniforms[ "speed" ].value = badTVParams.speed;
+        postprocessing['badtv'].uniforms[ "rollSpeed" ].value = badTVParams.rollSpeed;
+
+        postprocessing['rgbPass'].uniforms[ "angle" ].value = rgbParams.angle*Math.PI;
+        postprocessing['rgbPass'].uniforms[ "amount" ].value = rgbParams.amount;
+
+        postprocessing['staticPass'].uniforms[ "amount" ].value = staticParams.amount;
+        postprocessing['staticPass'].uniforms[ "size" ].value = staticParams.size2;
+    }
+
+    function animate()
+    {
+
+        // rgbParams.amount = Math.sin(time) * .001;
+
+        TweenLite.to(rgbParams, .3, {amount: 0, ease: 'Back.easeOut', onComplete: function(){
+            TweenLite.to(rgbParams, .3, {amount: .005, ease: 'Back.easeIn'});
+        }});
+
+        TweenLite.to(badTVParams, .3, {distortion: 0, distortion2: 0, ease: 'Back.easeIn', onComplete: function(){
+            TweenLite.to(badTVParams, .3, {delay: 3, distortion: 20, distortion2: 50, ease: 'Back.easeIn', onComplete: animate});
+        }});
     }
 
     function renderPass() {
@@ -82,7 +127,6 @@
             jsonLoader.load( "img/3d/mask.js", createScene );    
         });
 
-        
     };
 
     function createScene(geometry, materials)
@@ -107,19 +151,9 @@
         initPass();
         addControls();
 
-        animate();
         update();
+        animate();
         audio.play();
-    }
-
-    function animate()
-    {
-        TweenLite.to(mesh.rotation, .5, {
-            y: THREE.Math.degToRad(mouse.x*.015), 
-            x: THREE.Math.degToRad(-10 + mouse.y*-.01),
-            ease: 'easeInOut',
-            onComplete : animate
-        })
     }
 
     function addControls()
@@ -130,6 +164,7 @@
         controls.minDistance = 50;
         controls.noRoll = true;
         controls.noPan = true;
+        controls.noRotate = true;
         
         controls.dynamicDampingFactor = .15;
         // controls.enabled = false;
@@ -149,60 +184,19 @@
 
     function update() {
         
-        // mesh.rotation.y += .01;
-        // particleSystem.rotation.y -= .0005;
-        // f.rotation.z += 0.2;
-
-        // checkHit();
-
         controls.update();
 
-        //uniformsParticles.time.value = clock.getElapsedTime();
+        var time = clock.getElapsedTime() * .05;
 
-        // console.log(particlesGeom.getAttribute('size'));
+        postprocessing['rgbPass'].uniforms[ "angle" ].value = Math.random()*Math.PI;
+        postprocessing['rgbPass'].uniforms[ "amount" ].value = rgbParams.amount;
 
-        // for( i = 0; i < particlesGeom.getAttribute('size').length; i++ ) {
-        //     particlesGeom.getAttribute('size')[ i ] = 2 + 1 * Math.sin( 0.1 * i + clock.getElapsedTime() * .005 );
-        // }
-
-        // particlesGeom.getAttribute('size').needsUpdate = true;
-
-        // console.log(particlesGeom.getAttribute('size')[ 0]);
+        postprocessing['badtv'].uniforms[ "distortion" ].value = badTVParams.distortion;  
+        postprocessing['badtv'].uniforms[ "distortion2" ].value = badTVParams.distortion2;    
 
         render()
         requestAnimationFrame(update);
     };
-
-    function checkHit() {
-
-        var vector = new THREE.Vector3( mouse.x, mouse.y, 1 ).unproject(camera);
-        raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
-        var intersects = raycaster.intersectObject( hitMesh );
-
-        if ( intersects.length > 0 ) {
-
-            var o = intersects[0];
-
-            // uniforms.mouse.value.x = o.point.x;
-            // uniforms.mouse.value.y = o.point.y;
-
-            // uniformsParticles.mouse.value.x = o.point.x;
-            // uniformsParticles.mouse.value.y = o.point.y;
-
-            
-            // console.log(attributes.perlin.value);
-
-            // particleSystem.position.x = o.point.x;
-            // particleSystem.position.y = o.point.y;
-
-            // follow.position.y += (o.point.y - follow.position.y)/10;
-            // follow.position.z += (o.point.z - follow.position.z)/10;
-            // follow.position.x += (o.point.x - follow.position.x)/10;
-
-        }
-
-    }
-
 
     function render() {
         // renderer.render( scene, camera );
@@ -224,7 +218,11 @@
         mouse.x = event.pageX - window.innerWidth * .5;
         mouse.y = -event.pageY - window.innerHeight * .5;
 
-        animate();
+        TweenLite.to(mesh.rotation, .5, {
+            y: THREE.Math.degToRad(mouse.x*.015), 
+            x: THREE.Math.degToRad(-10 + mouse.y*-.01),
+            ease: 'easeInOut'
+        })
     }
 
     function onMouseUp(event)
