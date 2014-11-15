@@ -4,7 +4,6 @@
     var material, composer, clock, world;
     var curve, vectors, meshes, tube, size, lines;
     var isMouseDown, perlin = new SimplexNoise();
-    var projector;
     var step = 0;
 
     WAGNER.vertexShadersPath = "/common/shaders/vertex-shaders";
@@ -94,8 +93,6 @@
         camera.position.z = 1800;
         camera.lookAt(0);
         scene.add( camera );
-
-        projector = new THREE.Projector();
 
         clock = new THREE.Clock( false );
 
@@ -230,14 +227,8 @@
 
         if(vectors.length == 0)
         {
-            var mouse = new THREE.Vector3 (0,0,0)
-            mouse.x = ( event.clientX / window.innerWidth ) * 2 + 1;
-            mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
-            mouse.unproject(camera);
-            mouse.z = 1;
-
             for(var i = 0; i<lines; i++){
-                vectors.push([mouse]);
+                vectors.push([new THREE.Vector3 (0,0,0)]);
             };
         }
 

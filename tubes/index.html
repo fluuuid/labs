@@ -30,8 +30,37 @@
         <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
         <link rel="stylesheet" href="css/site.css">
+
+        <style>
+        #wrapper
+        {
+            font-family: 'Vollkorn', serif;
+            font-weight: 400;
+            font-style: italic;
+            color: #FFF;
+            letter-spacing: 0.6em;
+            color: white;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: table;
+        }
+        .cel
+        {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+        </style>
     </head>
     <body>
+        <div id="wrapper">
+            <div class='cel'>click and hold</div>
+        </div>
+
         <script src="js/three.min.js"></script>
         <script src="js/wagner/Wagner.js"></script>
         <script src="js/wagner/Wagner.base.js"></script>
