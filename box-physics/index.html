@@ -32,12 +32,41 @@
         <link rel="stylesheet" href="css/site.css">
     </head>
     <body>
-        <script src="js/v.js"></script>
-        <script src="js/wagner/Wagner.js"></script>
-        <script src="js/wagner/Wagner.base.js"></script>
-        <script src="js/wagner/ShaderLoader.js"></script>
-        <script src="js/Oimo.min.js"></script>
-        <script src="js/TrackballControls.js"></script>
+        <script type="x-shader/x-vertex" id="vertexshader">
+
+            void main() {
+                vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+                gl_Position = projectionMatrix * mvPosition;
+            }
+
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragmentshader">
+
+            uniform vec3 color;
+
+            void main() {
+                gl_FragColor = vec4( color, .4 );
+            }
+
+        </script>
+        <script src="/common/three.min.js"></script>
+
+        <script src="/common/3/shaders/BasicShader.js"></script>
+        <script src="/common/3/shaders/CopyShader.js"></script>
+        <script src="/common/3/shaders/DigitalGlitch.js"></script>
+        <script src="/common/3/shaders/FilmShader.js"></script>
+        <script src="/common/3/shaders/StaticShader.js"></script>
+
+        <script src="/common/3/postprocessing/EffectComposer.js"></script>
+        <script src="/common/3/postprocessing/FilmPass.js"></script>
+        <script src="/common/3/postprocessing/GlitchPass.js"></script>
+        <script src="/common/3/postprocessing/MaskPass.js"></script>
+        <script src="/common/3/postprocessing/RenderPass.js"></script>
+        <script src="/common/3/postprocessing/ShaderPass.js"></script>
+
+        <script src="/common/Oimo.min.js"></script>
+        <script src="/common/TrackballControls.js"></script>
 
       <script src="js/main.js"></script>
 

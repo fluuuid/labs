@@ -219,7 +219,7 @@
         mouse.y = -event.pageY - window.innerHeight * .5;
 
         TweenLite.to(mesh.rotation, .5, {
-            y: THREE.Math.degToRad(mouse.x*.015), 
+            y: THREE.Math.degToRad(mouse.x*.025), 
             x: THREE.Math.degToRad(-10 + mouse.y*-.01),
             ease: 'easeInOut'
         })

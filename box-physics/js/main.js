@@ -3,65 +3,51 @@
     var scene, camera, renderer, controls;
     var material, composer, clock, world;
 
-    WAGNER.vertexShadersPath = "/common/shaders/vertex-shaders";
-    WAGNER.fragmentShadersPath = "/common/shaders/fragment-shaders";
-    WAGNER.assetsPath = "/common/shaders/assets/";
+    var postprocessing = {};
 
-    var dirtPass, 
-        barrelBlurPass,
-        invertPass,
-        boxBlurPass,
-        fullBoxBlurPass,
-        zoomBlurPass,
-        multiPassBloomPass,
-        denoisePass,
-        sepiaPass,
-        noisePass,
-        vignettePass,
-        vignette2Pass,
-        CGAPass,
-        edgeDetectionPass,
-        dirtPass,
-        blendPass,
-        guidedFullBoxBlurPass,
-        SSAOPass;
+    var boxes = 350;
+    var size = 200;
+    var colors = [0x77ece4, 0x72ec61, 0xdd2629, 0x3435df, 0x7af0ea, 0x9000ff, 0xdd38c7]
+    var colorStep = 0;
+    var lights = []
 
     initOimoPhysics();
     initPass();
     update();
 
     function initPass(){
-        composer = new WAGNER.Composer( renderer, { useRGBA: false } );
-        composer.setSize( window.innerWidth, window.innerHeight );
+        composer = new THREE.EffectComposer( renderer );
+        composer.addPass( new THREE.RenderPass( scene, camera ) );
+        postprocessing.composer = composer;
 
-        // invertPass = new WAGNER.InvertPass();
-        // boxBlurPass = new WAGNER.BoxBlurPass();
-        // fullBoxBlurPass = new WAGNER.FullBoxBlurPass();
-        // zoomBlurPass = new WAGNER.ZoomBlurPass();
-        // multiPassBloomPass = new WAGNER.MultiPassBloomPass();
-        // denoisePass = new WAGNER.DenoisePass();
-        // sepiaPass = new WAGNER.SepiaPass();
-        // noisePass = new WAGNER.NoisePass();
-        vignettePass = new WAGNER.VignettePass();
-        // vignette2Pass = new WAGNER.Vignette2Pass();
-        // CGAPass = new WAGNER.CGAPass();
-        // edgeDetectionPass = new WAGNER.EdgeDetectionPass();
-        // dirtPass = new WAGNER.DirtPass();
-        // blendPass = new WAGNER.BlendPass();
-        // guidedFullBoxBlurPass = new WAGNER.GuidedFullBoxBlurPass();
-        SSAOPass = new WAGNER.SSAOPass();
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        var passes = [
+            // ['vignette', new THREE.ShaderPass( THREE.VignetteShader ), true],
+            ["film", new THREE.FilmPass( 0.85, 0.5, 2048, false ), false],
+            ['staticPass', new THREE.ShaderPass( THREE.StaticShader ), false],
+            ["glitch", new THREE.GlitchPass(64, 50), true]
+        ]
+
+        for (var i = 0; i < passes.length; i++) {
+            postprocessing[passes[i][0]] = passes[i][1];
+            if(passes[i][2]) passes[i][1].renderToScreen = passes[i][2];
+            composer.addPass(passes[i][1]);
+        };
+
+        staticParams = {
+            show: true,
+            amount:20.10,
+            size2:20.0
+        }
+
+        postprocessing['staticPass'].uniforms[ "amount" ].value = staticParams.amount;
+        postprocessing['staticPass'].uniforms[ "size" ].value = staticParams.size2;
     }
 
     function renderPass() {
-        composer.reset();
-        composer.render( scene, camera );
-        
-        // composer.pass( multiPassBloomPass );
-        composer.pass( SSAOPass ) ;
-        
-        composer.pass( vignettePass );
-
-        composer.toScreen();
+        postprocessing.composer.render(.5);
     }
 
     function limit(number, min, max)
@@ -69,14 +55,11 @@
         return Math.min( Math.max(min,number), max );
     }
 
-    function getRandomColor()
+    function getNextColour()
     {
-        letters = '0123456789ABCDEF'.split('')
-        color = '#'
-        for (var i = 5; i >= 0; i--) {
-            color += letters[Math.round(Math.random() * 15)]
-        };
-        return color
+        colorStep++;
+        colorStep = colorStep > colors.length - 1 ? 0 : colorStep;
+        return colors[colorStep]
     }
 
     function buildScene() {
@@ -87,19 +70,17 @@
         camera.lookAt(0);
         scene.add( camera );
 
+        var color = getNextColour();
+
         clock = new THREE.Clock( false );
 
         var material = new THREE.MeshPhongMaterial( {
             wireframe : false, 
-            ambient: 0,
-            specular: 0xfa7cff, 
-            shininess: 5, 
-            shading: THREE.FlatShading,
-            color: 0x9000ff
+            // ambient: 0xFFFFFF,
+            // specular: 0x224d44, 
+            shininess: 6, 
+            color: 0xFFFFFF
         } );
-
-        var boxes = 350;
-        var size = 200;
 
         var w = size;
 
@@ -133,31 +114,71 @@
             scene.add(meshs[i]);
         };
 
+        var shaderMaterial = new THREE.ShaderMaterial( {
+            uniforms:       {color: { type: "c", value: new THREE.Color( 0xFFFFFF ) }},
+            vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+            fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+        });
+
+
+        var radius = 5000;
+        var particles = 700;
+        particlesGeom = new THREE.BufferGeometry();
+        var positions = new Float32Array( particles * 3 );
+
+        for( var v = 0; v < particles; v++ ) {
+            positions[ v * 3 + 0 ] = ( Math.random() * 2 - 1 ) * radius;
+            positions[ v * 3 + 1 ] = ( Math.random() * 2 - 1 ) * radius;
+            positions[ v * 3 + 2 ] = ( Math.random() * 2 - 1 ) * radius;
+        }
+
+        particlesGeom.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+        particleSystem = new THREE.PointCloud( particlesGeom, shaderMaterial );
+        scene.add( particleSystem );
+
+
         renderer = new THREE.WebGLRenderer({precision: "mediump", antialias: false, alpha: false});
-        // renderer.autoClearColor = true;
-        // renderer.shadowMapEnabled = true;
+
         document.body.appendChild( renderer.domElement );
         renderer.setSize( window.innerWidth, window.innerHeight);
 
         clock.start();
 
-        scene.add(new THREE.AmbientLight( 0x222222 ));
+        setLights(color);
 
-        var f = new THREE.DirectionalLight(0xFFFFFF, 0.7);
-        f.position.set(0, 1, 0);
-        scene.add(f);
-
-        f = new THREE.DirectionalLight(0xFFFFFF, 0.7);
-        f.position.set(0, -1, 0);
-        scene.add(f);
+        scene.fog = new THREE.FogExp2( 0, 0.00035 );
 
         addControls();
     };
+
+    function setLights(color)
+    {
+        // scene.add(new THREE.AmbientLight( 0xFFFFFF, .2))
+
+        if(lights.length > 0)
+        {
+            for (var i = 0; i < lights.length; i++) {
+                scene.remove(lights[i]);
+            }
+        }
+
+        lights = [new THREE.DirectionalLight(color, 0.9), new THREE.DirectionalLight(color, 0.9)]
+        var a = -1;
+        for (var i = 0; i < lights.length; i++) {
+            lights[i].position.set(a, 0, 0);
+            scene.add(lights[i]);
+            a *= -1;
+        };
+    }
 
     function addControls()
     {
         controls = new THREE.TrackballControls( camera );
         // controls.enabled = false;
+        controls.maxDistance = 3000;
+        controls.minDistance = 1000;
+        controls.dynamicDampingFactor = .15;
+
         controls.addEventListener( 'change', render );
         document.addEventListener( 'mouseup', onMouseUp );
         window.addEventListener("resize", onWindowResize);
@@ -177,14 +198,14 @@
         // 2 : Sweep and prune , the default 
         // 3 : dynamic bounding volume tree
 
-        world = new OIMO.World(1/60, 1, 3);
+        world = new OIMO.World(1/60, 1, 2);
         world.gravity = new OIMO.Vec3(0, 0, 0);
         buildScene();
     }
 
     function updateOimoPhysics(force) {
 
-        if(force == null) force = -0.0005
+        if(force == null) force = -0.0025
 
         var i = bodys.length;
         var mesh;
@@ -206,7 +227,7 @@
                 Math.abs(body.linearVelocity.y) < 20 ||
                 Math.abs(body.linearVelocity.z) < 20)
             {
-                newPosAttraction.copy(mesh.position).multiplyScalar(force);
+                newPosAttraction.copy(mesh.position).multiplyScalar(force * Math.random());
             } else {
                 newPosAttraction.copy(mesh.position).multiplyScalar(0);
             }
@@ -219,10 +240,21 @@
 
     function onMouseUp()
     {
-        updateOimoPhysics(.1);
+        var color = getNextColour();
+
+        setLights(color);
+
+        for (var i = boxes - 1; i >= 0; i--) {
+            meshs[i].material.color = new THREE.Color( color );
+            meshs[i].colorsNeedUpdate = true;
+        }
+        updateOimoPhysics(.2);
+        postprocessing['glitch'].generateTrigger();
     }
 
     function update() {
+
+        particleSystem.rotation.y -= .0005;
         
         requestAnimationFrame(update);
         controls.update();
