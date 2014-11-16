@@ -7,27 +7,25 @@
     var jsonLoader;
     var audio;
     var postprocessing = {};
+    var audioDelay = 4;
 
     var badTVParams, rgbParams;
+
+    var rememberAudio, glitchAudio, audioGroup, audioLoaded;
 
     initAudio();
 
     function initAudio() {
-        var context, source;
-        context = new (AudioContext || webkitAudioContext)();
-        analyser = context.createAnalyser();
-        source = null;
-        audio = new Audio();
-        audio.src = 'audio/remember.mp3';
-        audio.addEventListener('canplay', function () {
-            var bufferLength;
-            console.log('audio canplay');
-            source = context.createMediaElementSource(audio);
-            source.connect(analyser);
-            source.connect(context.destination);
-            bufferLength = analyser.frequencyBinCount;
-            buildScene();
-            return analyserDataArray = new Uint8Array(bufferLength);
+
+        audioLoaded = 0;
+
+        buzz.defaults.formats = [ 'mp3' ];
+        buzz.defaults.preload = 'metadata';
+
+        rememberAudio = new buzz.sound( "audio/remember");
+        glitchAudio = new buzz.sound( "audio/glitch2");
+        rememberAudio.load().bindOnce('canplay', function(){
+            glitchAudio.load().bindOnce('canplay', buildScene);
         });
     };
 
@@ -45,7 +43,7 @@
             ["badtv", new THREE.ShaderPass( THREE.BadTVShader ), false],
             ["rgbPass", new THREE.ShaderPass( THREE.RGBShiftShader ), false],
             ['staticPass', new THREE.ShaderPass( THREE.StaticShader ), false],
-            ["glitch", new THREE.GlitchPass(), true]
+            ["glitch", new THREE.GlitchPass(64, 80), true]
         ]
 
         for (var i = 0; i < passes.length; i++) {
@@ -55,13 +53,13 @@
         };
 
         rgbParams = {
-            amount: 0.005,
+            amount: 0.0,
             angle: 0.0,
         }
 
         badTVParams = {
-            distortion: 50,
-            distortion2: -10,
+            distortion: 0,
+            distortion2: 0,
             speed: 10.7,
             rollSpeed: 10.9
         }
@@ -86,27 +84,14 @@
 
     function animate()
     {
+        var time = .3;
 
-        // rgbParams.amount = Math.sin(time) * .001;
-
-        TweenLite.to(rgbParams, .3, {amount: 0, ease: 'Back.easeOut', onComplete: function(){
-            TweenLite.to(rgbParams, .3, {amount: .005, ease: 'Back.easeIn'});
-        }});
-
-        TweenLite.to(badTVParams, .3, {distortion: 0, distortion2: 0, ease: 'Back.easeIn', onComplete: function(){
-            TweenLite.to(badTVParams, .3, {delay: 3, distortion: 20, distortion2: 50, ease: 'Back.easeIn', onComplete: animate});
-        }});
+        TweenMax.to(rgbParams, time, {amount: .005, ease: 'Back.easeOut', yoyo:true, repeat: 1});
+        TweenMax.to(badTVParams, time, {distortion: Math.random() * 40, distortion2: Math.random() * 100 - 50, yoyo:true, repeat: 1, ease: 'Back.easeIn'});
     }
 
     function renderPass() {
         postprocessing.composer.render(.1);
-    }
-
-    function getRandomColor()
-    {
-        colors = [0x9b59b6, 0xe74c3c, 0xf1c40f, 0xd35400, 0x1abc9c, 0x95a5a6, 0x3498db]
-        step++;
-        return colors[step%colors.length];
     }
 
     function buildScene() {
@@ -153,7 +138,7 @@
 
         update();
         animate();
-        audio.play();
+        rememberAudio.play();
     }
 
     function addControls()
@@ -187,6 +172,16 @@
         controls.update();
 
         var time = clock.getElapsedTime() * .05;
+        step++;
+
+        if(step == 60 * audioDelay)
+        {
+            audioDelay += 5
+            animate();
+            glitchAudio.load().setVolume(1).play();
+            step = 0;
+            postprocessing['glitch'].generateTrigger();
+        }
 
         postprocessing['rgbPass'].uniforms[ "angle" ].value = Math.random()*Math.PI;
         postprocessing['rgbPass'].uniforms[ "amount" ].value = rgbParams.amount;
