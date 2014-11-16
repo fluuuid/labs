@@ -114,15 +114,15 @@
             scene.add(meshs[i]);
         };
 
-        var shaderMaterial = new THREE.ShaderMaterial( {
-            uniforms:       {color: { type: "c", value: new THREE.Color( 0xFFFFFF ) }},
-            vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-            fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-        });
+        var canvas 
 
+        var pointMaterial = new THREE.PointCloudMaterial({
+            size: 2, sizeAttenuation: true, color: 0xFFFFFF, transparent: true,
+            blending: THREE.AdditiveBlending
+        })
 
-        var radius = 5000;
-        var particles = 700;
+        var radius = 8000;
+        var particles = 400;
         particlesGeom = new THREE.BufferGeometry();
         var positions = new Float32Array( particles * 3 );
 
@@ -133,9 +133,8 @@
         }
 
         particlesGeom.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-        particleSystem = new THREE.PointCloud( particlesGeom, shaderMaterial );
+        particleSystem = new THREE.PointCloud( particlesGeom, pointMaterial );
         scene.add( particleSystem );
-
 
         renderer = new THREE.WebGLRenderer({precision: "mediump", antialias: false, alpha: false});
 
@@ -146,7 +145,7 @@
 
         setLights(color);
 
-        scene.fog = new THREE.FogExp2( 0, 0.00035 );
+        scene.fog = new THREE.FogExp2( 0, 0.000035 );
 
         addControls();
     };
@@ -254,9 +253,10 @@
 
     function update() {
 
+        requestAnimationFrame(update);
+
         particleSystem.rotation.y -= .0005;
         
-        requestAnimationFrame(update);
         controls.update();
 
         render()

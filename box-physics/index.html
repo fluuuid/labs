@@ -32,24 +32,6 @@
         <link rel="stylesheet" href="css/site.css">
     </head>
     <body>
-        <script type="x-shader/x-vertex" id="vertexshader">
-
-            void main() {
-                vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-                gl_Position = projectionMatrix * mvPosition;
-            }
-
-        </script>
-
-        <script type="x-shader/x-fragment" id="fragmentshader">
-
-            uniform vec3 color;
-
-            void main() {
-                gl_FragColor = vec4( color, .4 );
-            }
-
-        </script>
         <script src="/common/three.min.js"></script>
 
         <script src="/common/3/shaders/BasicShader.js"></script>
