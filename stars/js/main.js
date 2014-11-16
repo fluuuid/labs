@@ -54,8 +54,8 @@
         scene = new THREE.Scene();
         //camera = new THREE.OrthographicCamera(window.innerWidth * -0.5, window.innerWidth * 0.5, window.innerHeight * 0.5, window.innerHeight * -0.5, .1, 10000);
         camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 3000 );
-        camera.position.z = 520;
-        camera.lookAt(0);
+        camera.position.z = 270;
+        camera.lookAt(10);
         scene.add( camera );
 
         projector = new THREE.Projector();
@@ -205,9 +205,9 @@
             fragmentShader: phongShader.fragmentShader,
             side: THREE.DoubleSide,
             transparent: true,
-            lights: true
-            // fog : true
-            // wireframe: true
+            lights: true,
+            fog : true,
+            wireframe: true
 
         } );
 
@@ -320,7 +320,7 @@
         // f.rotation.z += 0.2;
 
         for (var i = stars.length - 1; i >= 0; i--) {
-            var speed = (clock.getElapsedTime() *0.15 ) * stars[i].distance / 200
+            var speed = (clock.getElapsedTime() *0.1 ) * stars[i].distance / 200
             stars[i].position.x += stars[i].distance * Math.cos(2 * Math.PI * speed) - stars[i].position.x;
             // stars[i].position.y = stars[i].distance * Math.sin(2 * Math.PI * speed);
             stars[i].position.z += stars[i].distance * Math.sin(2 * Math.PI * speed) - stars[i].position.z;
