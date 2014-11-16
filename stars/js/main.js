@@ -7,72 +7,40 @@
     var particleSystem;
     var step = 0;
 
-    var shader = {};
+    var postprocessing = {};
 
-    WAGNER.vertexShadersPath = "/common/shaders/vertex-shaders";
-    WAGNER.fragmentShadersPath = "/common/shaders/fragment-shaders";
-    WAGNER.assetsPath = "/common/shaders/assets/";
-
-    var dirtPass, 
-        barrelBlurPass,
-        invertPass,
-        boxBlurPass,
-        fullBoxBlurPass,
-        zoomBlurPass,
-        multiPassBloomPass,
-        denoisePass,
-        sepiaPass,
-        noisePass,
-        vignettePass,
-        vignette2Pass,
-        CGAPass,
-        edgeDetectionPass,
-        dirtPass,
-        blendPass,
-        guidedFullBoxBlurPass,
-        SSAOPass;
-
-    
     buildScene();
-    initPass();
-    addControls();
-    update();
 
     function initPass(){
-        composer = new WAGNER.Composer( renderer, { useRGBA: false } );
-        composer.setSize( window.innerWidth, window.innerHeight );
+        composer = new THREE.EffectComposer( renderer );
+        composer.addPass( new THREE.RenderPass( scene, camera ) );
+        postprocessing.composer = composer;
 
-        // invertPass = new WAGNER.InvertPass();
-        // boxBlurPass = new WAGNER.BoxBlurPass();
-        // fullBoxBlurPass = new WAGNER.FullBoxBlurPass();
-        // zoomBlurPass = new WAGNER.ZoomBlurPass();
-        // multiPassBloomPass = new WAGNER.MultiPassBloomPass();
-        // denoisePass = new WAGNER.DenoisePass();
-        // sepiaPass = new WAGNER.SepiaPass();
-        // noisePass = new WAGNER.NoisePass();
-        vignettePass = new WAGNER.VignettePass();
-        vignette2Pass = new WAGNER.Vignette2Pass();
-        // CGAPass = new WAGNER.CGAPass();
-        // edgeDetectionPass = new WAGNER.EdgeDetectionPass();
-        // dirtPass = new WAGNER.DirtPass();
-        // blendPass = new WAGNER.BlendPass();
-        // guidedFullBoxBlurPass = new WAGNER.GuidedFullBoxBlurPass();
-        SSAOPass = new WAGNER.SSAOPass();
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        var passes = [
+            ["bloom", new THREE.BloomPass( 10.25 ), true],
+            ["film", new THREE.FilmPass( 0.85, 0.5, 2048, false ), false],
+            ['vignette', new THREE.ShaderPass( THREE.VignetteShader ), true]
+        ]
+
+        for (var i = 0; i < passes.length; i++) {
+            postprocessing[passes[i][0]] = passes[i][1];
+            if(passes[i][2]) passes[i][1].renderToScreen = passes[i][2];
+        };
+
+        postprocessing['vignette'].uniforms[ "offset" ].value = 1.5;
+        postprocessing['vignette'].uniforms[ "darkness" ].value = 1.6;
+
+        for (var i = 0; i < passes.length; i++) {
+            composer.addPass(passes[i][1]);
+        };
+
     }
 
     function renderPass() {
-        composer.reset();
-        composer.render( scene, camera );
-        
-        // composer.pass( noisePass ) ;
-        // composer.pass( denoisePass ) ;
-        // composer.pass( CGAPass );
-        
-        composer.pass( vignettePass );
-        // composer.pass( vignette2Pass ) ;
-        // composer.pass( SSAOPass );
-
-        composer.toScreen();
+        postprocessing.composer.render();
     }
 
     function getRandomColor()
@@ -104,12 +72,12 @@
                 THREE.UniformsLib[ "lights" ],
                 THREE.UniformsLib[ "shadowmap" ],
                 {
-                    "amount"   : { type: 'f', value: .2},
+                    "amount"   : { type: 'f', value: .3},
                     "time"     : { type: 'f', value: 0},
                     "ambient"  : { type: "c", value: new THREE.Color( 0xff7e00 ) },
                     "emissive" : { type: "c", value: new THREE.Color( 0xff9000 ) },
                     "specular" : { type: "c", value: new THREE.Color( 0xe4ff03 ) },
-                    "shininess": { type: "f", value: 50 },
+                    "shininess": { type: "f", value: 100 },
                     "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) }
                 }
 
@@ -162,8 +130,8 @@
                 "       mvPosition = modelViewMatrix * vec4( position, 1.0 );",
                 "   #endif",
 
-                "   mvPosition.x += sin(position.x * time * amount);",
-                "   mvPosition.y += sin(position.y * time * amount);",
+                "   mvPosition.x += sin(position.x * (time * .5) * amount);",
+                "   mvPosition.y += sin(position.y * (time * .5) * amount);",
                 // "   mvPosition.z += cos(position.z * time * amount);",
                 "   gl_Position = projectionMatrix * mvPosition;",
 
@@ -237,9 +205,9 @@
             fragmentShader: phongShader.fragmentShader,
             side: THREE.DoubleSide,
             transparent: true,
-            lights: true,
-            fog : true,
-            wireframe: true
+            lights: true
+            // fog : true
+            // wireframe: true
 
         } );
 
@@ -261,7 +229,7 @@
             var size = 300
 
             stars[i].scale.multiplyScalar(perlin.noise(i + 1, Math.random()) * 4);
-            stars[i].distance = 120 * (i + 1);
+            stars[i].distance = 180 * (i + 1);
             stars[i].position.x = (Math.random() * size/2 - (size)) * Math.sin(2 * Math.PI);
             stars[i].position.y = (Math.random() * size/2 - (size/2)) * Math.sin(2 * Math.PI);
             stars[i].position.z = (Math.random() * size/2 - (size)) * Math.sin(2 * Math.PI);
@@ -272,15 +240,16 @@
             scene.add(stars[i]);
         };
 
-        var shaderMaterial = new THREE.ShaderMaterial( {
-            uniforms:       {color: { type: "c", value: new THREE.Color( 0xFFFFFF ) }},
-            vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-            fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-        });
+        var particleMaterial = new THREE.PointCloudMaterial({
+            size: 5,
+            map: THREE.ImageUtils.loadTexture('img/particles.png'),
+            sizeAttenuation: true,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        })
 
-
-        var radius = 1000;
-        var particles = 40000;
+        var radius = 2000;
+        var particles = 800;
         particlesGeom = new THREE.BufferGeometry();
         var positions = new Float32Array( particles * 3 );
 
@@ -291,14 +260,12 @@
         }
 
         particlesGeom.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-        particleSystem = new THREE.PointCloud( particlesGeom, shaderMaterial );
+        particleSystem = new THREE.PointCloud( particlesGeom, particleMaterial );
         scene.add( particleSystem );
 
 
-        renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
-        renderer.autoClearColor = true;
-        // renderer.shadowMapEnabled = true;
-        // renderer.shadowMapType = THREE.PCFSoftShadowMap;
+        renderer = new THREE.WebGLRenderer({antialias: false, alpha: false});
+        renderer.autoClear = false;
         document.body.appendChild( renderer.domElement );
         renderer.setSize( window.innerWidth, window.innerHeight);
 
@@ -314,6 +281,10 @@
         sun = new THREE.PointLight( 0xfff600, 1, 5000 );
         // sun.castShadow = true;
         mesh.add(sun);
+
+        initPass();
+        addControls();
+        update();
 
         // var helperLight = new THREE.DirectionalLightHelper(f, 100);
         // scene.add(helperLight);
@@ -349,7 +320,7 @@
         // f.rotation.z += 0.2;
 
         for (var i = stars.length - 1; i >= 0; i--) {
-            var speed = clock.getElapsedTime() / stars[i].distance * 10
+            var speed = (clock.getElapsedTime() *0.15 ) * stars[i].distance / 200
             stars[i].position.x += stars[i].distance * Math.cos(2 * Math.PI * speed) - stars[i].position.x;
             // stars[i].position.y = stars[i].distance * Math.sin(2 * Math.PI * speed);
             stars[i].position.z += stars[i].distance * Math.sin(2 * Math.PI * speed) - stars[i].position.z;
