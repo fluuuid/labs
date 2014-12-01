@@ -8,7 +8,7 @@
 
     var gui = new dat.GUI();
     gui.add(params, 'resolution', 8, 32).step(2);
-    gui.add(params, 'size', 1, 10);
+    gui.add(params, 'size', 0, 10);
 
     // Mixed functions and events
     function playerUpdate() {
