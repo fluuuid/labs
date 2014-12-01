@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="content-language" content="en-US" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>*{margin:0;padding:0;}</style>
+
+        <title>Pixmas | @silviopaganini</title>
+
+    </head>
+    <body>
+
+         <script type="x-shader/x-vertex" id="vertexShader">
+
+            varying vec3 vWorldPosition;
+
+            void main() {
+
+                vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+                vWorldPosition = worldPosition.xyz;
+
+                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+            }
+
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragmentShader">
+
+            uniform vec3 topColor;
+            uniform vec3 bottomColor;
+            uniform float offset;
+            uniform float exponent;
+
+            varying vec3 vWorldPosition;
+
+            void main() {
+
+                float h = normalize( vWorldPosition + offset ).y;
+                gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
+
+            }
+
+        </script>
+
+        <script src="js/vendors/three.min.js"></script>
+
+        <script src="js/vendors/3/shaders/BasicShader.js"></script>
+        <script src="js/vendors/3/shaders/ConvolutionShader.js"></script>
+        <script src="js/vendors/3/shaders/CopyShader.js"></script>
+        <script src="js/vendors/3/shaders/DigitalGlitch.js"></script>
+        <script src="js/vendors/3/shaders/FilmShader.js"></script>
+        <script src="js/vendors/3/shaders/StaticShader.js"></script>
+        <script src="js/vendors/3/shaders/VignetteShader.js"></script>
+
+        <script src="js/vendors/3/postprocessing/BloomPass.js"></script>
+        <script src="js/vendors/3/postprocessing/EffectComposer.js"></script>
+        <script src="js/vendors/3/postprocessing/FilmPass.js"></script>
+        <script src="js/vendors/3/postprocessing/GlitchPass.js"></script>
+        <script src="js/vendors/3/postprocessing/MaskPass.js"></script>
+        <script src="js/vendors/3/postprocessing/RenderPass.js"></script>
+        <script src="js/vendors/3/postprocessing/ShaderPass.js"></script>
+
+        <script src="js/vendors/EasePack.min.js"></script>
+        <script src="js/vendors/TweenMax.min.js"></script>
+
+        <script src="js/vendors/Oimo.min.js"></script>
+
+      <script src="js/main.js"></script>
+
+    </body>
+
+    <!--<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-56136046-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>-->
+</html>

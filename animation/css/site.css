@@ -1,0 +1,17 @@
+
+/* GLOBALS */
+html, body {
+  width: 100%;
+  height: 100%;
+  font-size: 10px;
+  overflow: hidden !important;
+  margin : 0;
+}
+
+#shape-1, #shape-2, #shape-3
+{
+    background:#a0a0a0;
+    position:absolute;
+    width:200px;
+    height:50px;
+}
