@@ -3,11 +3,12 @@
     var scene, camera, renderer, controls;
     var composer, clock, world;
     var postprocessing = {};
-    var size = 5;
+    var size = 4;
     var lights = []
     var G = -10, nG = -10;
     var wakeup = false;
     var meshs = [];
+    var bodys = [];
     var ground;
     var grounds = [];
     var hemiLight, dirLight;
@@ -23,16 +24,26 @@
                 "gift-icon.png",
                 "santa-hat-icon.png",
                 "santa.png",
+                "imgo.png",
                 "santa2.png",
                 "snowflake-icon.png",
                 "tree.png",
                 "tree2.png"]
 
+    icons = shuffle(icons);
+    var currentIcon = 0;
+
     var positionsReverse = [];
 
     var theta, phi;
-    var reversing = false;
     var maxReverse, frame;
+    var state = 0;
+    /*
+    0 = static
+    1 = falling
+    2 = reversing
+    3 = exploding
+    */
 
     var groundMat = new THREE.MeshPhongMaterial( { ambient: 0xffffff, color: 0xffffff, specular: 0x050505} );
         groundMat.color.setHSL( 0.095, 1, 0.75 );
@@ -49,9 +60,9 @@
 
         var passes = [
             ["bloom", new THREE.BloomPass( .2 ), true],
-            ["film", new THREE.FilmPass( 0.15, 0.2, 2048, false ), false],
-            ['vignette', new THREE.ShaderPass( THREE.VignetteShader ), true],
-            // ["glitch", new THREE.GlitchPass(64, 50), true],
+            ["film", new THREE.FilmPass( 0.25, 0.3, 2048, false ), false],
+            // ["glitch", new THREE.GlitchPass(1, 50), true],
+            ['vignette', new THREE.ShaderPass( THREE.VignetteShader ), true]
         ]
 
         for (var i = 0; i < passes.length; i++) {
@@ -69,25 +80,28 @@
     }
 
     function renderPass() {
-        postprocessing.composer.render(.1);
+        postprocessing.composer.render(1);
     }
 
-    function loadImageToPixel(imgURL)
+    function loadImageToPixel(imgURL, addObject)
     {
+        pix = [];
         img = new Image()
         img.onload = function(e)
         {
             canvas = document.createElement('canvas')
             canvas.width = this.width;
             canvas.height = this.height;
-            canvas.style.position = "absolute";
-            canvas.style.right = '0'
-            canvas.style.display = 'none'
-            document.body.appendChild(canvas);
 
             ctx = canvas.getContext('2d')
             ctx.drawImage(img, 0, 0)
             computeColours(canvas, ctx);
+            if(!addObject) 
+            {
+                buildScene();
+            } else {
+                build3DPixelImage();
+            }
         }
 
         img.src= imgURL
@@ -110,79 +124,55 @@
             }
         };
 
-        buildScene();
+        
     }
 
-    function build3DPixelImage()
+    function explodeAll()
     {
-        var config = [
-                1, // The density of the shape.
-                0.4, // The coefficient of friction of the shape.
-                1, // The coefficient of restitution of the shape.
-                1, // The bits of the collision groups to which the shape belongs.
-                0xffffffff // The bits of the collision groups with which the shape collides.
-            ];
+        state = 3;
+        world.gravity = new OIMO.Vec3(0, 0, 0);
 
-        var mult = 2;
-        var blockSize = size * mult;
+        var a = {v: 1.1, d: 1.5}
+        TweenMax.to(a, .3, { v: 150.1, d: 2.5, ease: "easeInQuad", onUpdate: function(){
+            postprocessing['vignette'].uniforms[ "darkness" ].value = a.d;
+            postprocessing['vignette'].uniforms[ "offset" ].value = a.v;
+        }, onComplete: function(){
 
-        for (var i = pix.length - 1; i >= 0; i--) {
+            loadImageToPixel( getNextPixel(), true );
 
-            var zScale = Math.min(10, Math.max(2, Math.random() * 20))
+            TweenMax.to(a, .4, { v: 1.1, d: 1.5, ease: "easeOutQuad", onUpdate: function(){
+                postprocessing['vignette'].uniforms[ "darkness" ].value = a.d;
+                postprocessing['vignette'].uniforms[ "offset" ].value = a.v;
+                }
+            });
+        }});
 
-            x = pix[i].x - 70
-            y = (window.innerHeight / size) - pix[i].y
-            z = -100
-            var m = new THREE.Mesh( buffgeoBox, 
-                    new THREE.MeshLambertMaterial( {
-                        specular: 0xFFFFFF, shininess: 120,
-                        color: pix[i].color
-                    })
-                )
-
-            m.positionsReverse = []
-
-            m.position.x = x * mult;
-            m.position.y = y * mult;
-            m.position.z = z * mult;
-            meshs.push(m);
-
-            b = new OIMO.Body({type:'box', size:[blockSize, blockSize, blockSize], pos:[m.position.x,m.position.y,m.position.z], move:true, world:world,config:config})
-
-            // mult = 1.5
-            // b.body.angularVelocity.x = (Math.random() * Math.PI - Math.PI / 2) * mult
-            // b.body.linearVelocity.z = (Math.random() * Math.PI - Math.PI / 2)
-
-            bodys.push(b);
-
-            m.scale.set(blockSize,blockSize,blockSize);
-
-            m.castShadow = true;
-
-            scene.add(m);
-        };
+        var b = {v: .25, d: .3}
+        TweenMax.to(b, .7, { v: 5, d: 3, ease: "easeInQuad", onUpdate: function(){
+            postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
+            postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
+        }, onComplete: function(){
+            TweenMax.to(b, .7, { v: .25, d: .3, ease: "easeOutQuad", onUpdate: function(){
+                postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
+                postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
+                }, onComplete: function(){
+                    state = 0;
+                }
+            })
+        }});
     }
 
     function buildScene() {
         scene = new THREE.Scene();
-        //camera = new THREE.OrthographicCamera(window.innerWidth * -0.5, window.innerWidth * 0.5, window.innerHeight * 0.5, window.innerHeight * -0.5, .1, 10000);
         camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 10000 );
         camera.position.z = 100;
-        camera.position.y = -100;
-        camera.rotation.x = 10 * ToRad;
+        camera.position.y = -250;
+        camera.rotation.x = 15 * ToRad;
         scene.add( camera );
 
         clock = new THREE.Clock( false );
 
-        clearMesh();
-        world.clear();
-        bodys = [];
-        meshs = [];
-
         build3DPixelImage();
-
-        var ground = new OIMO.Body({size:[5000, 40, 5000], pos:[0,-400,0], rot:[-Math.PI/2, 0, 0], world:world});
-        addStaticBox([5000, 40, 5000], [0,-400,-100], [-Math.PI/2,0,0]);
 
         setLights();
         setSky();
@@ -212,6 +202,20 @@
             postprocessing['vignette'].uniforms[ "darkness" ].value = a.d;
             postprocessing['vignette'].uniforms[ "offset" ].value = a.v;
         }});
+
+        var b = {v: .25, d: .3}
+        TweenMax.to(b, .7, { v: 5, d: 3, ease: "easeInQuad", onUpdate: function(){
+            postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
+            postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
+        }, onComplete: function(){
+            TweenMax.to(b, .7, { v: .25, d: .3, ease: "easeOutQuad", onUpdate: function(){
+                postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
+                postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
+                }, onComplete: function(){
+                    state = 0;
+                }
+            })
+        }});
     }
 
     function addStaticBox(size, position, rotation) {
@@ -225,13 +229,14 @@
         mesh.receiveShadow = true;
     }
 
-    function clearMesh(){
-        var i=meshs.length;
-        while (i--) scene.remove(meshs[ i ]);
-        i = grounds.length;
-        while (i--) scene.remove(grounds[ i ]);
+    function clearMesh()
+    {
+        for (var i = meshs.length - 1; i >= 0; i--) scene.remove(meshs[ i ]);
+        for (var i = grounds.length - 1; i >= 0; i--) scene.remove(grounds[ i ]);
+            
         grounds = [];
         meshs = [];
+        bodys = [];
     }
 
     function setSky()
@@ -246,7 +251,7 @@
         }
         uniforms.topColor.value.copy( hemiLight.color );
 
-        // scene.fog.color.copy( uniforms.bottomColor.value );
+        scene.fog.color.copy( uniforms.bottomColor.value );
 
         var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
         var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } );
@@ -263,8 +268,8 @@
             blending: THREE.AdditiveBlending
         })
 
-        var radius = 1000;
-        var particles = 5000;
+        var radius = 2000;
+        var particles = 20000;
         particlesGeom = new THREE.BufferGeometry();
         var positions = new Float32Array( particles * 3 );
 
@@ -289,7 +294,7 @@
 
         dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
         dirLight.color.setHSL( 0.1, 1, 0.95 );
-        dirLight.position.set( 1, 1.75, 2 );
+        dirLight.position.set( 1, 8, 6 );
         scene.add( dirLight );
 
         // hep = new THREE.DirectionalLightHelper( dirLight );
@@ -300,7 +305,7 @@
         // dirLight.shadowMapHeight = 1000;
         dirLight.shadowDarkness = 0.35;
 
-        // scene.fog = new THREE.FogExp2( 0xFFFFFF, 10 );
+        scene.fog = new THREE.FogExp2( 0xFFFFFF, .0005 );
     }
 
     function addControls()
@@ -313,9 +318,11 @@
         // controls.noRotate = true;
 
         // controls.addEventListener( 'change', render );
-        document.addEventListener( 'mouseup', onMouseUp );
+        renderer.domElement.addEventListener( 'mouseup', onMouseUp );
         document.addEventListener( 'mousemove', onMouseMove );
         window.addEventListener("resize", onWindowResize);
+
+        document.getElementById('buttonChange').addEventListener('mouseup', explodeAll);
 
         stats = new Stats();
         stats.domElement.style.position = 'absolute';
@@ -332,27 +339,38 @@
         // 2 : Sweep and prune , the default 
         // 3 : dynamic bounding volume tree
 
-        world = new OIMO.World(1/60, 1, 2);
+        world = new OIMO.World(1/60, 1, 5);
         world.gravity = new OIMO.Vec3(0, 0, 0);
-        a = Math.round(Math.random() * icons.length);
-        loadImageToPixel('img/' + icons[a]);
+        loadImageToPixel( getNextPixel() );
     }
+
+    function getNextPixel()
+    {
+        currentIcon++;
+        if(currentIcon >= currentIcon.length - 1) currentIcon = 0;
+        return 'img/' + icons[currentIcon];
+    }
+
+    function shuffle(o){
+        for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
+    };
 
     function updateOimoPhysics() {
 
-        if(world.gravity.y >= 0) return
+        if(state != 1) return
 
         world.step();
 
         var m;
         var mtx = new THREE.Matrix4();
-        var i = bodys.length;
-        var mesh;
+        var mesh, body;
 
-        while (i--) {
-            var body = bodys[i].body;
+        for (var i = bodys.length - 1; i >= 0; i--) 
+        {
+            body = bodys[i].body;
             mesh = meshs[i];
-            bodys[i].body.awake();
+            body.awake();
             m = body.getMatrix();
             mtx.fromArray(m);
 
@@ -363,30 +381,116 @@
         }
     }
 
+    function resetPhysicsBodies()
+    {
+        var mesh, body;
+
+        for (var i = bodys.length - 1; i >= 0; i--) {
+            body = bodys[i].body;
+            mesh = meshs[i];
+            body.resetPosition(mesh.position.x,mesh.position.y,mesh.position.z);
+            body.resetRotation(mesh.rotation.x,mesh.rotation.y,mesh.rotation.z);
+            mesh.positionsReverse = [];
+        }
+    }
+
     function onMouseMove(e) 
     {
         e.preventDefault()
         var multX = 0.0005;
         var multY = 0.001;
         theta = - ( ( event.clientX - mousePos.x ) * 0.5 ) * multX;
-        phi = -( ( event.clientY - mousePos.y ) * 0.5 ) * multY;
+        phi = -( ( event.clientY - mousePos.y) * 0.5 ) * multY;
     }
 
     function onMouseUp(e)
     {
         e.preventDefault();
-        world.gravity = new OIMO.Vec3(0, -5, 0);
-        positionsReverse = []
 
-        setTimeout(reverse, 5000);
-        // postprocessing['glitch'].generateTrigger();
+        if(state != 0) return null
+
+        state = 1
+        world.gravity = new OIMO.Vec3(0, -5, 0);
+        setTimeout(reverse, 4000);
     }
 
     function reverse()
     {
         world.gravity = new OIMO.Vec3(0, 0, 0);
-        reversing = true;
         frame = meshs[0].positionsReverse.length - 1;
+        state = 2;
+    }
+
+    function build3DPixelImage()
+    {
+        clearMesh();
+        world.clear();
+
+        var config = [
+                1, // The density of the shape.
+                0.4, // The coefficient of friction of the shape.
+                1, // The coefficient of restitution of the shape.
+                1, // The bits of the collision groups to which the shape belongs.
+                0xffffffff // The bits of the collision groups with which the shape collides.
+            ];
+
+        var mult = 2;
+        var blockSize = size * mult;
+
+        for (var i = pix.length - 1; i >= 0; i--) {
+
+            var zScale = Math.min(10, Math.max(2, Math.random() * 20))
+
+            x = pix[i].x - 70
+            y = (window.innerHeight / (size * mult)) - pix[i].y
+            z = -100
+            var m = new THREE.Mesh( buffgeoBox, 
+                    new THREE.MeshLambertMaterial( {
+                        specular: 0xFFFFFF, shininess: 120,
+                        color: pix[i].color
+                    })
+                )
+
+            m.positionsReverse = []
+
+            m.position.x = x * mult;
+            m.position.y = y * mult;
+            m.position.z = z * mult;
+            meshs.push(m);
+
+            b = new OIMO.Body({type:'box', size:[blockSize, blockSize, blockSize], pos:[m.position.x,m.position.y,m.position.z], move:true, world:world,config:config})
+
+            // mult = 1.5
+            // b.body.angularVelocity.x = (Math.random() * Math.PI - Math.PI / 2) * mult
+            // b.body.linearVelocity.z = (Math.random() * Math.PI - Math.PI / 2)
+
+            bodys.push(b);
+
+            m.scale.set(blockSize,blockSize,blockSize);
+
+            m.castShadow = true;
+
+            scene.add(m);
+        };
+
+        var ground = new OIMO.Body({size:[5000, 40, 5000], pos:[0,-380,0], rot:[-Math.PI/2, 0, 0], world:world});
+        addStaticBox([5000, 40, 5000], [0,-400,-100], [-Math.PI/2,0,0]);
+    }
+
+    function reverseUpdate()
+    {
+        if(meshs.length == 0) return
+        if(frame > 0)
+        {
+            for (var i = 0; i < meshs.length; i++) {
+                meshs[i].position.copy(meshs[i].positionsReverse[frame][0]);
+                meshs[i].rotation.copy(meshs[i].positionsReverse[frame][1]);
+            }
+            frame--;
+        } else {
+            resetPhysicsBodies();
+            state = 0;
+        }
     }
 
     function update() {
@@ -396,22 +500,18 @@
         updateOimoPhysics();
 
         var a = Math.round((meshs.length - 1) / 2)
-        camera.lookAt(meshs[a].position);
-        camera.rotation.y += theta 
+        var l = new THREE.Vector3( 0, 0, 0 );
+        l.copy(meshs[a].position);
+        l.y += 5;
+
+        camera.lookAt(l);
+        camera.rotation.y += theta; 
         camera.rotation.x += phi;
 
         particleSystem.rotation.x -= .005;
         // uniformsBall.amplitude.value = 0.125 * Math.sin( clock.getElapsedTime() * 0.5 );
 
-        if(reversing && frame >= 0)
-        {
-            for (var i = 0; i < meshs.length; i++) {
-                meshs[i].position.copy(meshs[i].positionsReverse[frame][0]);
-                meshs[i].rotation.copy(meshs[i].positionsReverse[frame][1]);
-            }
-            frame--;
-        }
-
+        if(state == 2) reverseUpdate()
         
         render();
 
