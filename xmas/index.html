@@ -9,73 +9,50 @@
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="content-language" content="en-US" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>*{margin:0;padding:0;}</style>
+        <link rel="stylesheet" href="css/animate.css" />
+        <style>
+        body{margin:0;padding:0;overflow: hidden;}
+        .button
+        {
+            font-family: 'Great Vibes', cursive;
+            z-index: 2;
+            font-size: 94px;
+            cursor: pointer;
+            padding: 15px;
+            opacity: 0;
+            -webkit-transition: opacity .5s;
+            transition: opacity .5s;
+        }
+        .button-active
+        {
+            opacity: 1;
+        }
+        p
+        {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        </style>
+        <link href='http://fonts.googleapis.com/css?family=Great+Vibes' rel='stylesheet' type='text/css'>
 
         <title>Pixmas | @silviopaganini</title>
 
     </head>
     <body>
+        <script src="js/vendors/jquery.js"></script>
 
-         <script type="x-shader/x-vertex" id="vertexShader">
+        <script src="js/vendors/3/three.min.js"></script>
+        <script src="js/vendors/3/shaders.js"></script>
+        <script src="js/vendors/3/postprocessing.js"></script>
 
-            varying vec3 vWorldPosition;
-
-            void main() {
-
-                vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-                vWorldPosition = worldPosition.xyz;
-
-                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
-            }
-
-        </script>
-
-        <script type="x-shader/x-fragment" id="fragmentShader">
-
-            uniform vec3 topColor;
-            uniform vec3 bottomColor;
-            uniform float offset;
-            uniform float exponent;
-
-            varying vec3 vWorldPosition;
-
-            void main() {
-
-                float h = normalize( vWorldPosition + offset ).y;
-                gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
-
-            }
-
-        </script>
-
-        <script src="js/vendors/three.min.js"></script>
-
-        <script src="js/vendors/3/shaders/BasicShader.js"></script>
-        <script src="js/vendors/3/shaders/ConvolutionShader.js"></script>
-        <script src="js/vendors/3/shaders/CopyShader.js"></script>
-        <script src="js/vendors/3/shaders/DigitalGlitch.js"></script>
-        <script src="js/vendors/3/shaders/FilmShader.js"></script>
-        <script src="js/vendors/3/shaders/StaticShader.js"></script>
-        <script src="js/vendors/3/shaders/VignetteShader.js"></script>
-
-        <script src="js/vendors/3/postprocessing/BloomPass.js"></script>
-        <script src="js/vendors/3/postprocessing/EffectComposer.js"></script>
-        <script src="js/vendors/3/postprocessing/FilmPass.js"></script>
-        <script src="js/vendors/3/postprocessing/GlitchPass.js"></script>
-        <script src="js/vendors/3/postprocessing/MaskPass.js"></script>
-        <script src="js/vendors/3/postprocessing/RenderPass.js"></script>
-        <script src="js/vendors/3/postprocessing/ShaderPass.js"></script>
-
-        <script src="js/vendors/EasePack.min.js"></script>
         <script src="js/vendors/TweenMax.min.js"></script>
-
         <script src="js/vendors/Oimo.min.js"></script>
 
-      
+      <!-- <p><span id="buttonChange" class="button">Explode this fuk**r!</span></p> -->
 
-      <p style="text-align:center;"><button id="buttonChange" style="padding: 15px; position: absolute; bottom: 20px; z-index: 2;">Change</button></p>
-
+      <script src="js/utils.js"></script>
       <script src="js/main.js"></script>
 
     </body>

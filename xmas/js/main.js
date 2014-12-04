@@ -1,22 +1,23 @@
 (function(){
 
-    var scene, camera, renderer, controls;
-    var composer, clock, world;
-    var postprocessing = {};
+    var scene, camera, renderer;
+    var composer, clock, world, postprocessing = {};
     var size = 4;
-    var lights = []
-    var G = -10, nG = -10;
-    var wakeup = false;
     var meshs = [];
     var bodys = [];
     var ground;
     var grounds = [];
     var hemiLight, dirLight;
     var pix = [];
-    var ToRad = Math.PI / 180;
+    var currentIcon = -1;
+    var theta, phi;
+    var frame;
+    var state = 0;
+
     var buffgeoBox = new THREE.BufferGeometry();
-    var mousePos = new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2);
     buffgeoBox.fromGeometry( new THREE.BoxGeometry( 1, 1, 1 ) );
+
+    var mousePos = new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2);
 
     var icons = ["bells-icon.png",
                 "candy-cane-icon.png",
@@ -31,26 +32,35 @@
                 "tree2.png"]
 
     icons = shuffle(icons);
-    var currentIcon = 0;
 
-    var positionsReverse = [];
-
-    var theta, phi;
-    var maxReverse, frame;
-    var state = 0;
     /*
     0 = static
     1 = falling
     2 = reversing
     3 = exploding
+    4 = animating effect
+    5 = changing to new object
     */
 
     var groundMat = new THREE.MeshPhongMaterial( { ambient: 0xffffff, color: 0xffffff, specular: 0x050505} );
         groundMat.color.setHSL( 0.095, 1, 0.75 );
 
     initOimoPhysics();
+    initPass();
 
-    function initPass(){
+    function initPass()
+    {
+        renderer = new THREE.WebGLRenderer({precision: "mediump", antialias: false, alpha: false});
+        renderer.autoClear = false;
+        renderer.shadowMapEnabled = true;
+        renderer.shadowMapType = THREE.PCFSoftShadowMap;
+        document.body.appendChild( renderer.domElement );
+        renderer.setSize( window.innerWidth, window.innerHeight);
+
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 10000 );
+        scene.add( camera );
+
         composer = new THREE.EffectComposer( renderer );
         composer.addPass( new THREE.RenderPass( scene, camera ) );
         postprocessing.composer = composer;
@@ -59,9 +69,9 @@
         var height = window.innerHeight;
 
         var passes = [
-            ["bloom", new THREE.BloomPass( .2 ), true],
-            ["film", new THREE.FilmPass( 0.25, 0.3, 2048, false ), false],
-            // ["glitch", new THREE.GlitchPass(1, 50), true],
+            ["bloom", new THREE.BloomPass( .1 ), true],
+            // ["glitch", new THREE.GlitchPass(100, 50), true],
+            ["film", new THREE.FilmPass( 5., 3., 1024, false ), false],
             ['vignette', new THREE.ShaderPass( THREE.VignetteShader ), true]
         ]
 
@@ -76,7 +86,6 @@
         for (var i = 0; i < passes.length; i++) {
             composer.addPass(passes[i][1]);
         };
-
     }
 
     function renderPass() {
@@ -100,19 +109,11 @@
             {
                 buildScene();
             } else {
-                build3DPixelImage();
+                build3DPixelImage(true);
             }
         }
 
         img.src= imgURL
-    }
-
-    function rgbToHex(R,G,B) {return toHex(R)+toHex(G)+toHex(B)}
-    function toHex(n) {
-         n = parseInt(n,10);
-         if (isNaN(n)) return "00";
-         n = Math.max(0,Math.min(n,255));
-         return "0123456789ABCDEF".charAt((n-n%16)/16) + "0123456789ABCDEF".charAt(n%16);
     }
 
     function computeColours(canvas, context)
@@ -123,99 +124,31 @@
                 if(d[3] > 0) pix.push({x: x, y: y, color: "#" + rgbToHex(d[0], d[1], d[2])});
             }
         };
-
-        
     }
 
-    function explodeAll()
+    function buildScene() 
     {
-        state = 3;
-        world.gravity = new OIMO.Vec3(0, 0, 0);
-
-        var a = {v: 1.1, d: 1.5}
-        TweenMax.to(a, .3, { v: 150.1, d: 2.5, ease: "easeInQuad", onUpdate: function(){
-            postprocessing['vignette'].uniforms[ "darkness" ].value = a.d;
-            postprocessing['vignette'].uniforms[ "offset" ].value = a.v;
-        }, onComplete: function(){
-
-            loadImageToPixel( getNextPixel(), true );
-
-            TweenMax.to(a, .4, { v: 1.1, d: 1.5, ease: "easeOutQuad", onUpdate: function(){
-                postprocessing['vignette'].uniforms[ "darkness" ].value = a.d;
-                postprocessing['vignette'].uniforms[ "offset" ].value = a.v;
-                }
-            });
-        }});
-
-        var b = {v: .25, d: .3}
-        TweenMax.to(b, .7, { v: 5, d: 3, ease: "easeInQuad", onUpdate: function(){
-            postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
-            postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
-        }, onComplete: function(){
-            TweenMax.to(b, .7, { v: .25, d: .3, ease: "easeOutQuad", onUpdate: function(){
-                postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
-                postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
-                }, onComplete: function(){
-                    state = 0;
-                }
-            })
-        }});
-    }
-
-    function buildScene() {
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 10000 );
         camera.position.z = 100;
         camera.position.y = -250;
         camera.rotation.x = 15 * ToRad;
-        scene.add( camera );
-
-        clock = new THREE.Clock( false );
 
         build3DPixelImage();
-
         setLights();
         setSky();
-
-        renderer = new THREE.WebGLRenderer({precision: "mediump", antialias: false, alpha: false});
-        renderer.autoClear = false;
-        renderer.shadowMapEnabled = true;
-        renderer.shadowMapType = THREE.PCFSoftShadowMap;
-        document.body.appendChild( renderer.domElement );
-        renderer.setSize( window.innerWidth, window.innerHeight);
-
         addBackgroundParticles();
-
         addControls();
 
-        clock.start();
+        clock = new THREE.Clock( true );
 
-        initPass();
         update();
-        animateIn();
     };
 
-    function animateIn()
+    function animateIn(nu)
     {
-        var a = {v : 100, d: 10.5}
-        TweenMax.to(a, 1.5, { v: 1.1, d: 1.5, delay: 1, ease: "easeOutQuad", onUpdate: function(){
-            postprocessing['vignette'].uniforms[ "darkness" ].value = a.d;
-            postprocessing['vignette'].uniforms[ "offset" ].value = a.v;
-        }});
-
-        var b = {v: .25, d: .3}
-        TweenMax.to(b, .7, { v: 5, d: 3, ease: "easeInQuad", onUpdate: function(){
-            postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
-            postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
-        }, onComplete: function(){
-            TweenMax.to(b, .7, { v: .25, d: .3, ease: "easeOutQuad", onUpdate: function(){
-                postprocessing['film'].uniforms[ "nIntensity" ].value = b.v;
-                postprocessing['film'].uniforms[ "sIntensity" ].value = b.d;
-                }, onComplete: function(){
-                    state = 0;
-                }
-            })
-        }});
+        animateVignette({ a: .1, b: .9}, nu ? .5 : 1.5, null, nu ? .1 : 1);
+        animateFilmParams({a: .25, b: .3, c: 2048}, 1, function(){
+            state = 0;
+        });
     }
 
     function addStaticBox(size, position, rotation) {
@@ -241,8 +174,8 @@
 
     function setSky()
     {
-        var vertexShader = document.getElementById( 'vertexShader' ).textContent;
-        var fragmentShader = document.getElementById( 'fragmentShader' ).textContent;
+        var vertexShader = PIXMAS.SkyShader.vertexShader;
+        var fragmentShader = PIXMAS.SkyShader.fragmentShader;
         var uniforms = {
             topColor:    { type: "c", value: new THREE.Color( 0x0077ff ) },
             bottomColor: { type: "c", value: new THREE.Color( 0xffffff ) },
@@ -294,7 +227,7 @@
 
         dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
         dirLight.color.setHSL( 0.1, 1, 0.95 );
-        dirLight.position.set( 1, 8, 6 );
+        dirLight.position.set( 0, 10, 5 );
         scene.add( dirLight );
 
         // hep = new THREE.DirectionalLightHelper( dirLight );
@@ -310,25 +243,9 @@
 
     function addControls()
     {
-        // controls = new THREE.TrackballControls( camera );
-        // controls.maxDistance = 1000;
-        // controls.minDistance = 500;
-        // controls.noRoll = true;
-        // controls.noPan = true;
-        // controls.noRotate = true;
-
-        // controls.addEventListener( 'change', render );
         renderer.domElement.addEventListener( 'mouseup', onMouseUp );
         document.addEventListener( 'mousemove', onMouseMove );
         window.addEventListener("resize", onWindowResize);
-
-        document.getElementById('buttonChange').addEventListener('mouseup', explodeAll);
-
-        stats = new Stats();
-        stats.domElement.style.position = 'absolute';
-        stats.domElement.style.top = '0px';
-        // stats.domElement.style.display = 'none';
-        document.body.appendChild(stats.domElement);
     }
 
     function initOimoPhysics(){
@@ -347,14 +264,9 @@
     function getNextPixel()
     {
         currentIcon++;
-        if(currentIcon >= currentIcon.length - 1) currentIcon = 0;
+        currentIcon = currentIcon > currentIcon.length - 1 ? 0 : currentIcon;
         return 'img/' + icons[currentIcon];
     }
-
-    function shuffle(o){
-        for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-        return o;
-    };
 
     function updateOimoPhysics() {
 
@@ -400,7 +312,7 @@
         var multX = 0.0005;
         var multY = 0.001;
         theta = - ( ( event.clientX - mousePos.x ) * 0.5 ) * multX;
-        phi = -( ( event.clientY - mousePos.y) * 0.5 ) * multY;
+        phi = -( ( event.clientY - mousePos.y / 2) * 0.5 ) * multY;
     }
 
     function onMouseUp(e)
@@ -421,7 +333,7 @@
         state = 2;
     }
 
-    function build3DPixelImage()
+    function build3DPixelImage(newObject)
     {
         clearMesh();
         world.clear();
@@ -442,7 +354,7 @@
             var zScale = Math.min(10, Math.max(2, Math.random() * 20))
 
             x = pix[i].x - 70
-            y = (window.innerHeight / (size * mult)) - pix[i].y
+            y = (window.innerHeight / (size * mult * 2)) - pix[i].y
             z = -100
             var m = new THREE.Mesh( buffgeoBox, 
                     new THREE.MeshLambertMaterial( {
@@ -462,7 +374,7 @@
 
             // mult = 1.5
             // b.body.angularVelocity.x = (Math.random() * Math.PI - Math.PI / 2) * mult
-            // b.body.linearVelocity.z = (Math.random() * Math.PI - Math.PI / 2)
+            b.body.linearVelocity.y = Math.random()
 
             bodys.push(b);
 
@@ -473,8 +385,38 @@
             scene.add(m);
         };
 
-        var ground = new OIMO.Body({size:[5000, 40, 5000], pos:[0,-380,0], rot:[-Math.PI/2, 0, 0], world:world});
-        addStaticBox([5000, 40, 5000], [0,-400,-100], [-Math.PI/2,0,0]);
+        var ground = new OIMO.Body({size:[5000, 10, 5000], pos:[0,-400,0], rot:[-Math.PI/2, 0, 0], world:world});
+        addStaticBox([5000, 40, 5000], [0,-420,0], [-Math.PI/2,0,0]);
+
+        animateIn(newObject)
+    }
+
+    function changeObject()
+    {
+        loadImageToPixel( getNextPixel(), true );
+    }
+
+    function animateFilmParams(to, time, callback, delay)
+    {
+        var params = {
+            a : postprocessing['film'].uniforms[ "nIntensity" ].value, 
+            b : postprocessing['film'].uniforms[ "sIntensity" ].value,
+            c : postprocessing['film'].uniforms[ "sCount" ].value
+        }
+        TweenMax.to(params, time, { a : to.a, b: to.b, c: to.c, delay: delay, ease: "easeInQuad", onUpdate: function(){
+            postprocessing['film'].uniforms[ "nIntensity" ].value = params.a;
+            postprocessing['film'].uniforms[ "sIntensity" ].value = params.b;
+            postprocessing['film'].uniforms[ "sCount" ].value = params.c;
+        }, onComplete: callback });
+    }
+
+    function animateVignette(to, time, callback, delay, ease)
+    {
+        var params = {a: postprocessing['vignette'].uniforms[ "darkness" ].value, b: postprocessing['vignette'].uniforms[ "offset" ].value};
+        TweenMax.to(params, time, { a: to.a, b: to.b, delay: delay, ease: ease, onUpdate: function(){
+            postprocessing['vignette'].uniforms[ "darkness" ].value = params.a;
+            postprocessing['vignette'].uniforms[ "offset" ].value = params.b;
+        }, onComplete : callback });
     }
 
     function reverseUpdate()
@@ -487,9 +429,20 @@
                 meshs[i].rotation.copy(meshs[i].positionsReverse[frame][1]);
             }
             frame--;
+
+            if(frame < meshs[0].positionsReverse.length / 2 && state != 4)
+            {
+                state = 4
+                animateFilmParams({ a: 10.1, b: 10.5, c: 512}, 1.5);
+                animateVignette({a : 1.5, b: 2.5}, 1.5, null, "easeInOutQuad")
+            }
         } else {
-            resetPhysicsBodies();
-            state = 0;
+            if(state == 4)
+            {
+                // resetPhysicsBodies();
+                changeObject();
+                state = 5;
+            }
         }
     }
 
@@ -511,7 +464,7 @@
         particleSystem.rotation.x -= .005;
         // uniformsBall.amplitude.value = 0.125 * Math.sin( clock.getElapsedTime() * 0.5 );
 
-        if(state == 2) reverseUpdate()
+        if(state == 2 || state == 4) reverseUpdate()
         
         render();
 
