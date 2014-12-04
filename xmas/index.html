@@ -9,51 +9,34 @@
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="content-language" content="en-US" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="css/animate.css" />
-        <style>
-        body{margin:0;padding:0;overflow: hidden;}
-        .button
-        {
-            font-family: 'Great Vibes', cursive;
-            z-index: 2;
-            font-size: 94px;
-            cursor: pointer;
-            padding: 15px;
-            opacity: 0;
-            -webkit-transition: opacity .5s;
-            transition: opacity .5s;
-        }
-        .button-active
-        {
-            opacity: 1;
-        }
-        p
-        {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            text-align: center;
-        }
-        </style>
-        <link href='http://fonts.googleapis.com/css?family=Great+Vibes' rel='stylesheet' type='text/css'>
-
+        <link rel="stylesheet" href="static/css/animate.css" />
+        <link rel="stylesheet" href="static/css/site.css" />
         <title>Pixmas | @silviopaganini</title>
 
     </head>
     <body>
-        <script src="js/vendors/jquery.js"></script>
+        <p id="heading"><span id="buttonChange">Start!</span></p>
+        <div class="spinner">
+            <div class="cube1"></div>
+            <div class="cube2"></div>
+        </div>
 
-        <script src="js/vendors/3/three.min.js"></script>
-        <script src="js/vendors/3/shaders.js"></script>
-        <script src="js/vendors/3/postprocessing.js"></script>
+        <script src="static/js/vendors/jquery.js"></script>
 
-        <script src="js/vendors/TweenMax.min.js"></script>
-        <script src="js/vendors/Oimo.min.js"></script>
+        <script src="static/js/vendors/jquery.fittext.js"></script>
+        <script src="static/js/vendors/jquery.lettering.js"></script>
+        <script src="static/js/vendors/jquery.textillate.js"></script>
 
-      <!-- <p><span id="buttonChange" class="button">Explode this fuk**r!</span></p> -->
+        <script src="static/js/vendors/3/three.min.js"></script>
+        <script src="static/js/vendors/3/shaders.js"></script>
+        <script src="static/js/vendors/3/postprocessing.js"></script>
 
-      <script src="js/utils.js"></script>
-      <script src="js/main.js"></script>
+        <script src="static/js/vendors/howler.min.js"></script>
+        <script src="static/js/vendors/TweenMax.min.js"></script>
+        <script src="static/js/vendors/Oimo.min.js"></script>
+
+        <script src="static/js/utils.js"></script>
+        <script src="static/js/main.js"></script>
 
     </body>
 

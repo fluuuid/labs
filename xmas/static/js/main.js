@@ -2,17 +2,24 @@
 
     var scene, camera, renderer;
     var composer, clock, world, postprocessing = {};
-    var size = 4;
-    var meshs = [];
-    var bodys = [];
     var ground;
-    var grounds = [];
     var hemiLight, dirLight;
-    var pix = [];
-    var currentIcon = -1;
     var theta, phi;
     var frame;
-    var state = 0;
+
+    var size           = 4;
+    var meshs          = [];
+    var bodys          = [];
+    var grounds        = [];
+    var pix            = [];
+    var currentIcon    = -1;
+    var state          = 0;
+    var particlesCount = 20000;
+    var currentPlaying = 1;
+    var touched        = false;
+    var cameraTop      = true;
+    var animCamera     = false;
+    var reversing      = false;
 
     var buffgeoBox = new THREE.BufferGeometry();
     buffgeoBox.fromGeometry( new THREE.BoxGeometry( 1, 1, 1 ) );
@@ -20,16 +27,18 @@
     var mousePos = new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2);
 
     var icons = ["bells-icon.png",
-                "candy-cane-icon.png",
-                "christmas-tree-icon.png",
-                "gift-icon.png",
-                "santa-hat-icon.png",
-                "santa.png",
-                "imgo.png",
-                "santa2.png",
-                "snowflake-icon.png",
-                "tree.png",
-                "tree2.png"]
+"candy-cane-icon.png",
+"christmas_ice_man_icon.png",
+"christmas_stockings_icon.png",
+"christmas-tree-icon.png",
+"gift-icon.png",
+"gingerbread.png",
+"imgo.png",
+"santa-hat-icon.png",
+"santa.png",
+"santa2.png",
+"snowflake-icon.png",
+"tree.png"]
 
     icons = shuffle(icons);
 
@@ -42,11 +51,17 @@
     5 = changing to new object
     */
 
-    var groundMat = new THREE.MeshPhongMaterial( { ambient: 0xffffff, color: 0xffffff, specular: 0x050505} );
-        groundMat.color.setHSL( 0.095, 1, 0.75 );
+    var groundMat = new THREE.MeshPhongMaterial( { ambient: 0xda935b, color: 0x404966, specular: 0x173551} );
+        // groundMat.color.setHSL( 0.095, 1, 0.75 );
 
-    initOimoPhysics();
-    initPass();
+    window.init = function()
+    {
+        $('#heading').addClass('animate-out');
+        $('#buttonChange').addClass('button-deactive');
+        
+        initOimoPhysics();
+        initPass();
+    }
 
     function initPass()
     {
@@ -104,10 +119,11 @@
 
             ctx = canvas.getContext('2d')
             ctx.drawImage(img, 0, 0)
-            computeColours(canvas, ctx);
+            computeColours(canvas, ctx, pix, size);
             if(!addObject) 
             {
                 buildScene();
+                addControls();
             } else {
                 build3DPixelImage(true);
             }
@@ -116,21 +132,11 @@
         img.src= imgURL
     }
 
-    function computeColours(canvas, context)
-    {
-        for (var x = 1; x < canvas.width; x+=size) {
-            for (var y = 1; y < canvas.height; y+=size) {
-                d = context.getImageData(x, y, 1, 1).data
-                if(d[3] > 0) pix.push({x: x, y: y, color: "#" + rgbToHex(d[0], d[1], d[2])});
-            }
-        };
-    }
-
     function buildScene() 
     {
-        camera.position.z = 100;
-        camera.position.y = -250;
-        camera.rotation.x = 15 * ToRad;
+        camera.position.z = 70;
+        camera.position.y = -50;
+        // camera.rotation.x = 15 * ToRad;
 
         build3DPixelImage();
         setLights();
@@ -140,23 +146,16 @@
 
         clock = new THREE.Clock( true );
 
+        sound.play().fadeIn(0.3, 2000);
         update();
     };
-
-    function animateIn(nu)
-    {
-        animateVignette({ a: .1, b: .9}, nu ? .5 : 1.5, null, nu ? .1 : 1);
-        animateFilmParams({a: .25, b: .3, c: 2048}, 1, function(){
-            state = 0;
-        });
-    }
 
     function addStaticBox(size, position, rotation) {
         var mesh = new THREE.Mesh( buffgeoBox, groundMat );
         mesh.scale.set( size[0], size[1], size[2] );
         mesh.position.set( position[0], position[1], position[2] );
         mesh.rotation.set( rotation[0]*ToRad, rotation[1]*ToRad, rotation[2]*ToRad );
-        scene.add( mesh );
+        scene.add(mesh);
         grounds.push(mesh);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
@@ -176,14 +175,14 @@
     {
         var vertexShader = PIXMAS.SkyShader.vertexShader;
         var fragmentShader = PIXMAS.SkyShader.fragmentShader;
+        //0x0077ff, 0x0xffffff
         var uniforms = {
-            topColor:    { type: "c", value: new THREE.Color( 0x0077ff ) },
-            bottomColor: { type: "c", value: new THREE.Color( 0xffffff ) },
+            topColor:    { type: "c", value: new THREE.Color( 0x06293f ) },
+            bottomColor: { type: "c", value: new THREE.Color( 0xb77549 ) },
             offset:      { type: "f", value: 33 },
             exponent:    { type: "f", value: 0.6 }
         }
-        uniforms.topColor.value.copy( hemiLight.color );
-
+        // uniforms.topColor.value.copy( hemiLight.color );
         scene.fog.color.copy( uniforms.bottomColor.value );
 
         var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
@@ -196,17 +195,16 @@
     function addBackgroundParticles()
     {
         var pointMaterial = new THREE.PointCloudMaterial({
-            map: THREE.ImageUtils.loadTexture('img/particles.png'),
-            size: 2, sizeAttenuation: true, color: 0xFFFFFF, transparent: true,
+            map: THREE.ImageUtils.loadTexture('static/img/particles.png'),
+            size: randomRange(1, 6), sizeAttenuation: true, color: 0xFFFFFF, transparent: true,
             blending: THREE.AdditiveBlending
         })
 
-        var radius = 2000;
-        var particles = 20000;
+        var radius = 2500;
         particlesGeom = new THREE.BufferGeometry();
-        var positions = new Float32Array( particles * 3 );
+        var positions = new Float32Array( particlesCount * 3 );
 
-        for( var v = 0; v < particles; v++ ) {
+        for( var v = 0; v < particlesCount; v++ ) {
             positions[ v * 3 + 0 ] = ( Math.random() * 2 - 1 ) * radius;
             positions[ v * 3 + 1 ] = ( Math.random() * 2 - 1 ) * radius;
             positions[ v * 3 + 2 ] = ( Math.random() * 2 - 1 ) * radius;
@@ -214,31 +212,33 @@
 
         particlesGeom.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
         particleSystem = new THREE.PointCloud( particlesGeom, pointMaterial );
+        console.log(particleSystem);
         scene.add( particleSystem );
     }
 
     function setLights(color)
     {
-        hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
-        hemiLight.color.setHSL( 0.6, 1, 0.6 );
-        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-        hemiLight.position.set( 0, 500, 0 );
-        scene.add( hemiLight );
-
         dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-        dirLight.color.setHSL( 0.1, 1, 0.95 );
+        // dirLight.color.setHSL( 0.1, 1, 0.95 );
+        dirLight.castShadow = true;
+        dirLight.shadowDarkness = 0.35;
         dirLight.position.set( 0, 10, 5 );
         scene.add( dirLight );
 
-        // hep = new THREE.DirectionalLightHelper( dirLight );
-        // scene.add(hep);
+        dirLight2 = new THREE.DirectionalLight( 0xffffff, 1 );
+        // dirLight2.color.setHSL( 0.1, 1, 0.95 );
+        dirLight2.position.set( 2, 10, 3 );
+        // dirLight2.rotation.x = 45 * ToRad;
+        scene.add( dirLight2 );
 
-        dirLight.castShadow = true;
+        // amb = new THREE.AmbientLight( 0x404040, .5 );
+        // scene.add(amb);
+
         // dirLight.shadowMapWidth = 1000;
         // dirLight.shadowMapHeight = 1000;
-        dirLight.shadowDarkness = 0.35;
+        
 
-        scene.fog = new THREE.FogExp2( 0xFFFFFF, .0005 );
+        scene.fog = new THREE.FogExp2( 0xba804d, .001 );
     }
 
     function addControls()
@@ -256,7 +256,7 @@
         // 2 : Sweep and prune , the default 
         // 3 : dynamic bounding volume tree
 
-        world = new OIMO.World(1/60, 1, 5);
+        world = new OIMO.World(1/60, 2, 5);
         world.gravity = new OIMO.Vec3(0, 0, 0);
         loadImageToPixel( getNextPixel() );
     }
@@ -264,8 +264,8 @@
     function getNextPixel()
     {
         currentIcon++;
-        currentIcon = currentIcon > currentIcon.length - 1 ? 0 : currentIcon;
-        return 'img/' + icons[currentIcon];
+        currentIcon = currentIcon == currentIcon.length ? 0 : currentIcon;
+        return 'static/img/' + icons[currentIcon];
     }
 
     function updateOimoPhysics() {
@@ -288,6 +288,11 @@
 
             mesh.position.setFromMatrixPosition(mtx);
             mesh.rotation.setFromRotationMatrix(mtx);
+
+            if(mesh.position.y < -380 && !touched)
+            {
+                touched = true;
+            }
 
             mesh.positionsReverse.push([mesh.position.clone(), mesh.rotation.clone()]);
         }
@@ -323,14 +328,37 @@
 
         state = 1
         world.gravity = new OIMO.Vec3(0, -5, 0);
-        setTimeout(reverse, 4000);
+        touched = false;
     }
 
     function reverse()
     {
         world.gravity = new OIMO.Vec3(0, 0, 0);
         frame = meshs[0].positionsReverse.length - 1;
+
+        soundReverse.play().fadeIn(1, 1000);
         state = 2;
+
+        // {x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + 400, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-550, y: -350}]}
+
+        TweenMax.to(camera.position, 2, {bezier:{
+            curviness: 3, type:"soft", 
+            values:[{x:camera.position.x, z:camera.position.z,y:camera.position.y}, {x:camera.position.x - 400, z:0, y: -100}, {x:camera.position.x, z:70, y: -50}]}, 
+            ease: "easeInOutQuad", onComplete: function(){
+                TweenMax.delayedCall(.5, resetView)
+            }});
+    }
+
+    function resetView()
+    {
+        animateFilmParams({ a: 10.1, b: 5.5, c: 1024}, 1.5);
+        animateVignette({a : 10.5, b: 15.5}, 1, function(){
+            cameraTop = true;
+            reversing = false;
+            touched = false;
+            soundReverse.pause().fadeOut(0, 1000);
+            changeObject();
+        }, 1, "easeInOutQuad")
     }
 
     function build3DPixelImage(newObject)
@@ -370,7 +398,7 @@
             m.position.z = z * mult;
             meshs.push(m);
 
-            b = new OIMO.Body({type:'box', size:[blockSize, blockSize, blockSize], pos:[m.position.x,m.position.y,m.position.z], move:true, world:world,config:config})
+            b = new OIMO.Body({type:'box', size:[blockSize, blockSize, blockSize], pos:[m.position.x,m.position.y,m.position.z], name: 'box', move:true, world:world,config:config})
 
             // mult = 1.5
             // b.body.angularVelocity.x = (Math.random() * Math.PI - Math.PI / 2) * mult
@@ -385,14 +413,15 @@
             scene.add(m);
         };
 
-        var ground = new OIMO.Body({size:[5000, 10, 5000], pos:[0,-400,0], rot:[-Math.PI/2, 0, 0], world:world});
-        addStaticBox([5000, 40, 5000], [0,-420,0], [-Math.PI/2,0,0]);
+        var ground = new OIMO.Body({size:[5000, 10, 5000], pos:[0,-400,0], rot:[-Math.PI/2, 0, 0], noSleep: true, world:world, name: "ground"});
+        addStaticBox([5000, 40, 5000], [0,-410,0], [-Math.PI/2,0,0]);
 
         animateIn(newObject)
     }
 
     function changeObject()
     {
+        state = 5;
         loadImageToPixel( getNextPixel(), true );
     }
 
@@ -419,30 +448,27 @@
         }, onComplete : callback });
     }
 
+    function animateIn(nu)
+    {
+        animateVignette({ a: 1.2, b: .9}, nu ? .7 : 1.5, null, nu ? .1 : 1);
+        animateFilmParams({a: .25, b: .3, c: 2048}, .3, function(){
+            state = 0;
+        });
+    }
+
     function reverseUpdate()
     {
         if(meshs.length == 0) return
-        if(frame > 0)
+
+        if(frame > -1)
         {
+            reversing = true;
+
             for (var i = 0; i < meshs.length; i++) {
                 meshs[i].position.copy(meshs[i].positionsReverse[frame][0]);
                 meshs[i].rotation.copy(meshs[i].positionsReverse[frame][1]);
             }
             frame--;
-
-            if(frame < meshs[0].positionsReverse.length / 2 && state != 4)
-            {
-                state = 4
-                animateFilmParams({ a: 10.1, b: 10.5, c: 512}, 1.5);
-                animateVignette({a : 1.5, b: 2.5}, 1.5, null, "easeInOutQuad")
-            }
-        } else {
-            if(state == 4)
-            {
-                // resetPhysicsBodies();
-                changeObject();
-                state = 5;
-            }
         }
     }
 
@@ -455,17 +481,53 @@
         var a = Math.round((meshs.length - 1) / 2)
         var l = new THREE.Vector3( 0, 0, 0 );
         l.copy(meshs[a].position);
-        l.y += 5;
+        // l.y += 5;
 
         camera.lookAt(l);
-        camera.rotation.y += theta; 
-        camera.rotation.x += phi;
 
-        particleSystem.rotation.x -= .005;
-        // uniformsBall.amplitude.value = 0.125 * Math.sin( clock.getElapsedTime() * 0.5 );
+        if(!animCamera)
+        {
+            if(camera.position.z < 0)
+            {
+                camera.rotation.y -= theta; 
+                camera.rotation.x -= phi; 
+            } else {
+                camera.rotation.y += theta; 
+                camera.rotation.x += phi; 
+            }
+        } 
 
+        if(touched && cameraTop && state == 1 && !reversing)
+        {
+            sound.pause().fadeOut(0, 1000);
+            soundSlow.pos = 0;
+            soundSlow.play().fadeIn(.3, 1000);
+
+            animateFilmParams({ a: 10.1, b: 10.5, c: 512}, .3, function(){
+                animateFilmParams({a: .25, b: .3, c: 2048}, .4);
+            });
+
+            world.timeStep = 1/500;
+            animCamera = true;
+
+            TweenMax.to(camera.position, 2, {bezier:{
+                curviness: 2, type:"soft", 
+                values:[{x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + 400, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-550, y: -350}]}, ease: "easeInOutQuad", onComplete: function(){
+                animCamera = false;
+                TweenMax.delayedCall(1.5, function()
+                {
+                    sound.play().fadeIn(.3, 1000);
+
+                    world.timeStep = 1/60;
+                    TweenMax.delayedCall(2, reverse);
+                });
+            }});
+
+            cameraTop = false;
+        }
+
+        particleSystem.rotation.x -= .001;
         if(state == 2 || state == 4) reverseUpdate()
-        
         render();
 
     };
