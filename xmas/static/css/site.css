@@ -62,6 +62,30 @@ svg
 
     pointer-events : none;
 }
+
+#heading-click
+{
+  opacity: 0;
+  -webkit-transition: all .5s ease;
+  transition: all .5s ease;
+}
+
+.heading-click-off
+{
+  opacity: 0 !important;
+}
+
+#clickHeader
+{
+    z-index: 3;
+    font-size: 60px;
+    cursor: pointer;
+    color: white;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+    pointer-events : none;
+}
+
 #buttonChange:hover
 {
   font-size: 70px;

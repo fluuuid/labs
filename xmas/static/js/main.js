@@ -21,6 +21,8 @@
     var animCamera     = false;
     var reversing      = false;
 
+    var setTimerClick = 0;
+
     var _rotationStart = new THREE.Vector3( 0, 0, 0 );
 
     var buffgeoBox = new THREE.BufferGeometry();
@@ -61,7 +63,7 @@
         $('#heading').addClass('animate-out');
         $('#buttonChange').addClass('button-deactive');
         $('#headphones').addClass('headphone-deactive');
-        
+
         initOimoPhysics();
         initPass();
     }
@@ -126,6 +128,11 @@
             if(!addObject) 
             {
                 buildScene();
+                setTimerClick = setInterval(function(){
+                    $('#clickHeader').textillate({ autoStart: true, in: { effect: 'bounceIn' }, out: { effect: 'bounceOut' } });    
+                    $('#heading-click').css('opacity', 1)
+                }, 5000);
+                
                 addControls();
             } else {
                 build3DPixelImage(true);
@@ -216,7 +223,6 @@
 
         particlesGeom.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
         particleSystem = new THREE.PointCloud( particlesGeom, pointMaterial );
-        console.log(particleSystem);
         scene.add( particleSystem );
     }
 
@@ -334,6 +340,11 @@
         e.preventDefault();
 
         if(state != 0) return null
+
+        clearInterval(setTimerClick);
+        setTimerClick = 0;
+
+        $('#heading-click').addClass('heading-click-off')
 
         soundClick.pos(0);
         soundClick.play();
