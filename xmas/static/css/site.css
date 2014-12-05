@@ -40,7 +40,9 @@ svg
 
 .headphone-deactive
 {
-  padding-top: 500px !important;
+  -webkit-transition: all .5s ease .2s !important;
+  transition: all .5s ease .2s !important;
+  /*padding-top: 550px !important;*/
   opacity: 0 !important;
 }
 

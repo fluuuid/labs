@@ -21,6 +21,8 @@
     var animCamera     = false;
     var reversing      = false;
 
+    var _rotationStart = new THREE.Vector3( 0, 0, 0 );
+
     var buffgeoBox = new THREE.BufferGeometry();
     buffgeoBox.fromGeometry( new THREE.BoxGeometry( 1, 1, 1 ) );
 
@@ -33,7 +35,6 @@
 "christmas-tree-icon.png",
 "gift-icon.png",
 "gingerbread.png",
-"imgo.png",
 "santa-hat-icon.png",
 "santa-shades.png",
 "santa.png",
@@ -136,9 +137,10 @@
 
     function buildScene() 
     {
-        camera.position.z = 70;
-        camera.position.y = -50;
-        // camera.rotation.x = 15 * ToRad;
+        camera.position.x = 0
+        camera.position.y = -250
+        camera.position.z = 70
+        // camera.rotation.y = 45 * ToRad;
 
         build3DPixelImage();
         setLights();
@@ -233,6 +235,12 @@
         // dirLight2.rotation.x = 45 * ToRad;
         scene.add( dirLight2 );
 
+        dirLight3 = new THREE.DirectionalLight( 0xffffff, 1 );
+        // dirLight3.color.setHSL( 0.1, 1, 0.95 );
+        dirLight3.position.set( 2, 10, -3 );
+        // dirLight3.rotation.x = 45 * ToRad;
+        scene.add( dirLight3 );
+
         // amb = new THREE.AmbientLight( 0x404040, .5 );
         // scene.add(amb);
 
@@ -316,10 +324,9 @@
     function onMouseMove(e) 
     {
         e.preventDefault()
-        var multX = 0.0005;
-        var multY = 0.001;
-        theta = - ( ( event.clientX - mousePos.x ) * 0.5 ) * multX;
-        phi = -( ( event.clientY - mousePos.y / 2) * 0.5 ) * multY;
+
+        theta = ( event.clientX - window.innerWidth * 0.5 ) / (window.innerWidth*.5)
+        phi   = ( window.innerHeight * 0.5 - event.clientY ) / (window.innerHeight*.5) 
     }
 
     function onMouseUp(e)
@@ -327,6 +334,9 @@
         e.preventDefault();
 
         if(state != 0) return null
+
+        soundClick.pos(0);
+        soundClick.play();
 
         state = 1
         world.gravity = new OIMO.Vec3(0, -5, 0);
@@ -343,9 +353,12 @@
 
         cameraAnim = true;
 
+        var r = [400, -400]
+        var a = r[Math.random() < .5 ? 0 : 1]
+
         TweenMax.to(camera.position, 2, {overwrite: "none", bezier:{
-            curviness: 2, type:"soft", 
-            values:[{x:camera.position.x, z:camera.position.z,y:camera.position.y}, {x:camera.position.x - 400, z:0, y: -100}, {x:camera.position.x, z:70, y: -50}]}, 
+            curviness: 2.5, type:"soft", 
+            values:[{x:camera.position.x, z:camera.position.z,y:camera.position.y}, {x:camera.position.x + a, z:0, y: -100}, {x:camera.position.x, z:70, y: -250}]}, 
             ease: "easeInOutQuad", onComplete: function(){
                 TweenMax.delayedCall(.5, resetView)
             }});
@@ -355,6 +368,7 @@
     {
         animateFilmParams({ a: 10.1, b: 5.5, c: 1024}, 1.5);
         animateVignette({a : 10.5, b: 15.5}, 1, function(){
+            camera.position.y = -150;
             cameraTop = true;
             reversing = false;
             touched = false;
@@ -384,7 +398,7 @@
             var zScale = Math.min(10, Math.max(2, Math.random() * 20))
 
             x = pix[i].x - 70
-            y = (window.innerHeight / (size * mult * 2)) - pix[i].y
+            y = -pix[i].y + canvas.height / 3
             z = -100
             var m = new THREE.Mesh( buffgeoBox, 
                     new THREE.MeshLambertMaterial( {
@@ -470,7 +484,7 @@
                 meshs[i].position.copy(meshs[i].positionsReverse[frame][0]);
                 meshs[i].rotation.copy(meshs[i].positionsReverse[frame][1]);
             }
-            frame--;
+            frame -= 2;
         }
     }
 
@@ -483,47 +497,55 @@
         var a = Math.round((meshs.length - 1) / 2)
         var l = new THREE.Vector3( 0, 0, 0 );
         l.copy(meshs[a].position);
-        // l.y += 5;
-
-        camera.lookAt(l);
+        l.y += 15;
 
         if(!animCamera)
         {
-            if(camera.position.z < 0)
-            {
-                camera.rotation.y -= theta; 
-                camera.rotation.x -= phi; 
-            } else {
-                camera.rotation.y += theta; 
-                camera.rotation.x += phi; 
-            }
-        } 
+            TweenMax.to(camera.position, .8, {
+                x : ((window.innerWidth * theta - window.innerWidth / 2) * .2), 
+                y: -150 + ((window.innerHeight * phi - window.innerHeight / 2) * .1), 
+                ease: "easeOutQuad", onUpdate: function(){
+                    camera.lookAt(l);
+                }
+            });
+
+        } else {
+            camera.lookAt(l);
+        }
 
         if(touched && cameraTop && state == 1 && !reversing)
         {
-            sound.pause().fadeOut(0, 1000);
-            soundSlow.pos = 0;
+            sound.pause().fadeOut(0, 1000, function(){
+                sound.pos(0);    
+            });
+            
+            soundSlow.pos(0);
             soundSlow.play().fadeIn(.3, 1000);
 
-            animateFilmParams({ a: 3.1, b: 2.5, c: 1800}, .3, function(){
-                animateFilmParams({a: .25, b: .3, c: 2048}, .4);
-            });
+            animateFilmParams({ a: .7, b: .8, c: 1000}, .3);
 
-            world.timeStep = 1/500;
             animCamera = true;
 
+            TweenMax.to(world, .4, {timeStep: 1/600, ease: "easeOutQuad"});
+
+            var r = [400, -400]
+            var a = r[Math.random() < .5 ? 0 : 1]
+
+            animCamera = false;
+        
             TweenMax.to(camera.position, 2, {overwrite: "none", bezier:{
                 curviness: 2.5, type:"soft", 
-                values:[{x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + 400, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-450, y: -350}]}, ease: "easeInOutQuad", onComplete: function(){
-                animCamera = false;
+                values:[{x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + a, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-450, y: -350}]}, ease: "easeInOutQuad", onComplete: function(){
                 TweenMax.delayedCall(1.8, function()
                 {
+                    animateFilmParams({a: .25, b: .3, c: 2048}, .4);
                     sound.play().fadeIn(.3, 1000);
-
-                    world.timeStep = 1/60;
-                    TweenMax.delayedCall(2, reverse);
+                    TweenMax.to(world, .5, {timeStep: 1/60, ease: "easeOutQuad", onComplete: function(){
+                        TweenMax.delayedCall(1, reverse);    
+                    }})
                 });
             }});
+                
 
             cameraTop = false;
         }

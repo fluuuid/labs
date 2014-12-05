@@ -88,6 +88,12 @@ var soundReverse = new Howl({
   rate: .6
 });
 
+var soundClick = new Howl({
+  urls: ['static/audio/click.mp3'],
+  loop: false,
+  volume: 0.7
+});
+
 sound.on('load', function(a){
     $($(document.body).find(".spinner")[0]).addClass('spinner-hide')
     setTimeout(function(){
@@ -95,7 +101,7 @@ sound.on('load', function(a){
         $('#headphones').addClass('headphone-active');
         
         $('#buttonChange').textillate({ in: { effect: 'fadeInUp' } });
-        $('#buttonChange').click(window.init);
+        $(window).one("click", window.init);
     }, 1000);
 })
 
