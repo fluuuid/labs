@@ -10,19 +10,61 @@
     font-style: normal;
 
 }
-body{margin:0;padding:0;overflow: hidden;background: black;}
+body{
+  margin:0;padding:0;overflow: hidden;background: black;
+  font-family: 'vcr_osd_monoregular';
+}
+svg
+{
+  fill: white;
+  width: 80px;
+  height: 80px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+#headphones
+{
+  padding-top: 520px;
+  color: white;
+  -webkit-transition: all .5s ease .8s;
+  transition: all .5s ease .8s;
+  pointer-events : none;
+  opacity: 0;
+}
+.headphone-active
+{
+  padding-top: 420px !important;
+  opacity: 1 !important;
+}
+
+.headphone-deactive
+{
+  padding-top: 500px !important;
+  opacity: 0 !important;
+}
+
+#headphones>span
+{
+  display: block;
+}
 #buttonChange
 {
-    font-family: 'vcr_osd_monoregular';
     z-index: 2;
     font-size: 60px;
     cursor: pointer;
     color: white;
     opacity: 0;
-    -webkit-transition: all .5s;
-    transition: all .5s;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+
     pointer-events : none;
 }
+#buttonChange:hover
+{
+  font-size: 70px;
+}
+
 .button-active
 {
     opacity: 1 !important;

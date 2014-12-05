@@ -58,6 +58,7 @@
     {
         $('#heading').addClass('animate-out');
         $('#buttonChange').addClass('button-deactive');
+        $('#headphones').addClass('headphone-deactive');
         
         initOimoPhysics();
         initPass();
@@ -289,7 +290,7 @@
             mesh.position.setFromMatrixPosition(mtx);
             mesh.rotation.setFromRotationMatrix(mtx);
 
-            if(mesh.position.y < -380 && !touched)
+            if(mesh.position.y < -360 && !touched)
             {
                 touched = true;
             }
@@ -339,10 +340,10 @@
         soundReverse.play().fadeIn(1, 1000);
         state = 2;
 
-        // {x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + 400, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-550, y: -350}]}
+        cameraAnim = true;
 
-        TweenMax.to(camera.position, 2, {bezier:{
-            curviness: 3, type:"soft", 
+        TweenMax.to(camera.position, 2, {overwrite: "none", bezier:{
+            curviness: 2, type:"soft", 
             values:[{x:camera.position.x, z:camera.position.z,y:camera.position.y}, {x:camera.position.x - 400, z:0, y: -100}, {x:camera.position.x, z:70, y: -50}]}, 
             ease: "easeInOutQuad", onComplete: function(){
                 TweenMax.delayedCall(.5, resetView)
@@ -503,18 +504,18 @@
             soundSlow.pos = 0;
             soundSlow.play().fadeIn(.3, 1000);
 
-            animateFilmParams({ a: 10.1, b: 10.5, c: 512}, .3, function(){
+            animateFilmParams({ a: 3.1, b: 2.5, c: 1800}, .3, function(){
                 animateFilmParams({a: .25, b: .3, c: 2048}, .4);
             });
 
             world.timeStep = 1/500;
             animCamera = true;
 
-            TweenMax.to(camera.position, 2, {bezier:{
-                curviness: 2, type:"soft", 
-                values:[{x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + 400, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-550, y: -350}]}, ease: "easeInOutQuad", onComplete: function(){
+            TweenMax.to(camera.position, 2, {overwrite: "none", bezier:{
+                curviness: 2.5, type:"soft", 
+                values:[{x:camera.position.x, z:camera.position.z, y:camera.position.y}, {x:camera.position.x + 400, z:100, y: camera.position.y / 2}, {x:camera.position.x, z:-450, y: -350}]}, ease: "easeInOutQuad", onComplete: function(){
                 animCamera = false;
-                TweenMax.delayedCall(1.5, function()
+                TweenMax.delayedCall(1.8, function()
                 {
                     sound.play().fadeIn(.3, 1000);
 

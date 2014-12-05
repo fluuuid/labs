@@ -92,6 +92,8 @@ sound.on('load', function(a){
     $($(document.body).find(".spinner")[0]).addClass('spinner-hide')
     setTimeout(function(){
         $('#buttonChange').addClass('button-active');
+        $('#headphones').addClass('headphone-active');
+        
         $('#buttonChange').textillate({ in: { effect: 'fadeInUp' } });
         $('#buttonChange').click(window.init);
     }, 1000);
