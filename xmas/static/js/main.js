@@ -157,6 +157,7 @@
 
         clock = new THREE.Clock( true );
 
+        sound.pos(0);
         sound.play().fadeIn(0.3, 2000);
         update();
     };
@@ -526,10 +527,7 @@
 
         if(touched && cameraTop && state == 1 && !reversing)
         {
-            sound.pause().fadeOut(0, 1000, function(){
-                sound.pos(0);    
-            });
-            
+            sound.pause().fadeOut(0, 1000);
             soundSlow.pos(0);
             soundSlow.play().fadeIn(.3, 1000);
 
