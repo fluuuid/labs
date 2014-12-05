@@ -35,6 +35,7 @@
 "gingerbread.png",
 "imgo.png",
 "santa-hat-icon.png",
+"santa-shades.png",
 "santa.png",
 "santa2.png",
 "snowflake-icon.png",
