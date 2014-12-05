@@ -9,7 +9,7 @@
 * TweenMax.js [http://greensock.com/tweenmax](http://greensock.com/tweenmax)
 * Animate.css [http://daneden.me/animate](http://daneden.me/animate)
 
-![image](https://dl.dropboxusercontent.com/u/5279741/cover_1024.png =450x)
+![image](http://labs.fluuu.id/xmas/cover_1024.jpg =450x)
 
 
 <br>
