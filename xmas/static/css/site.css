@@ -25,7 +25,7 @@ svg
 
 #headphones
 {
-  padding-top: 520px;
+  padding-top: 420px;
   color: white;
   -webkit-transition: all .5s ease .8s;
   transition: all .5s ease .8s;
@@ -34,8 +34,14 @@ svg
 }
 .headphone-active
 {
-  padding-top: 300px !important;
+  padding-top: 380px !important;
   opacity: 1 !important;
+}
+
+.love
+{
+  color: #7d2f6a;
+  line-height: 1rem;
 }
 
 .headphone-deactive

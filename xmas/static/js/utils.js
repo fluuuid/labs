@@ -98,6 +98,9 @@ var soundClick = new Howl({
 });
 
 sound.on('load', function(a){
+
+  $('.tapclick').text(window.isMobile ? "Tap" : "Click");
+
     $($(document.body).find(".spinner")[0]).addClass('spinner-hide')
     setTimeout(function(){
         $('#buttonChange').addClass('button-active');
