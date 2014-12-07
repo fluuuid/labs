@@ -16,9 +16,9 @@ body{
 }
 svg
 {
-  fill: white;
-  width: 80px;
-  height: 80px;
+  fill: #666666;
+  width: 40px;
+  height: 40px;
   margin-top: 20px;
   margin-bottom: 10px;
 }
@@ -34,7 +34,7 @@ svg
 }
 .headphone-active
 {
-  padding-top: 420px !important;
+  padding-top: 300px !important;
   opacity: 1 !important;
 }
 
@@ -49,11 +49,13 @@ svg
 #headphones>span
 {
   display: block;
+  color: white !important;
+  font-size: 1rem;
 }
 #buttonChange
 {
     z-index: 2;
-    font-size: 60px;
+    font-size: 50px;
     cursor: pointer;
     color: white;
     opacity: 0;
@@ -78,7 +80,7 @@ svg
 #clickHeader
 {
     z-index: 3;
-    font-size: 60px;
+    font-size: 50px;
     cursor: pointer;
     color: white;
     -webkit-transition: all .5s ease;
@@ -103,6 +105,11 @@ svg
     pointer-events : none;
 }
 
+.betterWith
+{
+  color: #666666 !important;
+}
+
 .button-deactive
 {
     pointer-events : none !important;   
@@ -118,6 +125,8 @@ p
     text-align: center;
     -webkit-transition: all .5s;
     transition: all .5s;
+    font-size: 1rem;
+    line-height: .7rem;
 }
 
 .spinner {
@@ -129,7 +138,7 @@ p
     height: 32px;
 
     top: 40%;
-    left: 50%;
+    left: 46%;
     -webkit-transform: translate(-50%);
     transform: translate(-50%);
 

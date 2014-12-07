@@ -13,10 +13,11 @@ hope you enjoy!
     var composer, clock, world, postprocessing = {};
     var ground;
     var hemiLight, dirLight;
-    var theta, phi;
+    var theta = 0;
+    var phi = 0;
     var frame;
 
-    var size           = window.isMobile ? 8 : 4;
+    var size           = window.isMobile ? 10 : 4;
     var meshs          = [];
     var bodys          = [];
     var grounds        = [];
@@ -269,9 +270,16 @@ hope you enjoy!
 
     function addControls()
     {
-        $(window).bind( window.isMobile ? 'touchend' : "mouseup", onMouseUp );
-        document.addEventListener( 'mousemove', onMouseMove );
-        window.addEventListener("resize", onWindowResize);
+        if(window.isMobile)
+        {
+            $(window).bind( 'touchend', onMouseUp );
+            gyro.startTracking(gyroMove);
+        } else 
+        {
+            $(window).bind("mouseup", onMouseUp );
+            document.addEventListener( 'mousemove', onMouseMove );
+            window.addEventListener("resize", onWindowResize);
+        }
     }
 
     function initOimoPhysics(){
@@ -344,6 +352,8 @@ hope you enjoy!
         theta = ( event.clientX - window.innerWidth * 0.5 ) / (window.innerWidth*.5)
         phi   = ( window.innerHeight * 0.5 - event.clientY ) / (window.innerHeight*.5) 
     }
+
+    
 
     function onMouseUp(e)
     {
@@ -464,7 +474,11 @@ hope you enjoy!
 
     function animateFilmParams(to, time, callback, delay)
     {
-        if(window.isMobile) if(callback){callback();} return null;
+        if(window.isMobile){
+            if(callback){
+                callback();
+            } return null;
+        };
 
         var params = {
             a : postprocessing['film'].uniforms[ "nIntensity" ].value, 
@@ -513,6 +527,12 @@ hope you enjoy!
         }
     }
 
+    function gyroMove(e)
+    {
+        theta = -e.gamma * 5
+        phi   = -e.alpha * .7
+    }
+
     function update() {
 
         requestAnimationFrame(update);
@@ -526,13 +546,25 @@ hope you enjoy!
 
         if(!animCamera)
         {
-            TweenMax.to(camera.position, .8, {
-                x : ((window.innerWidth * theta - window.innerWidth / 2) * .2), 
-                y: -150 + ((window.innerHeight * phi - window.innerHeight / 2) * .1), 
-                ease: "easeOutQuad", onUpdate: function(){
-                    camera.lookAt(l);
-                }
-            });
+            if(window.isMobile)
+            {
+                TweenMax.to(camera.position, .3, {
+                    x : theta, y: -150, ease: "linear", onUpdate: function(){
+                        camera.lookAt(l);
+                    }
+                });
+
+            } else {
+
+                TweenMax.to(camera.position, .8, {
+                    x : ((window.innerWidth * theta - window.innerWidth / 2) * .2), 
+                    y: -150 + ((window.innerHeight * phi - window.innerHeight / 2) * .1), 
+                    ease: "easeOutQuad", onUpdate: function(){
+                        camera.lookAt(l);
+                    }
+                });
+
+            }
 
         } else {
             camera.lookAt(l);
