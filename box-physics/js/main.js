@@ -30,8 +30,8 @@
             ["glitch", new THREE.GlitchPass(64, 50), true]
         ]
 
-        postprocessing['vignette'].uniforms[ "offset" ].value = 1.5;
-        postprocessing['vignette'].uniforms[ "darkness" ].value = 1.6;
+        // postprocessing['vignette'].uniforms[ "offset" ].value = 1.5;
+        // postprocessing['vignette'].uniforms[ "darkness" ].value = 1.6;
 
         for (var i = 0; i < passes.length; i++) {
             postprocessing[passes[i][0]] = passes[i][1];
