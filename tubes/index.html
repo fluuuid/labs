@@ -54,12 +54,37 @@
             vertical-align: middle;
             text-align: center;
         }
+        .cexp
+        {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 160px;
+            height: 92px;
+        }
+        .cexp img
+        {
+            max-width: 100%;
+        }
+        .cexp a
+        {
+          z-index: 99999;
+          -webkit-font-smoothing: antialiased;
+          position: relative;
+          bottom: auto;
+          left: auto;
+          width: auto;
+          color: #FFF;
+          text-decoration: none;
+        }
         </style>
     </head>
     <body>
         <div id="wrapper">
             <div class='cel'>click and hold</div>
         </div>
+
+        <div class="cexp"><a href="https://www.chromeexperiments.com/experiment/generative-tubes" target="_blank"><img src="https://www.chromeexperiments.com/img/badges/b4.png" alt="See my Experiment on ChromeExperiments.com" /></a></div>
 
         <script src="js/three.min.js"></script>
         <script src="js/wagner/Wagner.js"></script>
