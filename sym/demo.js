@@ -1,6 +1,6 @@
 var THREE             = require('three');
 var createOrbitViewer = require('three-orbit-viewer')(THREE);
-var Physijs = require('physi')(THREE);
+var Physijs = require('physijs-browserify')(THREE);
 
 Physijs.scripts.worker = 'libs/physi-worker.js';
 Physijs.scripts.ammo = 'libs/ammo.js';
