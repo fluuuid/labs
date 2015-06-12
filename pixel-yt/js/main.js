@@ -17,7 +17,6 @@
         window.requestAnimationFrame(playerUpdate);
     };
     function playerStart() {
-        console.log('Width: ' + video.videoWidth + ' Height: ' + video.videoHeight);
         videoHeight = video.videoHeight;
         videoWidth = video.videoWidth;
         canvas.setAttribute('height', Math.floor(videoHeight));
@@ -35,8 +34,8 @@
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var video = '';
-    var videoHeight = 480;
-    var videoWidth = 640;
+    var videoWidth = window.innerWidth;
+    var videoHeight = window.innerHeight;
     var myPixelation = new ClosePixelation( canvas, []);
 
     // Init
@@ -60,7 +59,7 @@
             }
           }, onFailSoHard);
         } else {
-            video.src = 'http://media.w3.org/2010/05/sintel/trailer.webm'; // fallback.
+            alert('getUserMedia() is not supported in your browser');
         }
     } else {
       alert('getUserMedia() is not supported in your browser');
