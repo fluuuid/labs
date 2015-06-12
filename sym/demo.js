@@ -2,8 +2,8 @@ var THREE             = require('three');
 var createOrbitViewer = require('three-orbit-viewer')(THREE);
 var Physijs = require('physi')(THREE);
 
-Physijs.scripts.worker = '/libs/physi-worker.js';
-Physijs.scripts.ammo = '/libs/ammo.js';
+Physijs.scripts.worker = 'libs/physi-worker.js';
+Physijs.scripts.ammo = 'libs/ammo.js';
 
 var app = createOrbitViewer({
     clearColor       : 0x000000,
