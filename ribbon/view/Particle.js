@@ -15,7 +15,7 @@ var Particle = function()
     this.alive        = false;
 
     for( var i=1; i<=this.trailPoints; i++ ){
-        this.skeleton.push(new THREE.Vector3( i*2, 0, 0 ).add(this.position));
+        this.skeleton.push(new THREE.Vector3( 0, 0, 0 ).add(this.position));
     }
 
     this.material = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x89CFF0});
@@ -33,7 +33,7 @@ Particle.prototype.init = function()
     this.vel      = new THREE.Vector3(Utils.random(-2, 2),Utils.random(-2, 2),Utils.random(-2, 2));
 
     for( var i=0; i<this.skeleton.length; i++ ){
-        this.skeleton[i]=(new THREE.Vector3( i*2,  0, 0 ).add(this.position));
+        this.skeleton[i]=(new THREE.Vector3( 0,  0, 0 ).add(this.position));
     }
 
     this.alive = true;
