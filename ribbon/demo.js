@@ -11,7 +11,7 @@ var Particle = require('./view/Particle');
 var renderer, camera, scene;
 var counter = 0, stats, dt;
 var clock = new THREE.Clock();
-var particles = new Array(250);
+var particles = new Array(200);
 var PARAMS = window.PARAMS = {
     speed : .2,
     randomY : false
