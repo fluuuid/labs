@@ -19,7 +19,9 @@ var PARAMS = window.PARAMS = {
 
 function init()
 {
-    stats = new Stats(); stats.domElement.style.position = 'absolute';
+    stats = new Stats(); 
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0';
     document.body.appendChild(stats.domElement);
 
     renderer = new THREE.WebGLRenderer( {
@@ -28,7 +30,7 @@ function init()
         alpha      : true,
         precision  : 'lowp'
     } );
-    document.body.appendChild(renderer.domElement)
+    document.getElementById('container').appendChild(renderer.domElement)
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 4000 );
     camera.position.set(12, 17, 50);
@@ -83,7 +85,8 @@ onResize();
 update();
 window.onresize = onResize;
 function onResize(){
-    renderer.setSize(1280, 720);
+    videoLayer = document.getElementsByTagName('video')[0]
+    renderer.setSize(videoLayer.width, videoLayer.height);
     // renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = renderer.domElement.width / renderer.domElement.height;
     camera.updateProjectionMatrix();
