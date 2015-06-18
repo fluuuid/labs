@@ -3,11 +3,11 @@ var Utils = require('../utils/Utils')
 
 var Particle = function()
 {
-    this.depth   = 20
+    this.depth   = 22
     
-    this.endPosX = Utils.random(-80, 50);
+    this.endPosX = Utils.random(-120, 30);
     this.endPosY = 20;
-    this.endPosZ = -80;
+    this.endPosZ = -60;
     
     this.startX  = 26;
     this.startY  = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
