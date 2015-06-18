@@ -3,13 +3,20 @@ var Utils = require('../utils/Utils')
 
 var Particle = function()
 {
-    this.depth        = (Math.random())*-10
-    this.startX       = -50;
-    this.startY       = window.PARAMS.randomY ? Utils.random(-5, 5) : 0
-    this.imgPos       = new THREE.Vector3(70,0,0);
-    this.maxThickness = Utils.random(.1, .2);
+    this.depth   = 20
+    
+    this.endPosX = Utils.random(-80, 50);
+    this.endPosY = 20;
+    this.endPosZ = -80;
+    
+    this.startX  = 29;
+    this.startY  = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
+
+    this.imgPos       = new THREE.Vector3(this.endPosX,this.endPosY,this.endPosZ);
+    this.maxThickness = Utils.random(.1, .3);
     this.trailPoints  = Utils.random(2, 4) >> 0;
-    this.FW           = new THREE.Vector3(0,0,1);
+
+    this.FW           = new THREE.Vector3(0,0,-1);
     this.position     = new THREE.Vector3(this.startX, this.startY, this.depth );
     this.skeleton     = [];
     this.alive        = false;
@@ -18,18 +25,22 @@ var Particle = function()
         this.skeleton.push(new THREE.Vector3( 0, 0, 0 ).add(this.position));
     }
 
-    this.material = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x89CFF0});
+    this.material = new THREE.MeshPhongMaterial({
+        side: THREE.DoubleSide, 
+        color: 0x89CFF0
+    });
 
     this.geometry     = new THREE.Geometry();
     this.mesh         = new THREE.Mesh(this.geometry, this.material);
+    this.mesh.overdraw = true;
     
     this.drawRibbon();
 }
 
 Particle.prototype.init = function() 
 {
-    this.startY       = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
-    this.position = new THREE.Vector3(this.startX ,this.startY, this.depth );
+    this.startY   = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
+    this.position = new THREE.Vector3(this.startX, this.startY, this.depth );
     this.vel      = new THREE.Vector3(Utils.random(-2, 2),Utils.random(-2, 2),Utils.random(-2, 2));
 
     for( var i=0; i<this.skeleton.length; i++ ){
@@ -50,7 +61,7 @@ Particle.prototype.drawRibbon = function()
     // body vertices
     for( var i=1; i<=this.trailPoints; i++ ) {
         var progress = (i-1)/(this.trailPoints-1);
-        var height = Math.sin(progress*this.PI)*this.maxThickness;
+        var height = Math.sin(progress*Math.PI)*this.maxThickness;
         this.geometry.vertices.push( new THREE.Vector3( (i-1)*2, -height, 0 ).add(this.position) ); // 1
         this.geometry.vertices.push( new THREE.Vector3( (i-1)*2,  height, 0 ).add(this.position) ); // 2
         nVertices += 2;
@@ -77,7 +88,7 @@ Particle.prototype.update = function(dt)
 {
     if(!this.alive) return;
 
-    var str = new THREE.Vector3(window.PARAMS.speed, .15, .15);
+    var str = new THREE.Vector3(window.PARAMS.speed, window.PARAMS.speed, window.PARAMS.speed);
 
     var diff = this.imgPos.clone().sub(this.position);
     var d   = diff.clone();
@@ -124,7 +135,7 @@ Particle.prototype.update = function(dt)
     this.geometry.verticesNeedUpdate = true;
     this.geometry.normalsNeedUpdate = true;
 
-    if(this.geometry.vertices[0].x >= 50)
+    if(this.geometry.vertices[0].z <= this.endPosZ + 20)
     {
         this.alive = false;
         this.init();

@@ -13,8 +13,8 @@ var counter = 0, stats, dt;
 var clock = new THREE.Clock();
 var particles = new Array(200);
 var PARAMS = window.PARAMS = {
-    speed : .2,
-    randomY : false
+    speed : .8,
+    randomY : true
 }
 
 function init()
@@ -23,15 +23,21 @@ function init()
     document.body.appendChild(stats.domElement);
 
     renderer = new THREE.WebGLRenderer( {
-        antialias : true,
-        clearColor: 0,
-        alpha: true
+        antialias  : true,
+        clearColor : 0,
+        alpha      : true,
+        precision  : 'lowp'
     } );
     document.body.appendChild(renderer.domElement)
 
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 4000 );
-    camera.position.set(0, 0, 70);
+    camera.position.set(0, 7, 50);
+    // camera.quaternion.set(0.5260157570894711, -0.029362140068638857, -0.8486467001192167, -0.04737136602529148)
+
+    // w: _x: _y: _z: 
+
     controls = new OrbitControls(camera, renderer.domElement);
+    window.c = camera;
     controls.maxDistance = 5000;
     // controls.minDistance = 50;
 
@@ -70,7 +76,7 @@ function update()
 init();
 
 var gui = new dat.GUI()
-gui.add(window.PARAMS, 'speed', .1, .5);
+gui.add(window.PARAMS, 'speed', .4, 1);
 gui.add(window.PARAMS, 'randomY').name('random Y start')
 
 onResize();
