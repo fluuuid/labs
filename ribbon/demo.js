@@ -42,7 +42,7 @@ function init()
     // controls.minDistance = 50;
 
     scene = new THREE.Scene();
-    scene.add(new THREE.AmbientLight());
+    scene.add(new THREE.AmbientLight(0xfcfcfc));
 
     draw();
 }
