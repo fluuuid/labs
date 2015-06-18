@@ -3,7 +3,7 @@ var Utils = require('../utils/Utils')
 
 var Particle = function()
 {
-    this.depth   = 8
+    this.depth   = 5
     
     this.endPosX = Utils.random(-120, -10);
     this.endPosY = 20;
@@ -11,7 +11,7 @@ var Particle = function()
     
     this.startX  = Utils.random(0, 15);
     // this.startY  = window.PARAMS.randomY ? Utils.random(10, 14) : 0
-    this.startY = 15;
+    this.startY = -10;
 
     this.imgPos       = new THREE.Vector3(this.endPosX,this.endPosY,this.endPosZ);
     this.maxThickness = Utils.random(.1, .3);

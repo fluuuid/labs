@@ -28,15 +28,12 @@ function init()
         antialias  : true,
         clearColor : 0,
         alpha      : true,
-        precision  : 'lowp'
+        precision  : 'highp'
     } );
     document.getElementById('container').appendChild(renderer.domElement)
 
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 4000 );
     camera.position.set(12, 17, 50);
-    // camera.quaternion.set(0.5260157570894711, -0.029362140068638857, -0.8486467001192167, -0.04737136602529148)
-
-    // w: _x: _y: _z: 
 
     controls = new OrbitControls(camera, renderer.domElement);
     window.c = camera;
