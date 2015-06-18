@@ -9,7 +9,7 @@ var Particle = function()
     this.endPosY = 20;
     this.endPosZ = -60;
     
-    this.startX  = Utils.random(0, 15);
+    this.startX  = Utils.random(-5, 15);
     // this.startY  = window.PARAMS.randomY ? Utils.random(10, 14) : 0
     this.startY = -10;
 
@@ -42,7 +42,8 @@ var Particle = function()
 
 Particle.prototype.init = function() 
 {
-    this.startY   = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
+    this.startY   = window.PARAMS.randomY ? Utils.random(-7, 8) : 0
+    // this.startY = -10;
     this.position = new THREE.Vector3(this.startX, this.startY, this.depth );
     this.vel      = new THREE.Vector3(Utils.random(-2, 2),Utils.random(-2, 2),Utils.random(-2, 2));
 
