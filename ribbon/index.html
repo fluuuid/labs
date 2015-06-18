@@ -5,17 +5,13 @@
     <title>Ribbons</title>
     <link rel="stylesheet" type="text/css" href="normalise.css">
     <style type="text/css">
-    body { font-family: monospace; }
+    body { font-family: monospace; background-color: #000; }
     </style>
 </head>
 <body>
     <script type="x-shader/x-vertex" id="vertexshader-ribbon">
 
         // switch on high precision floats
-        #ifdef GL_ES
-            precision highp float;
-        #endif
-
         varying vec3 N;
         varying vec4 V;
         
@@ -28,10 +24,6 @@
     <script type="x-shader/x-fragment" id="fragmentshader">
         
         // switch on high precision floats
-        #ifdef GL_ES
-            precision highp float;
-        #endif
-
         varying vec3 N;
         varying vec4 V;
         uniform vec3 color;

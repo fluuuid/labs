@@ -24,7 +24,8 @@ function init()
 
     renderer = new THREE.WebGLRenderer( {
         antialias : true,
-        clearColor: 0
+        clearColor: 0,
+        alpha: true
     } );
     document.body.appendChild(renderer.domElement)
 
