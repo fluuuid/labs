@@ -13,7 +13,7 @@ var counter = 0, stats, dt;
 var clock = new THREE.Clock();
 var particles = new Array(200);
 var PARAMS = window.PARAMS = {
-    speed : .8,
+    speed : .4,
     randomY : true
 }
 
@@ -76,7 +76,7 @@ function update()
 init();
 
 var gui = new dat.GUI()
-gui.add(window.PARAMS, 'speed', .4, 1);
+gui.add(window.PARAMS, 'speed', .2, .8);
 gui.add(window.PARAMS, 'randomY').name('random Y start')
 
 onResize();
