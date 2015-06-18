@@ -3,7 +3,7 @@ var OrbitControls = require('three-orbit-controls')(THREE);
 var dat           = require('dat-gui');
 var Stats         = require('stats-js');
 var TweenMax      = require('gsap');
-var GoF           = require('./GoL');
+var GoF           = require('gof-array');
 
 var stats = new Stats(); stats.domElement.style.position = 'absolute';
 document.body.appendChild(stats.domElement);
