@@ -34,9 +34,9 @@ function init()
     controls = new OrbitControls(camera, renderer.domElement);
     controls.maxDistance = 5000;
     // controls.minDistance = 50;
-    window.c = controls;
 
     scene = new THREE.Scene();
+    scene.add(new THREE.AmbientLight());
 
     draw();
 }

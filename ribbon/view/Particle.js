@@ -18,18 +18,7 @@ var Particle = function()
         this.skeleton.push(new THREE.Vector3( i*2, 0, 0 ).add(this.position));
     }
 
-    this.uniforms = {
-        color:{ type: "c", value:new THREE.Color(0x89CFF0) }
-    };
-    
-    this.material     = new THREE.ShaderMaterial({
-        side           : THREE.DoubleSide,
-        uniforms       : this.uniforms,
-        fragmentShader : document.getElementById("fragmentshader").innerHTML,
-        vertexShader   : document.getElementById("vertexshader-ribbon").innerHTML
-    });
-
-    // this.material = new THREE.MeshBasicMaterial({wireframe: true, side: THREE.DoubleSide, color: 0xFFFFFF});
+    this.material = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x89CFF0});
 
     this.geometry     = new THREE.Geometry();
     this.mesh         = new THREE.Mesh(this.geometry, this.material);
