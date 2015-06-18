@@ -4,12 +4,13 @@ var Utils = require('../utils/Utils')
 var Particle = function()
 {
     this.depth        = (Math.random())*-10
-    this.startX       = -40;
-    this.imgPos       = new THREE.Vector3(50,0,0);
+    this.startX       = -50;
+    this.startY       = window.PARAMS.randomY ? Utils.random(-5, 5) : 0
+    this.imgPos       = new THREE.Vector3(60,0,0);
     this.maxThickness = Utils.random(.1, .2);
     this.trailPoints  = Utils.random(2, 4) >> 0;
     this.FW           = new THREE.Vector3(0,0,1);
-    this.position     = new THREE.Vector3(this.startX, 0, this.depth );
+    this.position     = new THREE.Vector3(this.startX, this.startY, this.depth );
     this.skeleton     = [];
     this.alive        = false;
 
@@ -38,7 +39,8 @@ var Particle = function()
 
 Particle.prototype.init = function() 
 {
-    this.position = new THREE.Vector3(this.startX ,0, this.depth );
+    this.startY       = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
+    this.position = new THREE.Vector3(this.startX ,this.startY, this.depth );
     this.vel      = new THREE.Vector3(Utils.random(-2, 2),Utils.random(-2, 2),Utils.random(-2, 2));
 
     for( var i=0; i<this.skeleton.length; i++ ){
@@ -86,7 +88,7 @@ Particle.prototype.update = function(dt)
 {
     if(!this.alive) return;
 
-    var str = .2;
+    var str = new THREE.Vector3(window.PARAMS.speed, .15, .15);
 
     var diff = this.imgPos.clone().sub(this.position);
     var d   = diff.clone();
@@ -118,7 +120,7 @@ Particle.prototype.update = function(dt)
         }
 
         var th   = Math.sin(( (i-1)/(n_vert-2))*Math.PI )*this.maxThickness;
-        var next = diff.clone().multiplyScalar(str);
+        var next = diff.clone().multiply(str);
         var norm = diff.clone().cross(this.FW).setLength(th);
         v.add(next);
 
@@ -133,7 +135,7 @@ Particle.prototype.update = function(dt)
     this.geometry.verticesNeedUpdate = true;
     this.geometry.normalsNeedUpdate = true;
 
-    if(this.geometry.vertices[0].x >= 30)
+    if(this.geometry.vertices[0].x >= 40)
     {
         this.alive = false;
         this.init();

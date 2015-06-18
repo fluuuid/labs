@@ -11,7 +11,11 @@ var Particle = require('./view/Particle');
 var renderer, camera, scene;
 var counter = 0, stats, dt;
 var clock = new THREE.Clock();
-var particles = new Array(200);
+var particles = new Array(250);
+var PARAMS = window.PARAMS = {
+    speed : .2,
+    randomY : false
+}
 
 function init()
 {
@@ -24,10 +28,12 @@ function init()
     } );
     document.body.appendChild(renderer.domElement)
 
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.001, 4000 );
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 4000 );
     camera.position.set(0, 0, 70);
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.maxDistance = 500;
+    controls.maxDistance = 5000;
+    // controls.minDistance = 50;
+    window.c = controls;
 
     scene = new THREE.Scene();
 
@@ -42,7 +48,7 @@ function draw()
 
         setTimeout(function(p){
             p.init();
-        }, 50 * i, particles[i]);
+        }, 25 * i, particles[i]);
     };
 
     // box = new THREE.Mesh(new THREE.BoxGeometry(100 ,100, 100), new THREE.MeshBasicMaterial({wireframe: true}))
@@ -64,6 +70,10 @@ function update()
 }
 
 init();
+
+var gui = new dat.GUI()
+gui.add(window.PARAMS, 'speed', .1, .5);
+gui.add(window.PARAMS, 'randomY').name('random Y start')
 
 onResize();
 update();
