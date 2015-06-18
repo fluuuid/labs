@@ -5,9 +5,9 @@ var Particle = function()
 {
     this.depth        = (Math.random())*-10
     this.startX       = -40;
-    this.imgPos       = new THREE.Vector3(40,0,0);
-    this.maxThickness = 20;
-    this.trailPoints  = 3;
+    this.imgPos       = new THREE.Vector3(50,0,0);
+    this.maxThickness = Utils.random(.1, .2);
+    this.trailPoints  = Utils.random(2, 4) >> 0;
     this.FW           = new THREE.Vector3(0,0,1);
     this.position     = new THREE.Vector3(this.startX, 0, this.depth );
     this.skeleton     = [];
@@ -96,7 +96,7 @@ Particle.prototype.update = function(dt)
 
     diff.add(new THREE.Vector3( Utils.random(-.2, .2) * dimX,Utils.random(-.2, .2)*dimY,Utils.random(-.2, .2)*dimZ));
 
-    this.maxThickness = di/10.0;
+    // this.maxThickness = di/10.0;
     this.position.add( diff.multiplyScalar( dt ) );
 
     this.position.add( this.vel.multiplyScalar(dt) );
