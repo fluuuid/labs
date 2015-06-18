@@ -50,9 +50,6 @@ function draw()
             p.init();
         }, 25 * i, particles[i]);
     };
-
-    // box = new THREE.Mesh(new THREE.BoxGeometry(100 ,100, 100), new THREE.MeshBasicMaterial({wireframe: true}))
-    // scene.add(box);
 }
 
 function update()

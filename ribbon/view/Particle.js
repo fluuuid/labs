@@ -6,7 +6,7 @@ var Particle = function()
     this.depth        = (Math.random())*-10
     this.startX       = -50;
     this.startY       = window.PARAMS.randomY ? Utils.random(-5, 5) : 0
-    this.imgPos       = new THREE.Vector3(60,0,0);
+    this.imgPos       = new THREE.Vector3(70,0,0);
     this.maxThickness = Utils.random(.1, .2);
     this.trailPoints  = Utils.random(2, 4) >> 0;
     this.FW           = new THREE.Vector3(0,0,1);
@@ -135,7 +135,7 @@ Particle.prototype.update = function(dt)
     this.geometry.verticesNeedUpdate = true;
     this.geometry.normalsNeedUpdate = true;
 
-    if(this.geometry.vertices[0].x >= 40)
+    if(this.geometry.vertices[0].x >= 50)
     {
         this.alive = false;
         this.init();
