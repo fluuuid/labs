@@ -9,7 +9,7 @@ var Particle = function()
     this.endPosY = 20;
     this.endPosZ = -80;
     
-    this.startX  = 29;
+    this.startX  = 26;
     this.startY  = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
 
     this.imgPos       = new THREE.Vector3(this.endPosX,this.endPosY,this.endPosZ);
