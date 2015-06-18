@@ -86,7 +86,7 @@ update();
 window.onresize = onResize;
 function onResize(){
     videoLayer = document.getElementsByTagName('video')[0]
-    renderer.setSize(videoLayer.width, videoLayer.height);
+    renderer.setSize(videoLayer.width + 100, videoLayer.height + 100);
     // renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = renderer.domElement.width / renderer.domElement.height;
     camera.updateProjectionMatrix();

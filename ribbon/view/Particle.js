@@ -3,14 +3,15 @@ var Utils = require('../utils/Utils')
 
 var Particle = function()
 {
-    this.depth   = 22
+    this.depth   = 8
     
-    this.endPosX = Utils.random(-120, 30);
+    this.endPosX = Utils.random(-120, -10);
     this.endPosY = 20;
     this.endPosZ = -60;
     
-    this.startX  = 26;
-    this.startY  = window.PARAMS.randomY ? Utils.random(-10, 10) : 0
+    this.startX  = Utils.random(0, 15);
+    // this.startY  = window.PARAMS.randomY ? Utils.random(10, 14) : 0
+    this.startY = 15;
 
     this.imgPos       = new THREE.Vector3(this.endPosX,this.endPosY,this.endPosZ);
     this.maxThickness = Utils.random(.1, .3);
@@ -27,7 +28,9 @@ var Particle = function()
 
     this.material = new THREE.MeshPhongMaterial({
         side: THREE.DoubleSide, 
-        color: 0x89CFF0
+        color: 0x89CFF0, 
+        transparent: true,
+        opacity: 0
     });
 
     this.geometry     = new THREE.Geometry();
@@ -46,6 +49,8 @@ Particle.prototype.init = function()
     for( var i=0; i<this.skeleton.length; i++ ){
         this.skeleton[i]=(new THREE.Vector3( 0,  0, 0 ).add(this.position));
     }
+
+    this.mesh.material.opacity = 1;
 
     this.alive = true;
 };
