@@ -13,7 +13,8 @@ var counter = 0;
 
 renderer = new THREE.WebGLRenderer( {
     antialias : true,
-    clearColor: 0
+    clearColor: 0,
+    precision: 'highp'
 } );
 document.body.appendChild(renderer.domElement)
 
@@ -21,6 +22,8 @@ camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight,
 // camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 1, 1000 );
 camera.position.set(0, 0, 1000);
 controls = new OrbitControls(camera, renderer.domElement);
+controls.maxDistance = 1500;
+controls.minDistance = 200
 
 onResize();
 
@@ -93,10 +96,11 @@ update();
 window.onresize = onResize;
 function onResize(){
 
-    camera.left = window.innerWidth / - 2;
-    camera.right = window.innerWidth / 2;
-    camera.top = window.innerHeight / 2;
-    camera.bottom = window.innerHeight / - 2;
+    // camera.left = window.innerWidth / - 2;
+    // camera.right = window.innerWidth / 2;
+    // camera.top = window.innerHeight / 2;
+    // camera.bottom = window.innerHeight / - 2;
+    camera.aspectRatio = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
