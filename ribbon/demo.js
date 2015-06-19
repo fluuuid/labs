@@ -94,7 +94,7 @@ init();
 
 var gui = new dat.GUI()
 gui.add(window.PARAMS, 'speed', .2, .8);
-gui.add(window.PARAMS, 'particles', 10, 300).onChange(reset.bind(this));
+gui.add(window.PARAMS, 'particles', 10, 600).onChange(reset.bind(this));
 gui.add(window.PARAMS, 'interval', 0, 400).name('particle step').onChange(reset.bind(this));
 gui.add(window.PARAMS, 'randomY').name('random Y start')
 
