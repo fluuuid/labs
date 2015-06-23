@@ -256,13 +256,13 @@
 
     function update() {
 
-        requestAnimationFrame(update);
-
         particleSystem.rotation.y -= .0005;
         
         controls.update();
 
         render()
+        
+        requestAnimationFrame(update);
     };
 
     function render() {
