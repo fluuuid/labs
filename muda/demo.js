@@ -1,7 +1,7 @@
 var THREE         = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var dat           = require('dat-gui');
-var Stats         = require('stats-js');
+// var Stats         = require('stats-js');
 
 var Oimo = OIMO = require('./libs/Oimo');
 
@@ -21,8 +21,8 @@ var logo = {"metadata":{"version":4.3,"type":"Object","generator":"ObjectExporte
 
 var letters = [letterM, letterU, letterD, letterA];
 
-var stats = new Stats(); stats.domElement.style.position = 'absolute';
-document.body.appendChild(stats.domElement);
+// var stats = new Stats(); stats.domElement.style.position = 'absolute';
+// document.body.appendChild(stats.domElement);
 
 var renderer, camera, scene, world, composer;
 var counter = 0;
@@ -39,10 +39,10 @@ renderer.gammaOutput = true;
 document.body.appendChild(renderer.domElement)
 
 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-camera.position.set(0, 45, 150);
+camera.position.set(0, 45, 300);
 controls = new OrbitControls(camera, renderer.domElement);
-controls.maxDistance = 400;
-controls.minDistance = 150;
+controls.noZoom = true;
+// controls.minDistance = 350;
 
 world = new Oimo.World(1 / 60, 1, 2);
 world.gravity = new OIMO.Vec3(0, 0, 0);
@@ -153,10 +153,10 @@ for (var i = boxes - 1; i >= 0; i--) {
     // if(i % 20 == 0)
     // {
         var a = counterLetters % (letters.length);
-        a = i % 10 == 0 ? 4 : Math.min(a, 3);
+        a = i % 25 == 0 ? 4 : Math.min(a, 3);
         // console.log(i)
 
-        scale = Math.random();
+        scale = Math.min(1, .3 + Math.random());
         meshs[i] = letters[a].clone();
         meshs[i].scale.set(scale, scale, scale);
         meshs[i].size = sizes[a].clone().multiplyScalar(scale);
@@ -179,7 +179,7 @@ for (var i = boxes - 1; i >= 0; i--) {
 
 function updateOimoPhysics(force) {
 
-    if(force == null) force = -0.000625
+    if(force == null) force = -0.00059
 
     var i = bodys.length;
     var mesh;
@@ -201,7 +201,7 @@ function updateOimoPhysics(force) {
             Math.abs(body.linearVelocity.y) < 15 ||
             Math.abs(body.linearVelocity.z) < 15)
         {
-            newPosAttraction.copy(mesh.position).multiplyScalar(force * (Math.random() / 50));
+            newPosAttraction.copy(mesh.position).multiplyScalar(force * (Math.random() / 20));
         } else {
             newPosAttraction.copy(mesh.position).multiplyScalar(0);
         }
@@ -237,12 +237,12 @@ var clicks = getRandomTimeForClick();
 
 function getRandomTimeForClick()
 {
-    return ~~(50 + Math.random() * 100 + .5)
+    return ~~(50 + Math.random() * 50 + .5)
 }
 
 function update()
 {
-    stats.begin();
+    // if(stats) stats.begin();
 
     updateOimoPhysics();
 
@@ -267,7 +267,7 @@ function update()
     renderer.render(scene, camera);
     // composer.render( clock.getDelta() );
 
-    stats.end()
+    // if(stats) stats.end()
     
     requestAnimationFrame(update);
 }
