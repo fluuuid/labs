@@ -33,7 +33,7 @@ light.position.set(0, 1, 10);
 light.lookAt(scene.position);
 scene.add(light);
 
-var sizeBox = 50;
+var sizeBox = 25;
 
 var resX = ~~(renderer.domElement.width / sizeBox + .5) - 1
 var resY = ~~(renderer.domElement.height / sizeBox + .5)
@@ -41,7 +41,7 @@ var resY = ~~(renderer.domElement.height / sizeBox + .5)
 var world = new GoF(resX, 10);
 world.restart();
 
-var box = new THREE.BoxGeometry(sizeBox, sizeBox, sizeBox);
+var box = new THREE.BufferGeometry().fromGeometry(new THREE.BoxGeometry(sizeBox, sizeBox, sizeBox));
 var material = new THREE.MeshPhongMaterial({color: 0xFFFFFF, side: THREE.DoubleSide});
 var boxes = [];
 
