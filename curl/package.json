@@ -1,0 +1,40 @@
+{
+  "name": "rapid-prototype",
+  "version": "1.0.0",
+  "description": "based on @mattdesl tuto",
+  "main": "index.js",
+  "repository": {
+    "git": "https://github.com/silviopaganini/rapid-prototype"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "budo index.js -t glslify -v --live -o bundle.js | garnish",
+    "build": "browserify -t glslify index.js | uglifyjs -cm > bundle.js"
+  },
+  "author": "silvio paganini | @silviopaganini",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^9.0.3",
+    "budo": "^1.2.0",
+    "dat-gui": "^0.5.0",
+    "dom-css": "^1.1.1",
+    "garnish": "^2.1.0",
+    "glsl-curl-noise": "0.0.4",
+    "glsl-noise": "0.0.0",
+    "glsl-random": "0.0.5",
+    "raf": "^3.0.0",
+    "stats-js": "^1.0.0-alpha1",
+    "three": "^0.70.0",
+    "three-orbit-viewer": "^69.2.9",
+    "uglify-js": "^2.4.16",
+    "watchify": "^2.4.0"
+  },
+  "browserify": {
+    "transform": [
+      "glslify"
+    ]
+  },
+  "dependencies": {
+    "glslify": "^2.1.1"
+  }
+}
