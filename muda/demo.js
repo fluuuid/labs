@@ -1,12 +1,13 @@
 var THREE         = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var dat           = require('dat-gui');
-// var Stats         = require('stats-js');
+var Stats         = require('stats-js');
 
 var Oimo = OIMO = require('./libs/Oimo');
 
 window.isMobile = false;
 (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))window.isMobile=true})(navigator.userAgent||navigator.vendor||window.opera);
+// window.isMobile = true;
 
 // var DotScreenShader = require('./libs/postprocessing/DotScreenShader')(THREE);
 // var AntiAliasPass   = require('./libs/postprocessing/AntiAliasPass')(THREE);
@@ -22,9 +23,13 @@ var letterD = {"metadata":{"version":4.3,"type":"Object","generator":"ObjectExpo
 var letterA = {"metadata":{"version":4.3,"type":"Object","generator":"ObjectExporter"},"geometries":[{"uuid":"49FFD166-1C5B-4187-9740-03DCFEA8F491","type":"Geometry","data":{"vertices":[16.0664,-24.4976,0,16.0664,-24.4976,0,23.3916,-24.4976,0,3.9043,24.4975,0,-3.9043,24.4975,0,-23.3916,-24.4976,0,-16.1357,-24.4976,0,-10.9531,-10.814,0,10.7451,-10.814,0,-0.172798,17.4487,0,-0.172798,17.4487,0,8.3262,-4.52585,0,-8.5351,-4.52585,0,16.0664,-24.4976,-20,16.0664,-24.4976,-20,23.3916,-24.4976,-20,3.9043,24.4975,-20,-3.9043,24.4975,-20,-23.3916,-24.4976,-20,-16.1357,-24.4976,-20,-10.9531,-10.814,-20,10.7451,-10.814,-20,-0.172798,17.4487,-20,-0.172798,17.4487,-20,8.3262,-4.52585,-20,-8.5351,-4.52585,-20],"normals":[0,-1,0,0.730143,0.683295,0,0.365071,0.93098,0,0.929199,0.369579,0,-0.365071,0.93098,0,-0.730143,0.683295,0,-0.929199,0.369579,0,0.369176,-0.929359,0,0.738352,-0.674415,0,-0.366984,-0.930227,0,-0.733968,-0.679184,0,-0.932007,-0.362441,0,-0.932672,-0.360725,0,0,1,0,0.934615,-0.355662,0],"uvs":[[0,1]],"faces":[40,15,2,1,0,0,0,0,0,0,40,14,15,1,0,0,0,0,0,0,40,16,3,2,0,0,0,1,2,3,40,15,16,2,0,0,0,3,1,3,40,17,4,3,0,0,0,4,5,2,40,16,17,3,0,0,0,1,4,2,40,18,5,4,0,0,0,6,6,5,40,17,18,4,0,0,0,4,6,5,40,19,6,5,0,0,0,7,8,0,40,18,19,5,0,0,0,0,7,0,40,20,7,6,0,0,0,8,7,8,40,19,20,6,0,0,0,7,8,8,40,21,8,7,0,0,0,9,10,7,40,20,21,7,0,0,0,8,9,7,40,13,0,8,0,0,0,11,11,10,40,21,13,8,0,0,0,9,11,10,40,24,11,10,0,0,0,12,12,12,40,23,24,10,0,0,0,12,12,12,40,25,12,11,0,0,0,13,13,13,40,24,25,11,0,0,0,13,13,13,40,22,9,12,0,0,0,14,14,14,40,25,22,12,0,0,0,14,14,14]}},{"uuid":"A91E526B-5775-49DF-84FF-C83F332210D4","type":"Geometry","data":{"vertices":[16.0664,-24.4976,-20,23.3916,-24.4976,-20,3.9043,24.4975,-20,-3.9043,24.4975,-20,-23.3916,-24.4976,-20,-16.1357,-24.4976,-20,-10.9531,-10.814,-20,10.7451,-10.814,-20,-0.172798,17.4487,-20,8.3262,-4.52585,-20,-8.5351,-4.52585,-20],"normals":[0,0,-1],"uvs":[[0.171536,0.358506,0.112585,0.286003,0.14229,0.257339,0.187215,0.434444,0.219316,0.779143,0.251375,0.728342,0.280684,0.779143,0.314196,0.434682,0.387415,0.286003,0.329743,0.359044,0.358045,0.257608]],"faces":[40,7,1,0,0,1,2,0,0,0,40,9,2,1,3,4,1,0,0,0,40,7,9,1,0,3,1,0,0,0,40,8,3,2,5,6,4,0,0,0,40,9,8,2,3,5,4,0,0,0,40,10,4,3,7,8,6,0,0,0,40,8,10,3,5,7,6,0,0,0,40,6,5,4,9,10,8,0,0,0,40,10,6,4,7,9,8,0,0,0,40,9,7,6,3,0,9,0,0,0,40,10,9,6,7,3,9,0,0,0]}},{"uuid":"DA10EC1A-DF49-4676-83F1-16FC5C15AEE5","type":"Geometry","data":{"vertices":[16.0664,-24.4976,0,23.3916,-24.4976,0,3.9043,24.4975,0,-3.9043,24.4975,0,-23.3916,-24.4976,0,-16.1357,-24.4976,0,-10.9531,-10.814,0,10.7451,-10.814,0,-0.172798,17.4487,0,8.3262,-4.52585,0,-8.5351,-4.52585,0],"normals":[0,0,1],"uvs":[[0,0.184769,0,0.24265,0,0.248984,1,0.341516,0.5,0.252035,1,0.248984,0,0.341516,0.5,0.344803,0.5,0.24265,0.5,0.185397,0.5,0.949692,0.5,0.996848,1,0.949692,0,0.949692]],"faces":[40,0,1,7,0,1,2,0,0,0,40,9,6,7,3,4,5,0,0,0,40,1,9,7,1,6,2,0,0,0,40,9,10,6,3,7,4,0,0,0,40,4,5,6,8,9,4,0,0,0,40,10,4,6,7,8,4,0,0,0,40,10,3,4,7,10,8,0,0,0,40,8,2,3,11,12,10,0,0,0,40,10,8,3,7,11,10,0,0,0,40,9,1,2,6,1,13,0,0,0,40,8,9,2,11,3,12,0,0,0]}}],"materials":[{"uuid":"3D94BEA4-BFE1-41C9-BC50-1C5EEF501FD6","type":"MeshPhongMaterial","name":"Mat","color":13421772,"emissive":0,"specular":3355443,"shininess":0.5}],"object":{"uuid":"B63904C2-C003-4475-84F5-60184DEC5E8D","type":"Object3D","name":"Path_4","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,81.37000274658203,4.182350158691406,0,1],"children":[{"uuid":"8D226B57-23CD-4397-BAE0-D80939E057F5","type":"Mesh","geometry":"49FFD166-1C5B-4187-9740-03DCFEA8F491","material":"3D94BEA4-BFE1-41C9-BC50-1C5EEF501FD6","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},{"uuid":"0D1C4A5E-FC46-49B4-B757-A0BEF561D499","type":"Object3D","name":"Cap_22","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[{"uuid":"FA9770CA-B267-4568-8A8A-B2F6DAA81EA0","type":"Mesh","geometry":"A91E526B-5775-49DF-84FF-C83F332210D4","material":"3D94BEA4-BFE1-41C9-BC50-1C5EEF501FD6","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]}]},{"uuid":"32799301-EA4F-445E-8D26-FFC9F775C6FF","type":"Object3D","name":"Cap_12","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[{"uuid":"3928CE8F-A6F6-4C7A-A625-B6C688402D4B","type":"Mesh","geometry":"DA10EC1A-DF49-4676-83F1-16FC5C15AEE5","material":"3D94BEA4-BFE1-41C9-BC50-1C5EEF501FD6","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]}]}]}};
 
 var letters = [letterM, letterU, letterD, letterA];
+var isLocal = window.location.href.indexOf('localhost') > -1;
 
-// var stats = new Stats(); stats.domElement.style.position = 'absolute';
-// document.body.appendChild(stats.domElement);
+if(isLocal){
+    var stats = new Stats(); stats.domElement.style.position = 'absolute';
+    document.body.appendChild(stats.domElement);    
+}
+
 
 var renderer, camera, scene, world, composer;
 var counter = 0;
@@ -32,7 +37,7 @@ var clock = new THREE.Clock();
 
 renderer = new THREE.WebGLRenderer( {
     antialias : true,
-    precision: 'mediump',
+    precision: 'lowp',
     clearColor: 0x000000
 } );
 renderer.gammaInput = true;
@@ -82,7 +87,7 @@ var materialLetters = new THREE.MeshPhongMaterial ({
     shininess: 0, 
     color: 0x1d1d1d,
     // wireframe : true
-    transparent: true,
+    // transparent: true,
     // opacity: .5
 })
 
@@ -96,6 +101,10 @@ var materialLetters = new THREE.MeshPhongMaterial ({
 
 for (var i = 0; i < letters.length; i++) {
     letters[i] = new THREE.ObjectLoader().parse(letters[i]);
+    // var a =  new THREE.BufferGeometry().fromGeometry(letters[i].children[0].geometry)
+    // letters[i] = new THREE.Mesh(a, materialLetters);
+    // console.log(a)
+    // letters[i] =;
     recursiveMaterialChange(letters[i], materialLetters);
 };
 
@@ -115,7 +124,7 @@ function recursiveMaterialChange(obj, material)
     }
 }
 
-var boxes = window.isMobile ? 100 : 400;
+var boxes = window.isMobile ? 80 : 380;
 // var w = 15;
 
 world.clear();
@@ -158,7 +167,7 @@ for (var i = boxes - 1; i >= 0; i--) {
         // a = i % 25 == 0 ? 4 : Math.min(a, 3);
         // console.log(i)
 
-        scale = Math.min(1, .3 + Math.random());
+        scale = Math.min(1, (window.isMobile ? .5 : .3) + Math.random());
         meshs[i] = letters[a].clone();
         meshs[i].scale.set(scale, scale, scale);
         meshs[i].size = sizes[a].clone().multiplyScalar(scale);
@@ -181,7 +190,7 @@ for (var i = boxes - 1; i >= 0; i--) {
 
 function updateOimoPhysics(force) {
 
-    if(force == null) force = -0.00059
+    if(force == null) force = window.isMobile ? -0.00079 : -0.00059;
 
     var i = bodys.length;
     var mesh;
@@ -260,7 +269,7 @@ function getRandomTimeForClick()
 
 function update()
 {
-    // if(stats) stats.begin();
+    if(stats) stats.begin();
 
     updateOimoPhysics();
 
@@ -296,7 +305,7 @@ function update()
         composer.render( clock.getDelta() );
     }
 
-    // if(stats) stats.end()
+    if(stats) stats.end()
     
     requestAnimationFrame(update);
 }
