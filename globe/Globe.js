@@ -4,46 +4,56 @@ var Globe = function(scene)
 {
     this.scene = scene;
 
-    this.shaders = {
-        'earth' : {
-          uniforms: {
-            'texture': { type: 't', value: null }
-          },
-          vertexShader: [
-            'varying vec3 vNormal;',
-            'varying vec2 vUv;',
-            'void main() {',
-              'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-              'vNormal = normalize( normalMatrix * normal );',
-              'vUv = uv;',
-            '}'
-          ].join('\n'),
-          fragmentShader: [
-            'uniform sampler2D texture;',
-            'varying vec3 vNormal;',
-            'varying vec2 vUv;',
-            'void main() {',
-              'vec3 diffuse = texture2D( texture, vUv ).xyz;',
-              'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
-              // 'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
-              'gl_FragColor = vec4( diffuse, 1.0 );',
-            '}'
-          ].join('\n')
-        }
-    };
+    // this.shaders = {
+    //     'earth' : {
+    //       uniforms: {
+    //         'texture': { type: 't', value: null }
+    //       },
+    //       vertexShader: [
+    //         'varying vec3 vNormal;',
+    //         'varying vec2 vUv;',
+    //         'void main() {',
+    //           'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+    //           'vNormal = normalize( normalMatrix * normal );',
+    //           'vUv = uv;',
+    //         '}'
+    //       ].join('\n'),
+    //       fragmentShader: [
+    //         'uniform sampler2D texture;',
+    //         'varying vec3 vNormal;',
+    //         'varying vec2 vUv;',
+    //         'void main() {',
+    //           'vec3 diffuse = texture2D( texture, vUv ).xyz;',
+    //           // 'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
+    //           // 'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
+    //           'gl_FragColor = vec4( diffuse , 1.0 );',
+    //         '}'
+    //       ].join('\n')
+    //     }
+    // };
 
     var geometry = new THREE.SphereGeometry(200, 40, 40);
 
-    shader = this.shaders['earth'];
-    uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+    // shader = this.shaders['earth'];
+    // uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    uniforms['texture'].value = THREE.ImageUtils.loadTexture('world.jpg');
+    var texture = THREE.ImageUtils.loadTexture('world.jpg');
+    texture.minFilter = THREE.LinearFilter;
 
-    material = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: shader.vertexShader,
-        fragmentShader: shader.fragmentShader,
+    // uniforms['texture'].value = texture;
+
+    material = new THREE.MeshBasicMaterial({
+        map : texture
+        // uniforms: uniforms,
+        // vertexShader: shader.vertexShader,
+        // fragmentShader: shader.fragmentShader,
     });
+
+    // material = new THREE.ShaderMaterial({
+    //     uniforms: uniforms,
+    //     vertexShader: shader.vertexShader,
+    //     fragmentShader: shader.fragmentShader,
+    // });
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.rotation.y = Math.PI;

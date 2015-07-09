@@ -18,12 +18,10 @@ renderer = new THREE.WebGLRenderer( {
 renderer.setClearColor(0x000000, 0);
 document.body.appendChild(renderer.domElement)
 
-var distance = 100000, distanceTarget = 100000;
-
 camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000 );
 camera.position.set(0, 0, 1000);
 controls = new OrbitControls(camera, renderer.domElement);
-controls
+controls.noZoom = true;
 
 scene = new THREE.Scene();
 
