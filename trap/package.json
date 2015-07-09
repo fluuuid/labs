@@ -13,7 +13,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "budo demo.js:bundle.js -v -t glslify --live | garnish",
-    "build": "browserify demo.js | uglifyjs -cm > bundle.js"
+    "build": "browserify -t glslify demo.js | uglifyjs -cm > bundle.js"
   },
   "devDependencies": {
     "budo": "^4.1.0",
