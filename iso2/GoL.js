@@ -42,11 +42,8 @@ GameOfLifeGL.prototype.init = function()
             "    n += texture2D(buffer, uv+vec2(dx,dy)/dims).r;",
             "  }",
             "  float s = texture2D(buffer, uv).r;",
-            "  if(n > 3.0+s || n < 3.0) {",
-            "    gl_FragColor = vec4(0,0,0,1);",
-            "  } else {",
-            "    gl_FragColor = vec4(1,1,1,1);",
-            "  }",
+            "  gl_FragColor.rgb = vec3(n > 3.0+s || n < 3.0 ? 0.0 : 1.0);",
+            "  gl_FragColor.a = 1.0;",
             "}"].join("\n")
     });
 
