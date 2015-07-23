@@ -9,8 +9,6 @@ uniform int mode;
 uniform int sizeMode;
 uniform float opacity;
 
-vec2 vUv2 = vUv;
-
 float applyOverlayToChannel( float base, float blend ) {
 
 	return (base < 0.5 ? (2.0 * base * blend) : (1.0 - 2.0 * (1.0 - base) * (1.0 - blend)));
@@ -54,6 +52,8 @@ float applyLinearLightToChannel( float base, float blend ) {
 }
 
 void main() {
+
+	vec2 vUv2 = vUv;
 
 	if( sizeMode == 1 ) {
 		
