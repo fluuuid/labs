@@ -1,0 +1,31 @@
+{
+  "license": "ISC",
+  "name": "fireworks",
+  "repository": {
+    "url": "",
+    "type": "git"
+  },
+  "author": "Silvio Paganini",
+  "bugs": {
+    "url": ""
+  },
+  "version": "0.0.1",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "budo demo.js:bundle.js -v --live | garnish",
+    "build": "browserify demo.js | uglifyjs -cm > bundle.js"
+  },
+  "devDependencies": {
+    "budo": "^4.1.0",
+    "dat-gui": "^0.5.0",
+    "garnish": "^2.1.3",
+    "gsap": "^1.17.0",
+    "stats-js": "^1.0.0-alpha1",
+    "three": "^0.71.0",
+    "three-orbit-controls": "^69.0.4",
+    "utils-perf": "^1.0.1",
+    "watchify": "^3.2.3"
+  },
+  "main": "index.js",
+  "description": ""
+}

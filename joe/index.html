@@ -1,0 +1,199 @@
+<html>
+
+<head>
+<style type="text/css">
+    .letters {
+        font-size: 30px;
+        font-family: monospace;
+        width: 100%;
+        height: 38px;
+        position: relative;
+        top: 50%;
+        transform: translate(-50% 0);
+    }
+
+    .letter {
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+
+    }
+</style>
+</head>
+
+<body>
+
+<div class="letters">
+    <span class="letter">H</span>
+    <span class="letter">E</span>
+    <span class="letter">L</span>
+    <span class="letter">L</span>
+    <span class="letter">O</span>
+    <span class="letter"></span>
+    <span class="letter">J</span>
+    <span class="letter">O</span>
+    <span class="letter">E</span>
+</div>
+
+<button onclick='restart();'>Restart</button>
+
+</body>
+
+
+<script type="text/javascript">
+var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+/*
+change those variables to play around
+*/
+
+var FRICTION = 0.88;
+var RADIUS   = 100;
+var SPRING   = .03;
+var TIME_PLAY = 2 // in seconds
+
+var Letter = function(el, originPosX)
+{
+      this.originPosX    = originPosX;
+      this.updatePos     = bind(this.updatePos, this);
+      
+      this.el            = el;
+      
+      this.stop          = bind(this.stop, this);
+      this.update        = bind(this.update, this);
+      
+      this.spring        = SPRING;
+      this.radius        = RADIUS;
+      this.friction      = FRICTION;
+      
+      this.style         = this.el.style;
+      this.angle         = Math.random() * 360;
+      this.speed         = Math.random() * .2;
+      this.rotation      = Math.random() * 360;
+      this.rotationSpeed = Math.random() * .1;
+      
+      this.originPos     = {
+        x : this.originPosX,
+        y : 0
+      };
+      
+      
+      this.pos           = {
+        x : this.originPosX,
+        y : 0  
+      };
+      
+      this.shouldUpdate  = true;
+      this.cx            = window.innerWidth / 2;
+      this.cy            = 0;
+      
+      this.vx            = 0;
+      this.vy            = 0;
+      this.vr            = 0;
+}
+
+Letter.prototype.update = function() {
+    if (this.shouldUpdate) {
+        this.angle += this.speed;
+        this.rotation += this.rotationSpeed;
+        this.pos.x = Math.floor(this.cx + this.radius * Math.cos(this.angle));
+        this.pos.y = Math.floor(this.cy + this.radius * Math.sin(this.angle));
+
+    } else {
+        this.stick();
+    }
+
+    this.updatePos();
+};
+
+Letter.prototype.stop = function() {
+    setTimeout(function(){
+        this.shouldUpdate = false;
+    }.bind(this), Math.random() * 1300);
+};
+
+Letter.prototype.stick = function() {
+    var ar, ax, ay, dr, dx, dy, offsetX;
+    offsetX = (window.innerWidth - startPos / 2) / 2;
+
+    dx = (offsetX + this.originPosX) - this.pos.x;
+    ax = dx * this.spring;
+
+    this.vx += ax;
+    this.vx *= this.friction;
+
+    this.pos.x += this.vx;
+
+    dy = 0 - this.pos.y;
+    ay = dy * this.spring;
+
+    this.vy += ay;
+    this.vy *= this.friction;
+    this.pos.y += this.vy;
+
+    dr = 0 - this.rotation;
+    ar = dr * this.spring;
+
+    this.vr += ar;
+    this.vr *= this.friction;
+    this.rotation += this.vr;
+};
+
+Letter.prototype.updatePos = function() {
+    var transform;
+    transform = "translate(" + this.pos.x + "px, " + this.pos.y + "px) rotate(" + this.rotation + "deg)";
+    this.style.webkitTransform = transform;
+    this.style.MozTransform = transform;
+    this.style.msTransform = transform;
+    this.style.OTransform = transform;
+    this.style.transform = transform;
+    return null;
+};
+
+var domEl      = document.getElementsByClassName('letter');
+var letterSize = 24;
+var startPos   = (window.innerWidth / 2) - (domEl.length * letterSize);
+
+var letters = [];
+for (var i = 0; i < domEl.length; i++) {
+  el = domEl[i];
+  pos = startPos + (letterSize * i);
+  letter = new Letter(el, pos - startPos);
+  letters.push(letter);
+}
+
+function update()
+{
+    for (var i = 0; i < letters.length; i++) {
+        letters[i].update();
+    };
+
+    requestAnimationFrame(update);
+}
+
+function stop()
+{
+    for (var i = 0; i < letters.length; i++) {
+        letters[i].stop();
+    };
+}
+
+
+function restart()
+{
+    for (var i = 0; i < letters.length; i++) {
+        letters[i].shouldUpdate = true;
+    };
+
+    setTimeout(stop, TIME_PLAY * 1000);
+
+}
+
+restart();
+update();
+
+
+</script>
+
+</html>
