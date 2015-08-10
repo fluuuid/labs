@@ -6,7 +6,7 @@ var TweenMax      = require('gsap');
 var Utils         = require('utils-perf');
 
 var stats = new Stats(); stats.domElement.style.position = 'absolute';
-document.body.appendChild(stats.domElement);
+if(window.location.href.indexOf('localhost') > -1)document.body.appendChild(stats.domElement);
 
 var prev = new THREE.Vector3(0,0,0);
 var renderer, camera, scene;
