@@ -33,7 +33,6 @@ function generateLines(point)
 {
     var distance = prev.distanceTo(point);
     var geo = new THREE.Geometry();
-    var normal = point.clone().normalize();
 
     var numLines = Utils.random(10, 200);
 
@@ -79,7 +78,8 @@ function animateLine(line)
     {
         TweenMax.to(line.geometry.vertices[i], Math.random(), {
             x: line.geometry.finalVertices[i].x,
-            y: line.geometry.finalVertices[i].y
+            y: line.geometry.finalVertices[i].y,
+            ease: Power4.easeOut
         ,onUpdate: function(line){
             line.geometry.verticesNeedUpdate = true;
         }, onUpdateParams: [line], onComplete: removeLines, onCompleteParams: [line]});
