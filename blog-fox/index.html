@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="normalise.css">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <style type="text/css">
+    body
+    {
+        font-family: monospace;
+        text-align: center;
+        padding-top: 50px;
+    }
+    .input
+    {
+        width: 500px;
+    }
+    .output
+    {
+        width: 500px;
+
+    }
+    #inputParse
+    {
+        display: none;
+    }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+    function convert()
+    {   
+        $('#inputParse').html($('#input').text());
+        var arrayImages = $('#inputParse').find('img').map(function(){
+            return $(this).attr("src");
+        });
+
+        var finalOutput = "";
+
+        for (var i = 0; i < arrayImages.length; i++) {
+            if(i % 2 == 0)
+            {
+                finalOutput += '<div style="display:table;width:100%;"><div style="display:table-cell;width:50%;">';
+                finalOutput += '<img src="' + arrayImages[i] + '">';
+                finalOutput += "</div>";
+            } else {
+                finalOutput += '<div style="display:table-cell;width:50%;">';
+                finalOutput += '<img src="' + arrayImages[i] + '">';
+                finalOutput += "</div></div>";
+            }
+        };
+
+        $('#output').text(finalOutput);
+
+    }
+    </script>
+
+    <div id="inputParse">
+    </div>
+
+    <textarea rows="10" cols="50" id="input">
+        <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127975849202.jpg"><img class="alignnone size-medium wp-image-83" src="https://buymeaticket.files.wordpress.com/2015/08/10150127975849202.jpg?w=300" alt="10150127975849202" width="300" height="225" /></a> <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127975929202.jpg"><img class="alignnone size-medium wp-image-84" src="https://buymeaticket.files.wordpress.com/2015/08/10150127975929202.jpg?w=300" alt="10150127975929202" width="300" height="225" /></a> <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127976099202.jpg"><img class="alignnone size-medium wp-image-87" src="https://buymeaticket.files.wordpress.com/2015/08/10150127976099202.jpg?w=300" alt="10150127976099202" width="300" height="225" /></a> <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127981839202.jpg"><img class="alignnone size-medium wp-image-100" src="https://buymeaticket.files.wordpress.com/2015/08/10150127981839202.jpg?w=300" alt="10150127981839202" width="300" height="225" /></a><a href="https://buymeaticket.files.wordpress.com/2015/08/10150127976284202.jpg"><img class="alignnone size-medium wp-image-91" src="https://buymeaticket.files.wordpress.com/2015/08/10150127976284202.jpg?w=300" alt="10150127976284202" width="300" height="225" /></a> <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127977604202.jpg"><img class="alignnone size-medium wp-image-92" src="https://buymeaticket.files.wordpress.com/2015/08/10150127977604202.jpg?w=300" alt="10150127977604202" width="300" height="225" /></a> <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127979909202.jpg"><img class="alignnone size-medium wp-image-93" src="https://buymeaticket.files.wordpress.com/2015/08/10150127979909202.jpg?w=300" alt="10150127979909202" width="300" height="225" /></a><a href="https://buymeaticket.files.wordpress.com/2015/08/10150127976484202.jpg"><img class="alignnone size-medium wp-image-101" src="https://buymeaticket.files.wordpress.com/2015/08/10150127976484202.jpg?w=300" alt="10150127976484202" width="300" height="225" /></a><a href="https://buymeaticket.files.wordpress.com/2015/08/10150127980074202.jpg"><img class="alignnone size-medium wp-image-102" src="https://buymeaticket.files.wordpress.com/2015/08/10150127980074202.jpg?w=300" alt="10150127980074202" width="300" height="225" /></a> <a href="https://buymeaticket.files.wordpress.com/2015/08/10150127981619202.jpg"><img class="alignnone size-medium wp-image-96" src="https://buymeaticket.files.wordpress.com/2015/08/10150127981619202.jpg?w=300" alt="10150127981619202" width="300" height="225" /></a>
+    </textarea>
+    <hr>
+    <textarea readonly rows="10" cols="50" id="output"></textarea>
+    <hr>
+    <button onclick="convert();">Convert</button>
+
+</body>
+
+</html>
