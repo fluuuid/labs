@@ -33,10 +33,12 @@
     <script type="text/javascript">
     function convert()
     {   
-        $('#inputParse').html($('#input').text());
+        $('#inputParse').html($('#input').val());
         var arrayImages = $('#inputParse').find('img').map(function(){
             return $(this).attr("src");
         });
+
+        console.log(arrayImages)
 
         var finalOutput = "";
 
@@ -60,12 +62,9 @@
     }
     </script>
 
-    <div id="inputParse">
-    </div>
+    <div id="inputParse"></div>
     <h2>Put your images here</h2>
-    <textarea rows="15" cols="100" id="input">
-        
-    </textarea>
+    <textarea rows="15" cols="100" id="input"></textarea>
     <hr>
     <h2>converted images</h2>
     <textarea readonly rows="15" cols="100" id="output"></textarea>
