@@ -6,7 +6,6 @@ var noise          = require('perlin-noise');
 var TweenMax       = require('gsap');
 var EffectComposer = require('./postprocessing/core/EffectComposer')(THREE);
 var NoiseShader    = require('./postprocessing/Noise')(THREE);
-var AntiAliasPass  = require('./postprocessing/AntiAliasPass')(THREE);
 var RenderPass     = require('./postprocessing/core/RenderPass')(THREE);
 
 var stats = new Stats(); stats.domElement.style.position = 'absolute';
@@ -20,17 +19,28 @@ var Params = function(){
     this.meshSpecular = '#fff3d7';
     this.meshEmissive = '#333333';
     this.shininess = 5;
+    this.noiseAmount = .08;
+    this.noiseSpeed = 1;
 }
 
 var p = new Params();
 var gui = new dat.GUI()
+
 gui.add(p, 'nodes', 100, 200).onChange(generatePlane.bind(this));
 gui.add(p, 'power', 0, 200).onChange(generatePlane.bind(this));
-gui.add(p, 'shininess', 0, 50).step(1).onChange(generatePlane.bind(this));
-gui.addColor(p, 'lightColor').onChange(generatePlane.bind(this));
-gui.addColor(p, 'meshColor').onChange(generatePlane.bind(this));
-gui.addColor(p, 'meshSpecular').onChange(generatePlane.bind(this));
-gui.addColor(p, 'meshEmissive').onChange(generatePlane.bind(this));
+
+var folderColors = gui.addFolder('Colours');
+folderColors.addColor(p, 'lightColor').onChange(generatePlane.bind(this));
+folderColors.addColor(p, 'meshColor').onChange(generatePlane.bind(this));
+folderColors.addColor(p, 'meshSpecular').onChange(generatePlane.bind(this));
+folderColors.addColor(p, 'meshEmissive').onChange(generatePlane.bind(this));
+folderColors.add(p, 'shininess', 0, 50).step(1).onChange(generatePlane.bind(this));
+folderColors.open();
+
+var folderNoise = gui.addFolder('Postprocessing Noise');
+folderNoise.add(p, 'noiseAmount', 0, .2);
+folderNoise.add(p, 'noiseSpeed', 0, 10);
+folderNoise.open();
 
 var renderer, camera, scene;
 var counter = 0;
@@ -62,9 +72,6 @@ noisePass.uniforms['amount'].value = .08;
 noisePass.uniforms['speed'].value = 1;
 noisePass.renderToScreen = true;
 composer.addPass( noisePass );
-
-var pass = new AntiAliasPass();
-composer.addPass( pass );
 
 function generatePlane()
 {
@@ -126,6 +133,8 @@ function update()
 {
     stats.begin();
 
+    noisePass.uniforms['amount'].value = p.noiseAmount;
+    noisePass.uniforms['speed'].value = p.noiseSpeed;
     noisePass.uniforms['time'].value = clock.getElapsedTime();
     mesh.geometry.verticesNeedUpdate = true;
 
