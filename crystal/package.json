@@ -12,8 +12,8 @@
   "version": "0.0.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "budo demo.js:bundle.js -v --live | garnish",
-    "build": "browserify demo.js | uglifyjs -cm > bundle.js"
+    "start": "budo --dir dist/ src/index.js:bundle.js -v --live | garnish",
+    "build": "browserify src/index.js | uglifyjs -cm > dist/bundle.js"
   },
   "devDependencies": {
     "budo": "^4.1.0",
