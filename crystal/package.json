@@ -22,7 +22,7 @@
     "gsap": "^1.17.0",
     "perlin-noise": "0.0.1",
     "stats-js": "^1.0.0-alpha1",
-    "three": "^0.71.0",
+    "three": "^0.71.1",
     "three-orbit-controls": "^69.0.4",
     "watchify": "^3.2.3"
   },

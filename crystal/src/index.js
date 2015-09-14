@@ -15,11 +15,11 @@ var Params = function(){
     this.nodes = 150;
     this.power = 100;
     this.lightColor = '#d7e3ff';
-    this.meshColor = '#d7e3ff';
+    this.meshColor = '#ebf1ff';
     this.meshSpecular = '#fff3d7';
-    this.meshEmissive = '#333333';
+    this.meshEmissive = '#2d2b26';
     this.shininess = 5;
-    this.noiseAmount = .08;
+    this.noiseAmount = .05;
     this.noiseSpeed = 1;
 }
 
@@ -30,11 +30,11 @@ gui.add(p, 'nodes', 100, 200).onChange(generatePlane.bind(this));
 gui.add(p, 'power', 0, 200).onChange(generatePlane.bind(this));
 
 var folderColors = gui.addFolder('Colours');
-folderColors.addColor(p, 'lightColor').onChange(generatePlane.bind(this));
-folderColors.addColor(p, 'meshColor').onChange(generatePlane.bind(this));
-folderColors.addColor(p, 'meshSpecular').onChange(generatePlane.bind(this));
-folderColors.addColor(p, 'meshEmissive').onChange(generatePlane.bind(this));
-folderColors.add(p, 'shininess', 0, 50).step(1).onChange(generatePlane.bind(this));
+folderColors.addColor(p, 'lightColor').onChange(updateColours.bind(this));
+folderColors.addColor(p, 'meshColor').onChange(updateColours.bind(this));
+folderColors.addColor(p, 'meshSpecular').onChange(updateColours.bind(this));
+folderColors.addColor(p, 'meshEmissive').onChange(updateColours.bind(this));
+folderColors.add(p, 'shininess', 0, 50).step(1).onChange(updateColours.bind(this));
 folderColors.open();
 
 var folderNoise = gui.addFolder('Postprocessing Noise');
@@ -86,10 +86,10 @@ function generatePlane()
     geo  = new THREE.PlaneGeometry(500, 500, nodes, nodes);
     geo.originalVertices = geo.vertices.slice();
     mesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
-        color: p.meshColor,
-        specular: p.meshSpecular,
-        emissive: p.meshEmissive,
-        shininess: p.shininess,
+        color: new THREE.Color(p.meshColor),
+        specular: new THREE.Color(p.meshSpecular),
+        emissive: new THREE.Color(p.meshEmissive),
+        shininess: new THREE.Color(p.shininess),
         shading: THREE.FlatShading,
         side: THREE.DoubleSide
     }));
@@ -129,6 +129,16 @@ function animateVertice(vert, i)
 
 generatePlane();
 
+function updateColours()
+{
+    console.log(mesh, p)
+    mesh.material.color = new THREE.Color(p.meshColor);
+    mesh.material.specular = new THREE.Color(p.meshSpecular);
+    mesh.material.emissive = new THREE.Color(p.meshEmissive);
+    mesh.material.shininess = p.shininess;
+    mesh.material.needsUpdate = true;
+}
+
 function update()
 {
     stats.begin();
@@ -136,6 +146,7 @@ function update()
     noisePass.uniforms['amount'].value = p.noiseAmount;
     noisePass.uniforms['speed'].value = p.noiseSpeed;
     noisePass.uniforms['time'].value = clock.getElapsedTime();
+
     mesh.geometry.verticesNeedUpdate = true;
 
     // renderer.render(scene, camera);
