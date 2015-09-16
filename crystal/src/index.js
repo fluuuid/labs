@@ -8,6 +8,14 @@ var EffectComposer = require('./postprocessing/core/EffectComposer')(THREE);
 var NoiseShader    = require('./postprocessing/Noise')(THREE);
 var RenderPass     = require('./postprocessing/core/RenderPass')(THREE);
 
+var Tabletop = require("tabletop");
+var a = Tabletop.init({
+    key: "1iYhvt8m8VNK4TMv6UAHt1IjG0DFksGw0GkpDhAke_FI",
+    callback: function(data, tabletop){
+        console.log(data.artists.elements);
+    }
+})
+
 var stats = new Stats(); stats.domElement.style.position = 'absolute';
 document.body.appendChild(stats.domElement);
 
@@ -131,7 +139,6 @@ generatePlane();
 
 function updateColours()
 {
-    console.log(mesh, p)
     mesh.material.color = new THREE.Color(p.meshColor);
     mesh.material.specular = new THREE.Color(p.meshSpecular);
     mesh.material.emissive = new THREE.Color(p.meshEmissive);
