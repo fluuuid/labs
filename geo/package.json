@@ -1,28 +1,30 @@
 {
   "license": "ISC",
-  "name": "marching",
+  "name": "geo",
   "repository": {
-    "url": "",
+    "url": "https://github.com/silviopaganini/rapid-prototype",
     "type": "git"
   },
   "author": "Silvio Paganini",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/silviopaganini/rapid-prototype/issues"
   },
   "version": "0.0.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "budo demo.js:bundle.js -v --live | garnish",
-    "build": "browserify demo.js | uglifyjs -cm > bundle.js"
+    "start": "budo --dir dist/ src/index.js:js/bundle.js -v --live -- -t babelify | garnish",
+    "build": "browserify -t babelify src/index.js | uglifyjs -cm > dist/js/bundle.js"
   },
   "devDependencies": {
+    "babelify": "^6.3.0",
+    "browserify": "^11.1.0",
     "budo": "^4.1.0",
     "dat-gui": "^0.5.0",
     "garnish": "^2.1.3",
-    "perlin-noise": "0.0.1",
     "stats-js": "^1.0.0-alpha1",
     "three": "^0.71.0",
     "three-orbit-controls": "^69.0.4",
+    "uglifyjs": "^2.4.10",
     "utils-perf": "^1.1.1",
     "watchify": "^3.2.3"
   },
