@@ -56,7 +56,7 @@ class Demo {
     const OrbitControls = OC(THREE);
 
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-    this.camera.position.set(0, 0, 500);
+    this.camera.position.set(0, 0, 800);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.maxDistance = 800;
