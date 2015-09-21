@@ -9,12 +9,12 @@ class Demo {
   {
     this.type         = "square";
     this.materialType = "MeshBasicMaterial";
-    this.numObjects   = 7;
+    this.numObjects   = 15;
     this.move         = true;
-    this.amount       = 150;
-    this.size         = 50;
-    this.speed        = .05;
-    this.spacing      = 4;
+    this.amount       = 180;
+    this.size         = 45;
+    this.speed        = .04;
+    this.spacing      = 3.5;
 
     this.startStats();
     this.startGUI();
@@ -161,7 +161,7 @@ class Demo {
     var gui = new dat.GUI()
     gui.add(this, "type", ['triangle', 'inverted', 'square']).onChange(this.addObjects.bind(this));
     gui.add(this, "materialType", ['MeshBasicMaterial', 'MeshNormalMaterial']).onChange(this.addObjects.bind(this));
-    gui.add(this, 'numObjects', 1, 10).step(1).onChange(this.addObjects.bind(this));
+    gui.add(this, 'numObjects', 1, 15).step(1).onChange(this.addObjects.bind(this));
     gui.add(this, 'spacing', 1, 10).onChange(this.addObjects.bind(this));
     gui.add(this, 'speed', 0, .15);
     gui.add(this, 'size', 1, 100).onChange(this.addObjects.bind(this));
