@@ -92,7 +92,7 @@ class Demo {
     // this.light.shadowCameraVisible = true;
 
 
-    // this.scene.add(new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 ));
+    // this.scene.add(new THREE.HemisphereLight( 0xffffbb, 0x080820, .3 ));
     this.scene.add(this.light);
 
     this.box = new THREE.SphereGeometry(5, 32, 32);
@@ -120,7 +120,7 @@ class Demo {
     this.ssaoPass.uniforms[ 'cameraNear' ].value = this.camera.near;
     this.ssaoPass.uniforms[ 'cameraFar' ].value = this.camera.far;
     this.ssaoPass.uniforms[ 'onlyAO' ].value = false;
-    this.ssaoPass.uniforms[ 'aoClamp' ].value = 20.5;
+    this.ssaoPass.uniforms[ 'aoClamp' ].value = 100.5;
     this.ssaoPass.uniforms[ 'lumInfluence' ].value = 0.5;
 
     // Add pass to effect composer
@@ -150,7 +150,7 @@ class Demo {
   {
     let dist = this.prev.distanceTo(point);
     if(dist < 2) return;
-    if(this.boxes.length > 350) return;
+    if(this.boxes.length > 250) return;
 
     // point.z = dist / 10;
 
