@@ -1,0 +1,32 @@
+{
+    "license": "ISC", 
+    "name": "generative-forms", 
+    "repository": {
+        "url": "https://github.com/silviopaganini/rapid-prototype", 
+        "type": "git"
+    }, 
+    "author": "Silvio Paganini", 
+    "bugs": {
+        "url": "https://github.com/silviopaganini/rapid-prototype/issues"
+    }, 
+    "version": "0.0.1", 
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1", 
+        "start": "budo --dir dist/ src/index.js:js/bundle.js -v --live -- -t babelify | garnish", 
+        "build": "browserify -t babelify src/index.js | uglifyjs -cm > dist/js/bundle.js"
+    }, 
+    "devDependencies": {
+        "watchify": "^3.2.3", 
+        "dat-gui": "^0.5.0", 
+        "stats-js": "^1.0.0-alpha1", 
+        "browserify": "^11.1.0", 
+        "babelify": "^6.3.0", 
+        "three.js": "^0.72.0", 
+        "garnish": "^2.1.3", 
+        "budo": "^4.1.0", 
+        "three-orbit-controls": "^69.0.4", 
+        "uglifyjs": "^2.4.10"
+    }, 
+    "main": "index.js", 
+    "description": ""
+}
