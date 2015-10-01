@@ -6,7 +6,7 @@ const OrbitControls  = require('three-orbit-controls')(THREE);
 const EffectComposer = require('./postprocessing/core/EffectComposer')(THREE);
 const RenderPass     = require('./postprocessing/core/RenderPass')(THREE);
 const SSAOShader     = require('./postprocessing/SSAOShader')(THREE);
-const AntiAliasPass     = require('./postprocessing/AntiAliasPass')(THREE);
+const AntiAliasPass  = require('./postprocessing/AntiAliasPass')(THREE);
 
 import Box from './Box';
 
