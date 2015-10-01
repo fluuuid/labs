@@ -5,6 +5,8 @@ class Box  {
     this.index = index;
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.scale.set(0,0,0);
+    // this.mesh.castShadow = true;
+    // this.mesh.receiveShadow = true;
   }
 
   update(time)

@@ -40,7 +40,7 @@ class Demo {
   {
     this.renderer = new THREE.WebGLRenderer( {
         antialias : true,
-        clearColor: 0
+        clearColor: 0,
     } );
 
     this.renderer.shadowMap.enabled = true;
@@ -71,13 +71,14 @@ class Demo {
     this.scene.add(this.hitPlane);
 
     this.material = new THREE.MeshPhongMaterial({
-      shininess: 5, 
-      color: 0xFBA026, 
-      emissive: 0xFBA026,
-      shading : THREE.FlatShading
+      shininess: .1, 
+      color: 0x5CACE2, 
+      emissive: 0x5CACE2,
+      specular: 0x5CACE2,
+      // shading : THREE.FlatShading
     });
 
-    this.light = new THREE.DirectionalLight(0xFFFFFF, 1);
+    this.light = new THREE.SpotLight(0xFFFFFF, .4);
     this.light.position.set(0, 0, 200);
     // this.light.castShadow = true;
     // this.light.shadowCameraNear  = 0.01; 
@@ -108,10 +109,10 @@ class Demo {
   generateBoxes(point)
   {
     let dist = this.prev.distanceTo(point);
-    if(dist < 2) return;
+    if(dist < 5) return;
     if(this.boxes.length > 500) return;
 
-    point.z = dist / 10;
+    // point.z = dist / 10;
 
     let index = this.boxes.length / 2;
 
