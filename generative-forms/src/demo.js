@@ -2,7 +2,11 @@ import THREE from 'three.js';
 import dat   from 'dat-gui' ;
 import Stats from 'stats-js' ;
 
-const OrbitControls = require('three-orbit-controls')(THREE);
+const OrbitControls  = require('three-orbit-controls')(THREE);
+const EffectComposer = require('./postprocessing/core/EffectComposer')(THREE);
+const RenderPass     = require('./postprocessing/core/RenderPass')(THREE);
+const SSAOShader     = require('./postprocessing/SSAOShader')(THREE);
+const AntiAliasPass     = require('./postprocessing/AntiAliasPass')(THREE);
 
 import Box from './Box';
 
@@ -23,6 +27,7 @@ class Demo {
     this.createRender();
     this.createScene();
     this.addObjects();
+    this.addPasses();
 
     this.onResize();
     this.listen();
@@ -43,8 +48,8 @@ class Demo {
         clearColor: 0,
     } );
 
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // this.renderer.shadowMap.enabled = true;
+    // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     document.body.appendChild(this.renderer.domElement)
   }
@@ -52,7 +57,7 @@ class Demo {
   createScene()
   {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-    this.camera.position.set(0, 0, 240);
+    this.camera.position.set(0, 0, 100);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.maxDistance = 500;
 
@@ -73,8 +78,9 @@ class Demo {
     this.material = new THREE.MeshPhongMaterial({
       shininess: .1, 
       color: 0x5CACE2, 
-      emissive: 0x5CACE2,
+      emissive: 0x5196c5,
       specular: 0x5CACE2,
+      // side: THREE.DoubleSide
       // shading : THREE.FlatShading
     });
 
@@ -89,8 +95,42 @@ class Demo {
     // this.scene.add(new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 ));
     this.scene.add(this.light);
 
-    this.box = new THREE.SphereGeometry(10, 32, 32);
+    this.box = new THREE.SphereGeometry(5, 32, 32);
     this.boxes = [];
+  }
+
+  addPasses()
+  {
+    var renderPass = new THREE.RenderPass( this.scene, this.camera );
+    var depthShader = THREE.ShaderLib[ "depthRGBA" ];
+    var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
+
+    this.depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader,
+      uniforms: depthUniforms, blending: THREE.NoBlending } );
+
+    var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
+    this.depthRenderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, pars );
+
+    // Setup SSAO pass
+    this.ssaoPass = new THREE.ShaderPass( THREE.SSAOShader );
+    this.ssaoPass.renderToScreen = true;
+    //this.ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
+    this.ssaoPass.uniforms[ "tDepth" ].value = this.depthRenderTarget;
+    this.ssaoPass.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
+    this.ssaoPass.uniforms[ 'cameraNear' ].value = this.camera.near;
+    this.ssaoPass.uniforms[ 'cameraFar' ].value = this.camera.far;
+    this.ssaoPass.uniforms[ 'onlyAO' ].value = false;
+    this.ssaoPass.uniforms[ 'aoClamp' ].value = 20.5;
+    this.ssaoPass.uniforms[ 'lumInfluence' ].value = 0.5;
+
+    // Add pass to effect composer
+    this.effectComposer = new THREE.EffectComposer( this.renderer );
+    this.effectComposer.addPass( renderPass );
+    this.effectComposer.addPass( this.ssaoPass );
+
+    var antiPass = new AntiAliasPass();
+    antiPass.name = 'anti-alias';
+    this.effectComposer.addPass( antiPass );
   }
 
   startGUI()
@@ -109,8 +149,8 @@ class Demo {
   generateBoxes(point)
   {
     let dist = this.prev.distanceTo(point);
-    if(dist < 5) return;
-    if(this.boxes.length > 500) return;
+    if(dist < 2) return;
+    if(this.boxes.length > 350) return;
 
     // point.z = dist / 10;
 
@@ -156,7 +196,14 @@ class Demo {
       this.boxes[i].update(time);
     };
 
-    this.renderer.render(this.scene, this.camera);
+    this.scene.overrideMaterial = this.depthMaterial;
+    this.renderer.render( this.scene, this.camera, this.depthRenderTarget, true );
+
+    // Render renderPass and SSAO shaderPass
+    this.scene.overrideMaterial = null;
+    this.effectComposer.render();
+
+    // this.renderer.render(this.scene, this.camera);
 
     this.stats.end()
     requestAnimationFrame(this.update.bind(this));
@@ -167,6 +214,14 @@ class Demo {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
+
+    this.ssaoPass.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
+
+    var pixelRatio = this.renderer.getPixelRatio();
+    var newWidth  = Math.floor( window.innerWidth / pixelRatio ) || 1;
+    var newHeight = Math.floor( window.innerHeight / pixelRatio ) || 1;
+    this.depthRenderTarget.setSize( newWidth, newHeight );
+    this.effectComposer.setSize( newWidth, newHeight );
   }
 }
 
