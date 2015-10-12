@@ -10,9 +10,9 @@
 
     var shader = {};
 
-    WAGNER.vertexShadersPath = "/common/shaders/vertex-shaders";
-    WAGNER.fragmentShadersPath = "/common/shaders/fragment-shaders";
-    WAGNER.assetsPath = "/common/shaders/assets/";
+    WAGNER.vertexShadersPath = "js/shaders";
+    WAGNER.fragmentShadersPath = "js/shaders";
+    WAGNER.assetsPath = "js/shaders";
 
     var dirtPass, 
         barrelBlurPass,
