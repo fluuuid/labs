@@ -1,0 +1,33 @@
+{
+  "name": "bloom",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "budo --dir dist/ src/index.js:js/bundle.js -v --live -- -t babelify -t glslify | garnish",
+    "build": "browserify -t babelify src/index.js | uglifyjs -cm > dist/js/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/username/repository.git"
+  },
+  "bugs": "",
+  "author": "Silvio Paganini",
+  "license": "ISC",
+  "devDependencies": {
+    "babelify": "^6.3.0",
+    "browserify": "^11.1.0",
+    "budo": "^4.1.0",
+    "dat-gui": "^0.5.0",
+    "garnish": "^2.1.3",
+    "stats-js": "^1.0.0-alpha1",
+    "three.js": "^0.72.0",
+    "three-orbit-controls": "^69.0.4",
+    "uglifyjs": "^2.4.10",
+    "watchify": "^3.2.3"
+  },
+  "dependencies": {
+    "glslify": "^2.3.1"
+  }
+}
