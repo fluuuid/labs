@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "budo --dir dist/ src/index.js:js/bundle.js -v --live -- -t babelify -t glslify | garnish",
-    "build": "browserify -t babelify src/index.js | uglifyjs -cm > dist/js/bundle.js"
+    "build": "browserify -t babelify -t glslify src/index.js | uglifyjs -cm > dist/js/bundle.js"
   },
   "repository": {
     "type": "git",
