@@ -5,6 +5,7 @@ uniform vec2 d3;
 varying vec2 vUv;
 uniform sampler2D my_color_texture;
 uniform vec2 uv_scale;
+uniform float blurAmount;
 
 #ifdef CUSTOM_COLOR_FUNC
 CUSTOM_COLOR_FUNC
@@ -17,7 +18,7 @@ vec4 customColorFunc(vec4 c){
 void main()
 {
 	// blur from four samples
-	vec4 c = 0.25*(
+	vec4 c = blurAmount*(
 	customColorFunc(texture2D(my_color_texture, (vUv * uv_scale)+d0))+
 	customColorFunc(texture2D(my_color_texture, (vUv * uv_scale)+d1))+
 	customColorFunc(texture2D(my_color_texture, (vUv * uv_scale)+d2))+

@@ -4,7 +4,5 @@ varying vec2 vUv;
 
 void main()
 {
-    vec2 pos = vUv;
-    pos.s = time;
-    gl_FragColor = texture2D(tDiffuse, pos);
+    gl_FragColor = texture2D(tDiffuse, vUv);
 }

@@ -11,6 +11,8 @@ require('./EffectComposer')(THREE);
 class Demo {
   constructor(args) 
   {
+    this.bloomParams = {};
+
     this.renderer = null;
     this.camera   = null;
     this.scene    = null;
@@ -57,7 +59,7 @@ class Demo {
   createScene()
   {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-    this.camera.position.set(0, 0, 100);
+    this.camera.position.set(0, 0, 500);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.maxDistance = 500;
@@ -83,17 +85,15 @@ class Demo {
       
     })
 
-    // this.material = new THREE.MeshBasicMaterial({
-    //   wireframe: false, color: 0xFFFFFF,
-    //   blending: THREE.AdditiveBlending,
-    //   // blending: THREE.CustomBlending,
-    //   blendSrc: THREE.SrcAlphaFactor,
-    //   blendDst: THREE.OneFactor,
-      
-    // });
+    for (var i = 0; i < 100; i++) {
+      let mesh = new THREE.Mesh(this.box, this.material);
+      mesh.position.x = window.innerWidth / 2 - Math.random() * window.innerWidth
+      mesh.position.y = window.innerHeight / 2 - Math.random() * window.innerHeight
+      mesh.position.z = window.innerHeight / 2 - Math.random() * window.innerHeight
+      this.scene.add(mesh);
+    };
 
-    this.mesh = new THREE.Mesh(this.box, this.material);
-    this.scene.add(this.mesh);
+    
   }
 
   addComposer()
@@ -101,8 +101,8 @@ class Demo {
     this.rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { 
       minFilter: THREE.LinearFilter, 
       magFilter: THREE.LinearFilter, 
-      // blending: THREE.ScreenBlending,
-      blending: THREE.CustomBlending,
+      blending: THREE.ScreenBlending,
+      // blending: THREE.CustomBlending,
       blendSrc: THREE.SrcAlphaFactor,
       blendDst: THREE.OneFactor,
       format: THREE.RGBAFormat 
@@ -135,25 +135,27 @@ class Demo {
 
     this.gamma = {
       uniforms: {
-        exposure         : {type: 'f', value:1.0},
+        exposure         : {type: 'f', value:1.},
         power            : {type: 'f', value:1.0},
-        desaturate       : {type: 'f', value:0.0},
+        desaturate       : {type: 'f', value:1.0},
         tonemap_method   : {type: 'i', value:0},
         my_color_texture : {type: 't', value:null},
+        brightness       : {type: 'f', value:1},
+        max_vignetting   : {type: 'f', value: 1.5},
         transparent      : {type: 'i', value: 1},
-        vignetting_k     : {type: 'v2', value: new THREE.Vector2(200,200)}
+        vignetting_k     : {type: 'v2', value: new THREE.Vector2(10, 10)}
       }, 
       vertexShader : THREE.CopyShader.vertexShader,
       fragmentShader : glslify('./glsl/bloom/fragpower.glsl')
     }
 
-    // let postprocessing = new THREE.ShaderPass(this.gamma);
-    // postprocessing.renderToScreen = true;
-    // this.composer.addPass(postprocessing);
-
-    let postprocessing = new THREE.ShaderPass(this.antialias);
+    let postprocessing = new THREE.ShaderPass(this.gamma);
     postprocessing.renderToScreen = true;
     this.composer.addPass(postprocessing);
+
+    // let antialias = new THREE.ShaderPass(this.antialias);
+    // antialias.renderToScreen = true;
+    // this.composer.addPass(antialias);
 
   }
 
@@ -162,11 +164,17 @@ class Demo {
     this.gui = new dat.GUI()
     this.gui.domElement.style.display = this.DEBUG ? 'block' : 'none';
 
-    let cameraFolder = this.gui.addFolder('Camera');
-    cameraFolder.add(this.camera.position, 'x', -400, 400);
-    cameraFolder.add(this.camera.position, 'y', -400, 400);
-    cameraFolder.add(this.camera.position, 'z', -400, 400);
-    
+    this.bloomParams = {
+      blurAmount : .25,
+    }
+
+    // let cameraFolder = this.gui.addFolder('Camera');
+    // cameraFolder.add(this.camera.position, 'x', -400, 400);
+    // cameraFolder.add(this.camera.position, 'y', -400, 400);
+    // cameraFolder.add(this.camera.position, 'z', -400, 400);
+
+    let bloom = this.gui.addFolder('Bloom');
+    bloom.add(this.bloomParams, 'blurAmount', 0, .5);
   }
 
   update()
