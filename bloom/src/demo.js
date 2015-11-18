@@ -2,6 +2,8 @@ import THREE from 'three.js';
 import dat   from 'dat-gui' ;
 import Stats from 'stats-js' ;
 
+import ScenePass from './ScenePass';
+
 const OrbitControls = require('three-orbit-controls')(THREE);
 const glslify = require('glslify');
 const PyramidBloomPass = require('./PyramidBloomPass')(THREE);
@@ -61,6 +63,9 @@ class Demo {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
     this.camera.position.set(0, 0, 500);
 
+    this.cameraRTT = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -10000, 10000 );
+    this.cameraRTT.position.z = 100;
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.maxDistance = 500;
 
@@ -73,41 +78,26 @@ class Demo {
     // var gridHelper = new THREE.GridHelper( 100, 10 );        
     // this.scene.add( gridHelper );
 
-    this.box = new THREE.SphereGeometry(40, 32, 32);
-    this.objects = [];
+    this.sceneBox = new THREE.BoxGeometry(1000, 1000, 1000);
+    this.sceneBoxMesh = new THREE.Mesh(this.sceneBox, new THREE.MeshPhongMaterial({
+      side: THREE.DoubleSide,
+      color: 0xcccccc,
+      // wireframe : true,
+    }));
 
-    this.material = new THREE.ShaderMaterial({
-      uniforms : {
-        index : {type : 'f', value: 0},
-        uTime : {type : 'f', value: 0},
-        delta : {type : 'f', value: 0},
-        tDiffuse : {type: 't', value: THREE.ImageUtils.loadTexture(noise)},
-      },
-      wireframe: true,
-      vertexShader : glslify('./glsl/texture_vert.glsl'),
-      fragmentShader : glslify('./glsl/texture_frag.glsl'),
-      
-    })
+    this.sceneBack = new THREE.Scene();
 
-    for (var i = 0; i < 100; i++) {
-      let m = this.material.clone();
-      m.uniforms.index.value = i;
+    var spotLight = new THREE.PointLight( 0xffffff );
+    spotLight.position.set( 0, 0, 0 );
+    this.sceneBack.add(this.sceneBoxMesh);
+    this.sceneBack.add(spotLight);
 
-      let mesh = new THREE.Mesh(this.box, m);
-      let r = Math.random();
-      mesh.position.x = window.innerWidth / 2 - Math.random() * window.innerWidth
-      mesh.position.y = window.innerHeight / 2 - Math.random() * window.innerHeight
-      mesh.position.z = window.innerHeight / 2 - Math.random() * window.innerHeight
-      mesh.scale.set(r, r, r);
-      this.scene.add(mesh);
-      this.objects.push(mesh);
-    };
+    /*
 
-    
-  }
+    */
 
-  addComposer()
-  {
+    this.sceneRTT = new ScenePass();
+
     this.rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { 
       minFilter: THREE.LinearFilter, 
       magFilter: THREE.LinearFilter, 
@@ -118,20 +108,80 @@ class Demo {
       format: THREE.RGBAFormat 
     });
 
+    this.rtt = this.rtTexture.clone();
+
+    this.materialScreenQuad1 = new THREE.ShaderMaterial({
+      uniforms: { 
+        tDiffuse: { type: "t", value: this.rtt },
+        opacity: { type: "f", value: 1 },
+      },
+      vertexShader: THREE.CopyShader.vertexShader,
+      fragmentShader: THREE.CopyShader.fragmentShader,
+      transparent: true,
+      depthWrite: false
+    })
+
+    this.materialScreenQuad2 = this.materialScreenQuad1.clone();
+    this.materialScreenQuad2.uniforms.tDiffuse.value = this.rtTexture;
+
+    this.fullScene = new THREE.Scene();
+    this.quad1 = new THREE.Mesh( new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight), this.materialScreenQuad1 );
+    this.quad1.position.z = -100;
+    this.fullScene.add( this.quad1 );
+
+    this.quad2 = new THREE.Mesh( new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight), this.materialScreenQuad2 );
+    this.quad2.position.z = -100;
+    this.fullScene.add( this.quad2 );
+
+    this.box = new THREE.CylinderGeometry( 20, 20, 100, 32 );
+    this.objects = [];
+
+    this.material = new THREE.ShaderMaterial({
+      uniforms : {
+        index : {type : 'f', value: 0},
+        uTime : {type : 'f', value: 0},
+        delta : {type : 'f', value: 0},
+        tDiffuse : {type: 't', value: THREE.ImageUtils.loadTexture(noise)},
+      },
+      // wireframe: true,
+      // vertexShader : glslify('./glsl/texture_vert.glsl'),
+      vertexShader: glslify('./glsl/screen_vert.glsl'),
+      fragmentShader : glslify('./glsl/texture_frag.glsl'),
+      
+    })
+
+    // for (var i = 0; i < 100; i++) {
+    //   let m = this.material.clone();
+    //   m.uniforms.index.value = i;
+
+      let mesh = new THREE.Mesh(this.box, this.material);
+      let r = Math.random();
+      // mesh.position.x = window.innerWidth / 2 - Math.random() * window.innerWidth
+      // mesh.position.y = window.innerHeight / 2 - Math.random() * window.innerHeight
+      // mesh.position.z = window.innerHeight / 2 - Math.random() * window.innerHeight
+      // mesh.scale.set(r, r, r);
+      this.scene.add(mesh);
+      this.objects.push(mesh);
+    // };
+
+  }
+
+  addComposer()
+  {
     this.composer = new THREE.EffectComposer(this.renderer, this.rtTexture);
 
     let scenePass = new THREE.RenderPass( this.scene, this.camera, false, 0, 0 );
 
     var copyPass = new THREE.ShaderPass( THREE.CopyShader );
 
-    this.antialias = {
-      uniforms : {
-        resWidth : {type: 'f', value: window.innerWidth},
-        resHeight : {type: 'f', value: window.innerHeight},
-      },
-      vertexShader : THREE.CopyShader.vertexShader,
-      fragmentShader: glslify('./glsl/antialias.glsl'),
-    };
+    // this.antialias = {
+    //   uniforms : {
+    //     resWidth : {type: 'f', value: window.innerWidth},
+    //     resHeight : {type: 'f', value: window.innerHeight},
+    //   },
+    //   vertexShader: glslify('./glsl/screen_vert.glsl'),
+    //   fragmentShader: glslify('./glsl/antialias.glsl'),
+    // };
 
     /*
     passes
@@ -148,24 +198,24 @@ class Demo {
         exposure         : {type: 'f', value:1.},
         power            : {type: 'f', value:1.0},
         desaturate       : {type: 'f', value:1.0},
-        tonemap_method   : {type: 'i', value:0},
+        tonemap_method   : {type: 'i', value:1},
         my_color_texture : {type: 't', value:null},
         brightness       : {type: 'f', value:1},
         max_vignetting   : {type: 'f', value: 1.5},
         transparent      : {type: 'i', value: 1},
-        vignetting_k     : {type: 'v2', value: new THREE.Vector2(10, 10)}
+        vignetting_k     : {type: 'v2', value: new THREE.Vector2(100, 100)}
       }, 
-      vertexShader : THREE.CopyShader.vertexShader,
+      vertexShader: glslify('./glsl/screen_vert.glsl'),
       fragmentShader : glslify('./glsl/bloom/fragpower.glsl')
     }
 
-    let postprocessing = new THREE.ShaderPass(this.gamma);
+    // let postprocessing = new THREE.ShaderPass(this.gamma);
     // postprocessing.renderToScreen = true;
-    this.composer.addPass(postprocessing);
+    // this.composer.addPass(postprocessing);
 
-    let antialias = new THREE.ShaderPass(this.antialias);
-    antialias.renderToScreen = true;
-    this.composer.addPass(antialias);
+    // let antialias = new THREE.ShaderPass(this.antialias);
+    // antialias.renderToScreen = true;
+    // this.composer.addPass(antialias);
 
   }
 
@@ -200,8 +250,10 @@ class Demo {
     // this.bloom.uniforms.on.value = .5 + s;
 
     this.renderer.clear();
-    // this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.sceneBack, this.camera, this.sceneRTT.rtt, true);
+    this.renderer.render(this.sceneBack, this.camera, this.rtt, true);
     this.composer.render(d);
+    this.renderer.render(this.fullScene, this.cameraRTT);
 
     this.stats.end()
     requestAnimationFrame(this.update.bind(this));

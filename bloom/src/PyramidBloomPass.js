@@ -150,10 +150,10 @@ module.exports = function(THREE){
             var old_setColorWrite=renderer.state.setColorWrite;
             /// turn off alpha
             // if(readBuffer.format==THREE.RGBAFormat){
-                //console.log('blah');
+                // console.log('blah');
                 // context.colorMask(true, true, true, false);/// does not seem to work
                 // HACK: keep three.js from overriding our colour mask
-                // renderer.state.setColorWrite=function(){};
+                renderer.state.setColorWrite=function(){};
             // }
 
             this.maskActive=maskActive;

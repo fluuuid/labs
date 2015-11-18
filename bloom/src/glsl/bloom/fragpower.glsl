@@ -30,14 +30,14 @@ void main()
     float a=(desaturate*col_p.r+desaturate*col_p.g+desaturate*col_p.b)*(1.0/3.0);
     col_p=col_p*(1.0-desaturate)+vec3(a,a,a);
 
-    if(transparent == 1)
-    {
+    // if(transparent == 1)
+    // {
         col_p=tonemap(col_p)*vignetting;
         col_p=clamp(col_p-vec3(0.1), 0.0, 1.0);
         float brightness_f=dot(col_p, vec3(brightness));
         col_p*=clamp(brightness_f*5.0-0.2, 0.0, 1.0);
         gl_FragColor = vec4(col_p, clamp(brightness_f*2.0,0.0,1.0) );  
-    } else {
-        gl_FragColor = vec4(col_p, 1.0 );  
-    }
+    // } else {
+    //     gl_FragColor = vec4(col_p, 1.0 );  
+    // }
 }
