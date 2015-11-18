@@ -13,7 +13,7 @@ module.exports = function(THREE){
         ].join( "\n" );
 
         this.bloom_multiplier_color=new THREE.Vector3( 1.0, 1.0, 1.0);
-        this.bloom_falloff_color=new THREE.Vector3( 1.0, 0.0, 1.0);
+        this.bloom_falloff_color=new THREE.Vector3( 1.0, .0, 1.0);
 
         var params={
             vertexShader: this.vertexShader,

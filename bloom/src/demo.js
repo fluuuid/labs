@@ -73,24 +73,34 @@ class Demo {
     // var gridHelper = new THREE.GridHelper( 100, 10 );        
     // this.scene.add( gridHelper );
 
-    this.box = new THREE.BoxGeometry(40, 10, 10);
+    this.box = new THREE.SphereGeometry(40, 32, 32);
+    this.objects = [];
 
     this.material = new THREE.ShaderMaterial({
       uniforms : {
-        time : {type : 'f', value: 0},
+        index : {type : 'f', value: 0},
+        uTime : {type : 'f', value: 0},
+        delta : {type : 'f', value: 0},
         tDiffuse : {type: 't', value: THREE.ImageUtils.loadTexture(noise)},
       },
-      vertexShader : THREE.CopyShader.vertexShader,
+      wireframe: true,
+      vertexShader : glslify('./glsl/texture_vert.glsl'),
       fragmentShader : glslify('./glsl/texture_frag.glsl'),
       
     })
 
     for (var i = 0; i < 100; i++) {
-      let mesh = new THREE.Mesh(this.box, this.material);
+      let m = this.material.clone();
+      m.uniforms.index.value = i;
+
+      let mesh = new THREE.Mesh(this.box, m);
+      let r = Math.random();
       mesh.position.x = window.innerWidth / 2 - Math.random() * window.innerWidth
       mesh.position.y = window.innerHeight / 2 - Math.random() * window.innerHeight
       mesh.position.z = window.innerHeight / 2 - Math.random() * window.innerHeight
+      mesh.scale.set(r, r, r);
       this.scene.add(mesh);
+      this.objects.push(mesh);
     };
 
     
@@ -150,12 +160,12 @@ class Demo {
     }
 
     let postprocessing = new THREE.ShaderPass(this.gamma);
-    postprocessing.renderToScreen = true;
+    // postprocessing.renderToScreen = true;
     this.composer.addPass(postprocessing);
 
-    // let antialias = new THREE.ShaderPass(this.antialias);
-    // antialias.renderToScreen = true;
-    // this.composer.addPass(antialias);
+    let antialias = new THREE.ShaderPass(this.antialias);
+    antialias.renderToScreen = true;
+    this.composer.addPass(antialias);
 
   }
 
@@ -172,20 +182,21 @@ class Demo {
     // cameraFolder.add(this.camera.position, 'x', -400, 400);
     // cameraFolder.add(this.camera.position, 'y', -400, 400);
     // cameraFolder.add(this.camera.position, 'z', -400, 400);
-
-    let bloom = this.gui.addFolder('Bloom');
-    bloom.add(this.bloomParams, 'blurAmount', 0, .5);
   }
 
   update()
   {
     this.stats.begin();
 
-    let time = Date.now();
-    let s = Math.sin(time * .001);
+    let time = this.clock.getElapsedTime();
     let d = this.clock.getDelta();
 
-    this.material.uniforms.time.value = time;
+    for (var i = 0; i < this.objects.length; i++) {
+      this.objects[i].material.uniforms.uTime.value = time;
+      this.objects[i].material.uniforms.needsUpdate = true;
+    }
+
+    
     // this.bloom.uniforms.on.value = .5 + s;
 
     this.renderer.clear();
