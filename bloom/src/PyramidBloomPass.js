@@ -13,13 +13,13 @@ module.exports = function(THREE){
         ].join( "\n" );
 
         this.bloom_multiplier_color=new THREE.Vector3( 1.0, 1.0, 1.0);
-        this.bloom_falloff_color=new THREE.Vector3( 1.0, .0, 1.0);
+        this.bloom_falloff_color=new THREE.Vector3( 0.0, 1.0, .0);
 
         var params={
             vertexShader: this.vertexShader,
             fragmentShader: glslify('./glsl/bloom/blur_frag.glsl'),
             uniforms:{
-                blurAmount : {type: 'f', value:.28},
+                blurAmount : {type: 'f', value:.028},
                 d0: {type: 'v2', value:new THREE.Vector2( 0.0, 0.0 )},
                 d1: {type: 'v2', value:new THREE.Vector2( 0.0, 0.0 )},
                 d2: {type: 'v2', value:new THREE.Vector2( 0.0, 0.0 )},
