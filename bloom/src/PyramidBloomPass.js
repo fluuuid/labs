@@ -19,7 +19,7 @@ module.exports = function(THREE){
             vertexShader: this.vertexShader,
             fragmentShader: glslify('./glsl/bloom/blur_frag.glsl'),
             uniforms:{
-                blurAmount : {type: 'f', value:.25},
+                blurAmount : {type: 'f', value:.28},
                 d0: {type: 'v2', value:new THREE.Vector2( 0.0, 0.0 )},
                 d1: {type: 'v2', value:new THREE.Vector2( 0.0, 0.0 )},
                 d2: {type: 'v2', value:new THREE.Vector2( 0.0, 0.0 )},
@@ -39,6 +39,7 @@ module.exports = function(THREE){
 
         this.plain_draw_shader = new THREE.ShaderMaterial({
             vertexShader: this.vertexShader,
+            transparent: true,
             fragmentShader: glslify('./glsl/bloom/plain_draw.glsl'),
             uniforms:{
                 color_multiplier: {type: 'v3', value:new THREE.Vector3(1.0, 1.0, 1.0)},
@@ -92,7 +93,7 @@ module.exports = function(THREE){
             for(i=1; src.width>3 && src.height>3; ++i){
                 if(!this.downsampled_buffer[i]){
                     var params={minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
-                        format: THREE.RGBFormat, type: base_fb.type, stencilBuffer: false, generateMipmaps: false}
+                        format: THREE.RGBAFormat, type: base_fb.type, stencilBuffer: false, generateMipmaps: false}
                     this.downsampled_buffer[i]=new THREE.WebGLRenderTarget( Math.floor(src.width/2), Math.floor(src.height/2), params );
                 }
                 this.downsample_one(src, this.downsampled_buffer[i], i==1?this.blur1_first_shader:this.blur1_shader );
@@ -119,7 +120,7 @@ module.exports = function(THREE){
             this.renderer.autoClear=false;
             this.renderer.autoClearColor=false;
 
-            //this.renderer.setClearColor(0xFF0000, 0);
+            // this.renderer.setClearColor(0xFF0000, 0);
             this.renderer.render(this.scene, this.camera, dest, false);
 
             this.renderer.autoClear=auto_clear;
@@ -149,12 +150,12 @@ module.exports = function(THREE){
             var context=this.renderer.context;
             var old_setColorWrite=renderer.state.setColorWrite;
             /// turn off alpha
-            // if(readBuffer.format==THREE.RGBAFormat){
+            if(readBuffer.format==THREE.RGBAFormat){
                 // console.log('blah');
                 // context.colorMask(true, true, true, false);/// does not seem to work
                 // HACK: keep three.js from overriding our colour mask
                 renderer.state.setColorWrite=function(){};
-            // }
+            }
 
             this.maskActive=maskActive;
 

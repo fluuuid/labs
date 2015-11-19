@@ -206,7 +206,7 @@ THREE.ShaderPass = function ( shader, textureID ) {
         defines: shader.defines || {},
         uniforms: this.uniforms,
         vertexShader: shader.vertexShader,
-        fragmentShader: shader.fragmentShader
+        fragmentShader: shader.fragmentShader,
 
     } );
 
@@ -373,6 +373,7 @@ THREE.RenderPass.prototype = {
             this.oldClearAlpha = renderer.getClearAlpha();
 
             renderer.setClearColor( this.clearColor, this.clearAlpha );
+            renderer.setClearAlpha(0);
 
         }
 
@@ -381,6 +382,7 @@ THREE.RenderPass.prototype = {
         if ( this.clearColor ) {
 
             renderer.setClearColor( this.oldClearColor, this.oldClearAlpha );
+            renderer.setClearAlpha(0);
 
         }
 
