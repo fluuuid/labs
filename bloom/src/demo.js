@@ -50,13 +50,16 @@ class Demo {
   createRender()
   {
     this.renderer = new THREE.WebGLRenderer( {
-        antialias : true,
-        alpha: true,
+        antialias : false,
+        // alpha: true,
     } );
 
     this.renderer.setClearColor( 0x000000 );
     this.renderer.setClearAlpha( 0 );
+    this.renderer.setPixelRatio(window.devicePixelRatio | 1);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.gammaInput = true;
+    this.renderer.gammaOuput = true;
     this.renderer.autoClear = false;
     document.body.appendChild(this.renderer.domElement)
   }
@@ -204,29 +207,29 @@ class Demo {
     this.bloom = new PyramidBloomPass();
     this.composer.addPass(this.bloom);
 
-    // this.gamma = {
-    //   uniforms: {
-    //     exposure         : {type: 'f', value:1.},
-    //     power            : {type: 'f', value:2.0},
-    //     desaturate       : {type: 'f', value:1.0},
-    //     tonemap_method   : {type: 'i', value:1},
-    //     my_color_texture : {type: 't', value:null},
-    //     brightness       : {type: 'f', value:1},
-    //     max_vignetting   : {type: 'f', value: 1.5},
-    //     transparent      : {type: 'i', value: 1},
-    //     vignetting_k     : {type: 'v2', value: new THREE.Vector2(100, 100)}
-    //   }, 
-    //   vertexShader: glslify('./glsl/screen_vert.glsl'),
-    //   fragmentShader : glslify('./glsl/bloom/fragpower.glsl')
-    // }
+    this.gamma = {
+      uniforms: {
+        exposure         : {type: 'f', value:1.},
+        power            : {type: 'f', value:2.0},
+        desaturate       : {type: 'f', value:1.0},
+        tonemap_method   : {type: 'i', value:1},
+        my_color_texture : {type: 't', value:null},
+        brightness       : {type: 'f', value:1},
+        max_vignetting   : {type: 'f', value: 1.5},
+        transparent      : {type: 'i', value: 1},
+        vignetting_k     : {type: 'v2', value: new THREE.Vector2(100, 100)}
+      }, 
+      vertexShader: glslify('./glsl/screen_vert.glsl'),
+      fragmentShader : glslify('./glsl/bloom/fragpower.glsl')
+    }
 
-    // let postprocessing = new THREE.ShaderPass(this.gamma);
+    let postprocessing = new THREE.ShaderPass(this.gamma);
     // postprocessing.renderToScreen = true;
-    // this.composer.addPass(postprocessing);
+    this.composer.addPass(postprocessing);
 
-    // let antialias = new THREE.ShaderPass(this.antialias);
+    let antialias = new THREE.ShaderPass(this.antialias);
     // antialias.renderToScreen = true;
-    // this.composer.addPass(antialias);
+    this.composer.addPass(antialias);
 
   }
 
