@@ -31,6 +31,7 @@
     body
     {
         font-family: monospace;
+        background-color: #000;
     }
     .credits
     {
@@ -41,19 +42,32 @@
         color: white;
         text-align: left;
     }
-    .cta
+    .cta, .restart
     {
         position: absolute;
         top: 50%;
         left: 50%;
         z-index: 1000;
-        /*color: white;*/
         transform: translate(-50%, -50%);
         background: white;
-        padding: 0 10px;
         pointer-events: none;
+        padding: 0 10px;
         transition: all .4s;
     }
+
+    .restart
+    {
+        top: 10px;
+        left: 50%;
+        font-size: 15px;
+        z-index: 1000;
+        /*color: white;*/
+        transform: translateX(-50%);
+        cursor: pointer;
+        pointer-events: visible;
+        opacity: 0;
+    }
+
     .remove
     {
         opacity: 0;
@@ -65,13 +79,15 @@
     </style>
 </head>
 <body>
-    <script src="js/bundle.js"></script>
     <div class="credits">
         <p><b>Inspiration: </b><a href="https://www.youtube.com/watch?t=34&v=kLmLk0Vuw8c" target="_blank">Mirroring</a></p>
         <p>by <a href="http://twitter.com/silviopaganini">@silviopaganini</a> | <a href="http://fluuu.id" target="_blank">FLUUUID</a> | <a href="https://github.com/fluuuid/labs">fork on github</a></p>
         <p>tech stack: <a href="http://three.org" target="_blank">three.js</a>
     </div>
     <div class='cta'>Move your mouse around</div>
+    <div class='restart'>Restart</div>
+
+    <script src="js/bundle.js"></script>
 </body>
 
 <script>

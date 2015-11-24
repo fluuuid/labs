@@ -29,6 +29,9 @@ class Demo {
     this.addObjects();
     this.addPasses();
 
+    this.restartButton = document.querySelector('.restart');
+    this.restartButton.addEventListener('click', this.restart.bind(this));
+
     this.onResize();
     this.listen();
     this.update();
@@ -38,13 +41,14 @@ class Demo {
   {
     this.stats = new Stats(); 
     this.stats.domElement.style.position = 'absolute';
+    this.stats.domElement.style.display = 'none';
     document.body.appendChild(this.stats.domElement);
   }
 
   createRender()
   {
     this.renderer = new THREE.WebGLRenderer( {
-        antialias : true,
+        antialias : false,
         clearColor: 0,
     } );
 
@@ -113,7 +117,7 @@ class Demo {
 
     // Setup SSAO pass
     this.ssaoPass = new THREE.ShaderPass( THREE.SSAOShader );
-    this.ssaoPass.renderToScreen = true;
+    // this.ssaoPass.renderToScreen = true;
     //this.ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
     this.ssaoPass.uniforms[ "tDepth" ].value = this.depthRenderTarget;
     this.ssaoPass.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
@@ -130,6 +134,7 @@ class Demo {
 
     var antiPass = new AntiAliasPass();
     antiPass.name = 'anti-alias';
+    antiPass.renderToScreen = true;
     this.effectComposer.addPass( antiPass );
   }
 
@@ -146,11 +151,26 @@ class Demo {
     window.onmousemove = this.onMouseMove.bind(this);
   }
 
+  restart()
+  {
+    for (var i = 0; i < this.boxes.length; i++) {
+      this.scene.remove(this.boxes[i].mesh);
+    };
+
+    this.restartButton.style.opacity = 0;
+
+    this.boxes = [];
+  }
+
   generateBoxes(point)
   {
     let dist = this.prev.distanceTo(point);
     if(dist < 2) return;
-    if(this.boxes.length > 250) return;
+    if(this.boxes.length > 250) 
+    {
+      this.restartButton.style.opacity = 1;
+      return;
+    }
 
     // point.z = dist / 10;
 
