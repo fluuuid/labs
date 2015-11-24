@@ -41,6 +41,23 @@
         color: white;
         text-align: left;
     }
+    .cta
+    {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 1000;
+        /*color: white;*/
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 0 10px;
+        pointer-events: none;
+        transition: all .4s;
+    }
+    .remove
+    {
+        opacity: 0;
+    }
     a
     {
         color: white;
@@ -54,6 +71,7 @@
         <p>by <a href="http://twitter.com/silviopaganini">@silviopaganini</a> | <a href="http://fluuu.id" target="_blank">FLUUUID</a> | <a href="https://github.com/fluuuid/labs">fork on github</a></p>
         <p>tech stack: <a href="http://three.org" target="_blank">three.js</a>
     </div>
+    <div class='cta'>Move your mouse around</div>
 </body>
 
 <script>
