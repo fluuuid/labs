@@ -24,6 +24,7 @@ void main() {
     mvPosition.x += cos(time * 2.) * (2. * dist.x) * normal.x ;
     mvPosition.y += sin(time * 2.) * (2. * dist.y) * normal.y ;
     mvPosition.z += distance(mvPosition.x, mvPosition.x) * normal.z;
+
     // mvPosition.y += dist * (sin(time * 5. * normal.y) ) ;
 
     vNormal = normal * normalMatrix;
