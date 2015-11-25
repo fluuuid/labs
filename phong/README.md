@@ -1,6 +1,6 @@
-#xmas_tree 
+#phong 
 
-Description of your prototype
+custom phong and noise displacement
 
 
 ###Usage:
