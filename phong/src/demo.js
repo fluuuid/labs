@@ -48,7 +48,8 @@ class Demo {
   {
     this.renderer = new THREE.WebGLRenderer( {
         antialias : true,
-        clearColor: 0
+        clearColor: 0x000000,
+        transparent: false
     } );
     document.body.appendChild(this.renderer.domElement)
   }
