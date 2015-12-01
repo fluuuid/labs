@@ -1,4 +1,4 @@
-import App from './app';
+import App from './App';
 
 const app = new App();
 window.onresize = app.onResize.bind(app);

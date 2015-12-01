@@ -95,14 +95,17 @@ class App {
     let scenePass = new THREE.RenderPass( this.scene, this.camera, false, 0x000000, 0 );
     let copyPass = new THREE.ShaderPass( THREE.CopyShader );
 
-    this.antialias = {
-      uniforms : {
-        resWidth : {type: 'f', value: window.innerWidth * (window.devicePixelRatio || 1)},
-        resHeight : {type: 'f', value: window.innerHeight * (window.devicePixelRatio || 1)},
+    this.gamma = {
+      uniforms: {
+        tDiffuse   : {type: "t", value: null },
+        resolution : {type: 'v2', value: new THREE.Vector2(
+          window.innerWidth * (window.devicePixelRatio || 1), 
+          window.innerHeight * (window.devicePixelRatio || 1)
+          )},
       },
-      vertexShader: glslify('./glsl/screen_vert.glsl'),
-      fragmentShader: glslify('./glsl/antialias.glsl'),
-    };
+      vertexShader   : glslify('./glsl/screen_vert.glsl'),
+      fragmentShader : glslify('./glsl/gamma.glsl'), 
+    }
 
     /*
     passes
@@ -114,9 +117,9 @@ class App {
     this.bloom = new PyramidBloomPass();
     this.composer.addPass(this.bloom);
 
-    let antialias = new THREE.ShaderPass(this.antialias);
-    antialias.renderToScreen = true;
-    this.composer.addPass(antialias);
+    let gamma = new THREE.ShaderPass(this.gamma);
+    gamma.renderToScreen = true;
+    this.composer.addPass(gamma);
   }
 
   createParticleSystem()
@@ -179,6 +182,7 @@ class App {
     this.renderer.clear();
 
     this.sys.material.uniforms.time.value = el;
+    this.sys.rotation.x += .001;
 
     this.renderer.render(this.scene, this.camera);
     this.composer.render(d);
