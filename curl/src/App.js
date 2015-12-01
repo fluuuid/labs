@@ -61,7 +61,7 @@ class App {
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.gammaInput = true;
-    this.renderer.gammaOuput = true;
+    this.renderer.gammaOuput = false;
     this.renderer.autoClear = false;
 
     document.body.appendChild(this.renderer.domElement)
