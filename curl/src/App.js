@@ -73,7 +73,7 @@ class App {
     this.camera.position.set(0, 0, 15);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enabled = false;
+    // this.controls.enabled = false;
     this.controls.maxDistance = 500;
 
     this.scene = new THREE.Scene();
