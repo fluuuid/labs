@@ -70,10 +70,10 @@ class App {
   createScene()
   {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-    this.camera.position.set(0, 0, 2);
+    this.camera.position.set(0, 0, 15);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.controls.enabled = false;
+    this.controls.enabled = false;
     this.controls.maxDistance = 500;
 
     this.scene = new THREE.Scene();
@@ -163,10 +163,10 @@ class App {
     this.gui = new dat.GUI()
     this.gui.domElement.style.display = this.DEBUG ? 'block' : 'none';
 
-    let cameraFolder = this.gui.addFolder('Camera');
-    cameraFolder.add(this.camera.position, 'x', -400, 400);
-    cameraFolder.add(this.camera.position, 'y', -400, 400);
-    cameraFolder.add(this.camera.position, 'z', -400, 400);
+    // let cameraFolder = this.gui.addFolder('Camera');
+    // cameraFolder.add(this.camera.position, 'x', -400, 400);
+    // cameraFolder.add(this.camera.position, 'y', -400, 400);
+    // cameraFolder.add(this.camera.position, 'z', -400, 400);
     
   }
 
