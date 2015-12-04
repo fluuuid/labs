@@ -1,17 +1,11 @@
-uniform sampler2D tDiffuse;
-uniform float resWidth;
-uniform float resHeight;
-
-varying vec2 vUv;
-
 float FXAA_REDUCE_MIN  = (1.0/128.0);
 float FXAA_REDUCE_MUL  = (1.0/8.0);
 float FXAA_SPAN_MAX    = 8.0;
 
-void main() {
-   vec2 resolution = vec2( 1.0/resWidth, 1.0/resHeight );
-   vec2 xyFragCoord = gl_FragCoord.xy;
-   vec2 aaa = vUv;
+vec4 fxaa(sampler2D tDiffuse, vec2 xyFragCoord, vec2 res) {
+
+   vec2 resolution = vec2( 1.0/res.x, 1.0/res.y );
+   vec4 color;
 
    vec3 rgbNW = texture2D( tDiffuse, ( xyFragCoord + vec2( -1.0, -1.0 ) ) * resolution ).xyz;
    vec3 rgbNE = texture2D( tDiffuse, ( xyFragCoord + vec2( 1.0, -1.0 ) ) * resolution ).xyz;
@@ -45,8 +39,12 @@ void main() {
    float lumaB = dot(rgbB, vec4(luma, 0.0));
 
    if(( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {
-       gl_FragColor = rgbA;
+       color = rgbA;
    }else{
-       gl_FragColor = rgbB;
+       color = rgbB;
    }
+
+    return color;
 }
+
+#pragma glslify: export(fxaa)

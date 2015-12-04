@@ -58,7 +58,7 @@ class App {
 
     this.renderer.setClearColor( 0x000000 );
     this.renderer.setClearAlpha( 0 );
-    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
+    // this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.gammaInput = true;
     this.renderer.gammaOuput = false;
@@ -129,7 +129,6 @@ class App {
         color : {type: 'c', value: new THREE.Color(0xFFFFFF)},
         time  : {type : 'f', value: 0},
       },
-      blending       : THREE.AdditiveBlending,
       transparent    : true,
       vertexShader   : glslify('./glsl/particle_vert.glsl'),
       fragmentShader : glslify('./glsl/particle_frag.glsl'),
@@ -143,14 +142,14 @@ class App {
     let geometry = new THREE.BufferGeometry();
 
     let pPosition = new Float32Array(maxParticles * 3);
-    let _index = new Float32Array(maxParticles);
+    // let _index = new Float32Array(maxParticles);
 
     for (let i = 0, a = 0; i < pPosition.length; i+=3, a++) {
       pPosition[i + 0] = this.SIZE.w2 / spread - (Math.random() * this.SIZE.w2 / (spread / 2));
       pPosition[i + 1] = this.SIZE.h2 / spread - (Math.random() * this.SIZE.h2 / (spread / 2));
       pPosition[i + 2] = 0;
 
-      _index[a] = a;
+      // _index[a] = a;
 
       // this.index[a] = a;
     };
@@ -184,7 +183,7 @@ class App {
     this.sys.material.uniforms.time.value = el;
     this.sys.rotation.x += .001;
 
-    this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.scene, this.camera);
     this.composer.render(d);
 
     this.stats.end()
