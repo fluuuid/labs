@@ -47,8 +47,8 @@ class Demo {
   createRender()
   {
     this.renderer = new THREE.WebGLRenderer( {
-        antialias : true,
-        transparent: true
+        antialias : false,
+        transparent: false
     } );
     document.body.appendChild(this.renderer.domElement)
   }
@@ -101,6 +101,7 @@ class Demo {
     });
 
     this.rtt2 = this.rttTexture.clone();
+    this.rttFinal = this.rttTexture.clone();
     
     this.sceneBack = new THREE.Scene();
     this.sceneBack.add(this.bgMesh);
@@ -119,6 +120,18 @@ class Demo {
 
     this.sceneFull.add(this.quad1);
     this.sceneFull.add(this.quad2);
+
+    this.scenePostProcessing = new THREE.Scene();
+    this.quadPP = new THREE.Mesh(this.quad, new THREE.ShaderMaterial({
+      uniforms: {
+        map : {type: 't', value: this.rttFinal},
+        resolution : {type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+      }, 
+      vertexShader : glslify('./glsl/background-vert.glsl'),
+      fragmentShader : glslify('./glsl/postprocessing.glsl')
+    }));
+
+    this.scenePostProcessing.add(this.quadPP);
 
   }
 
@@ -146,18 +159,6 @@ class Demo {
       transparent : true
     })
 
-    // this.material.uniforms.tDiffuse.value.wrapS = this.material.uniforms.tDiffuse.value.wrapT = THREE.ClampToEdgeWrapping;
-
-    // this.material = new THREE.MeshPhongMaterial({
-    //   shading     : THREE.FlatShading,
-    //   specular    : this.colors.specular,
-    //   emissive    : this.colors.emissive,
-    //   color       : this.colors.color,
-    //   wireframe   : true, 
-    //   alphaMap    : this.texture,
-    //   transparent : true
-    // })
-
     // var geometry = new THREE.SphereGeometry( 16, 32, 16 );
     let geometry = new THREE.BufferGeometry().fromGeometry(new THREE.IcosahedronGeometry(60, 4));
     // var geometry = new THREE.CylinderGeometry( 0, 10, 20, 32, 32 );
@@ -170,12 +171,6 @@ class Demo {
   {
     this.gui = new dat.GUI()
     this.gui.domElement.style.display = this.DEBUG ? 'block' : 'none';
-
-    // let material = this.gui.addFolder('Material');
-    // material.addColor(this.colors, 'color').onChange(this.changeColor(this.material.color).bind(this));
-    // material.addColor(this.colors, 'emissive').onChange(this.changeColor(this.material.emissive).bind(this));
-    // material.addColor(this.colors, 'specular').onChange(this.changeColor(this.material.specular).bind(this));
-    // material.open();
   }
 
   update()
@@ -189,7 +184,8 @@ class Demo {
 
     this.renderer.render(this.sceneBack, this.cameraRTT, this.rttTexture, true);
     this.renderer.render(this.scene, this.camera, this.rtt2, true);
-    this.renderer.render(this.sceneFull, this.cameraRTT);
+    this.renderer.render(this.sceneFull, this.cameraRTT, this.rttFinal, true);
+    this.renderer.render(this.scenePostProcessing, this.cameraRTT);
 
     this.stats.end()
     requestAnimationFrame(this.update.bind(this));
@@ -215,6 +211,7 @@ class Demo {
 
   onResize()
   {
+    this.quadPP.material.uniforms.resolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
     this.bgMesh.material.uniforms.resolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.camera.aspect = window.innerWidth / window.innerHeight;
