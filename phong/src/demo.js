@@ -48,8 +48,7 @@ class Demo {
   {
     this.renderer = new THREE.WebGLRenderer( {
         antialias : true,
-        clearColor: 0x000000,
-        transparent: false
+        transparent: true
     } );
     document.body.appendChild(this.renderer.domElement)
   }
@@ -57,9 +56,10 @@ class Demo {
   createScene()
   {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-    this.camera.position.set(0, 200, 200);
+    this.camera.position.set(0, 0, 300);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.maxDistance = 500;
+    this.controls.minDistance = 100;
     this.controls.autoRotate = true;
 
     this.scene = new THREE.Scene();
@@ -77,10 +77,57 @@ class Demo {
     });
   }
 
+  addBackground()
+  {
+    this.cameraRTT = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -10000, 10000 );
+    // this.cameraRTT.position.z = 100;
+
+    this.quad = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+    this.bgMesh = new THREE.Mesh(this.quad, new THREE.ShaderMaterial({
+      uniforms : {
+        color1 : {type: 'c', value: new THREE.Color(0x232323)},
+        color2 : {type: 'c', value: new THREE.Color(0x000000)},
+        resolution : {type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+      },
+      depthTest      : false,
+      vertexShader   : glslify('./glsl/background-vert.glsl'),
+      fragmentShader : glslify('./glsl/background-frag.glsl'),
+    }));
+
+    this.rttTexture = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, { 
+      minFilter: THREE.LinearFilter, 
+      magFilter: THREE.LinearFilter, 
+      format: THREE.RGBAFormat 
+    });
+
+    this.rtt2 = this.rttTexture.clone();
+    
+    this.sceneBack = new THREE.Scene();
+    this.sceneBack.add(this.bgMesh);
+
+    this.sceneFull = new THREE.Scene();
+    this.quad1 = new THREE.Mesh(this.quad, new THREE.MeshBasicMaterial({
+      map       : this.rttTexture,
+      depthTest : false,
+    }));
+
+    this.quad2 = new THREE.Mesh(this.quad, new THREE.MeshBasicMaterial({
+      map         : this.rtt2,
+      transparent : true,
+      depthTest   : false,
+    }));
+
+    this.sceneFull.add(this.quad1);
+    this.sceneFull.add(this.quad2);
+
+  }
+
   addObjects()
   {
     // var gridHelper = new THREE.GridHelper( 100, 10 );        
     // this.scene.add( gridHelper );
+
+    this.addBackground();
 
     this.material = new THREE.ShaderMaterial({
       uniforms : {
@@ -131,16 +178,6 @@ class Demo {
     // material.open();
   }
 
-  changeColor(color)
-  {
-    return function ( value ){
-
-      if (typeof value === "string") value = value.replace('#', '0x');
-      color.setHex( value );
-      this.material.needsUpdate = true;
-    };
-  }
-
   update()
   {
     this.stats.begin();
@@ -150,7 +187,9 @@ class Demo {
 
     this.material.uniforms.time.value = time;
 
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.sceneBack, this.cameraRTT, this.rttTexture, true);
+    this.renderer.render(this.scene, this.camera, this.rtt2, true);
+    this.renderer.render(this.sceneFull, this.cameraRTT);
 
     this.stats.end()
     requestAnimationFrame(this.update.bind(this));
@@ -176,6 +215,7 @@ class Demo {
 
   onResize()
   {
+    this.bgMesh.material.uniforms.resolution.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
