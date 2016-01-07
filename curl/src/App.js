@@ -1,17 +1,17 @@
-import THREE from 'three.js'; 
-import dat   from 'dat-gui' ;
-import Stats from 'stats-js' ;
+import dat  from 'dat-gui'
+import Stats  from 'stats-js'
+import THREE  from 'three.js'
+import ScenePass  from './ScenePass'
 
 const OrbitControls = require('three-orbit-controls')(THREE);
 const glslify       = require('glslify');
 const PyramidBloomPass = require('./PyramidBloomPass')(THREE);
 
-import ScenePass from './ScenePass';
-require('./EffectComposer')(THREE);
+@replaceMe@require('./EffectComposer')(THREE);
 
 
 class App {
-  constructor(args) 
+  constructor(args)
   {
     this.renderer = null;
     this.camera   = null;
@@ -21,8 +21,8 @@ class App {
     this.clock    = new THREE.Clock();
     this.DEBUG    = false;
     this.SIZE     = {
-      w  : window.innerWidth , 
-      w2 : window.innerWidth / 2, 
+      w  : window.innerWidth ,
+      w2 : window.innerWidth / 2,
       h  : window.innerHeight,
       h2 : window.innerHeight / 2
     };
@@ -40,7 +40,7 @@ class App {
 
   startStats()
   {
-    this.stats = new Stats(); 
+    this.stats = new Stats();
     this.stats.domElement.style.position = 'absolute';
     this.stats.domElement.style.top = 0;
     this.stats.domElement.style.display = this.DEBUG ? 'block' : 'none';
@@ -58,7 +58,6 @@ class App {
 
     this.renderer.setClearColor( 0x000000 );
     this.renderer.setClearAlpha( 0 );
-    // this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.gammaInput = true;
     this.renderer.gammaOuput = false;
@@ -81,7 +80,7 @@ class App {
 
   addObjects()
   {
-    // let gridHelper = new THREE.GridHelper( 100, 10 );        
+    // let gridHelper = new THREE.GridHelper( 100, 10 );
     // this.scene.add( gridHelper );
 
     this.sys = this.createParticleSystem();
@@ -99,12 +98,12 @@ class App {
       uniforms: {
         tDiffuse   : {type: "t", value: null },
         resolution : {type: 'v2', value: new THREE.Vector2(
-          window.innerWidth * (window.devicePixelRatio || 1), 
+          window.innerWidth * (window.devicePixelRatio || 1),
           window.innerHeight * (window.devicePixelRatio || 1)
           )},
       },
       vertexShader   : glslify('./glsl/screen_vert.glsl'),
-      fragmentShader : glslify('./glsl/gamma.glsl'), 
+      fragmentShader : glslify('./glsl/gamma.glsl'),
     }
 
     /*
@@ -169,7 +168,7 @@ class App {
     // cameraFolder.add(this.camera.position, 'x', -400, 400);
     // cameraFolder.add(this.camera.position, 'y', -400, 400);
     // cameraFolder.add(this.camera.position, 'z', -400, 400);
-    
+
   }
 
   update()
@@ -211,8 +210,8 @@ class App {
   onResize()
   {
     this.SIZE = {
-      w  : window.innerWidth , 
-      w2 : window.innerWidth / 2, 
+      w  : window.innerWidth ,
+      w2 : window.innerWidth / 2,
       h  : window.innerHeight,
       h2 : window.innerHeight / 2
     };
