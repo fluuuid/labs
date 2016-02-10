@@ -28,7 +28,7 @@ class App {
     this.startStats();
     this.createRender();
     this.createScene();
-    this.addComposer();
+    // this.addComposer();
     this.createTexture();
     // this.startGUI();
 
@@ -67,31 +67,43 @@ class App {
 
   addComposer()
   {
-    this.composer = new THREE.EffectComposer(this.renderer);
+    // this.composer = new THREE.EffectComposer(this.renderer);
 
-    let scenePass = new THREE.RenderPass( this.scene, this.camera, false, 0x000000, 0 );
+    // let scenePass = new THREE.RenderPass( this.scene, this.camera, false, 0x000000, 0 );
 
-    this.gamma = {
-      uniforms: {
-        tDiffuse   : {type: "t", value: null },
-        resolution : {type: 'v2', value: new THREE.Vector2(
-          window.innerWidth * (window.devicePixelRatio || 1),
-          window.innerHeight * (window.devicePixelRatio || 1)
-          )},
-      },
-      vertexShader   : glslify('./post-processing/glsl/screen_vert.glsl'),
-      fragmentShader : glslify('./post-processing/glsl/gamma.glsl'),
-    }
+    // this.gamma = {
+    //   uniforms: {
+    //     tDiffuse   : {type: "t", value: null },
+    //     resolution : {type: 'v2', value: new THREE.Vector2(
+    //       window.innerWidth * (window.devicePixelRatio || 1),
+    //       window.innerHeight * (window.devicePixelRatio || 1)
+    //       )},
+    //   },
+    //   vertexShader   : glslify('./post-processing/glsl/screen_vert.glsl'),
+    //   fragmentShader : glslify('./post-processing/glsl/gamma.glsl'),
+    // }
+
+    // this.vrPass = {
+    //   uniforms: {
+    //     tDiffuse   : {type: "t", value: null },
+    //     resolution : {type: 'v2', value: new THREE.Vector2(
+    //         window.innerWidth * (window.devicePixelRatio || 1),
+    //         window.innerHeight * (window.devicePixelRatio || 1)
+    //       )}
+    //     },
+    //   vertexShader   : glslify('./post-processing/glsl/screen_vert.glsl'),
+    //   fragmentShader : glslify('./post-processing/glsl/vr.glsl'),
+    // }
 
     /*
     passes
     */
 
-    this.composer.addPass(scenePass);
+    // this.composer.addPass(scenePass);
 
-    let gamma = new THREE.ShaderPass(this.gamma);
-    gamma.renderToScreen = true;
-    this.composer.addPass(gamma);
+    // let gamma = new THREE.ShaderPass(this.vrPass);
+    // gamma.renderToScreen = true;
+    // this.composer.addPass(gamma);
 
   }
 
@@ -99,6 +111,9 @@ class App {
   {
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
     this.camera.position.set(0, 0, 25);
+
+    this.cameraRTT = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -10000, 10000 );
+    this.cameraRTT.position.z = 100;
 
     if(window.ontouchstart !== undefined)
     {
@@ -112,11 +127,47 @@ class App {
       this.orbitControls.minDistance = 25;
     }
 
+    this.rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { 
+      minFilter: THREE.LinearFilter, 
+      magFilter: THREE.LinearFilter, 
+      blending: THREE.ScreenBlending,
+      // blending: THREE.CustomBlending,
+      blendSrc: THREE.SrcAlphaFactor,
+      blendDst: THREE.OneFactor,
+      format: THREE.RGBAFormat 
+    });
+
+    this.rtt = this.rtTexture.clone();
+
+    this.materialScreenQuad1 = new THREE.ShaderMaterial({
+      uniforms: { 
+        tDiffuse: { type: "t", value: this.rtt },
+        opacity: { type: "f", value: 1 },
+      },
+      vertexShader: THREE.CopyShader.vertexShader,
+      fragmentShader: THREE.CopyShader.fragmentShader,
+      transparent: true,
+      depthWrite: false,
+    })
+
+    this.plane = new THREE.PlaneBufferGeometry(window.innerWidth / 2, window.innerHeight);
+
+    this.leftEye = new THREE.Mesh(this.plane, this.materialScreenQuad1);
+    this.leftEye.position.x = -window.innerWidth / 4;
+
+    this.rightEye = new THREE.Mesh(this.plane, this.materialScreenQuad1);
+    this.rightEye.position.x = window.innerWidth / 4;
+
     this.scene = new THREE.Scene();
+    this.sceneVR = new THREE.Scene();
+
+    this.sceneVR.add(this.leftEye);
+    this.sceneVR.add(this.rightEye);
   }
 
   createTexture()
   {
+
     this.video = document.createElement('video');
     this.video.preload = 'auto';
     this.video.width = '640';
@@ -199,9 +250,11 @@ class App {
     this.material.needsUpdate = true;
 
     if(this.controls) this.controls.update();
-
     this.renderer.clear();
-    this.composer.render(d);
+
+    this.renderer.render(this.scene, this.camera, this.rtt, true);
+    this.renderer.render(this.sceneVR, this.cameraRTT);
+    // this.composer.render(d);
 
     this.stats.end()
     requestAnimationFrame(this.update.bind(this));
