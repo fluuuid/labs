@@ -127,20 +127,20 @@ class App {
       this.orbitControls.minDistance = 25;
     }
 
-    this.rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { 
-      minFilter: THREE.LinearFilter, 
-      magFilter: THREE.LinearFilter, 
+    this.rtTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
       blending: THREE.ScreenBlending,
       // blending: THREE.CustomBlending,
       blendSrc: THREE.SrcAlphaFactor,
       blendDst: THREE.OneFactor,
-      format: THREE.RGBAFormat 
+      format: THREE.RGBAFormat
     });
 
     this.rtt = this.rtTexture.clone();
 
     this.materialScreenQuad1 = new THREE.ShaderMaterial({
-      uniforms: { 
+      uniforms: {
         tDiffuse: { type: "t", value: this.rtt },
         opacity: { type: "f", value: 1 },
       },
@@ -174,8 +174,8 @@ class App {
     this.video.height = '320';
     this.video.loop = 'true'
     this.video.setAttribute('crossorigin', 'anonymous');
-    this.video.src = "video/360-video-example-video-m7aerial-6694e-ea215-421af-7339d.jsv";
-    this.video['data-audio'] = "video/360-video-example-video-m7aerial-6694e-ea215-421af-7339d.mp3";
+    this.video.src = "video/video.jsv";
+    this.video['data-audio'] = "video/audio.mp3";
 
     this.video.addEventListener('canplay', function()
     {
