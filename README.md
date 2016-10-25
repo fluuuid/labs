@@ -17,3 +17,7 @@
 <a href="http://labs.fluuu.id/torus/" target="_blank"><img src="http://payload331.cargocollective.com/1/1/51718/8925611/torus_310.png" width="360" height="190"></a>
 <a href="http://labs.fluuu.id/web/" target="_blank"><img src="http://payload331.cargocollective.com/1/1/51718/8925611/4_1000.png" width="360" height="190"></a>
 <a href="http://labs.s2paganini.com/streetview/" target="_blank"><img src="http://payload331.cargocollective.com/1/1/51718/8925611/a_1340_c.png" width="360" height="190"></a>
+
+## How to build an experiment
+
+Do ´npm install´, ´npm build´, ´ńpm start´ and you're good to go.
