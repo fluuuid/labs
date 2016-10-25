@@ -1,0 +1,46 @@
+{
+  "name": "nefertiti",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "jspm install",
+    "start": "browser-sync start --files \"app\" --server --no-notify",
+    "build": "make build",
+    "release": "make release",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/username/repository.git"
+  },
+  "bugs": "",
+  "author": "Silvio Paganini",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.11.1",
+    "jspm": "^0.16.29"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">= 5.6.0",
+    "npm": ">=3.6.0"
+  },
+  "jspm": {
+    "dependencies": {
+      "dat-gui": "npm:dat-gui@^0.5.0",
+      "mrdoob/three.js": "github:mrdoob/three.js@master",
+      "peteruithoven/systemjs-debugger": "github:peteruithoven/systemjs-debugger@^0.0.1",
+      "stats-js": "npm:stats-js@^1.0.0-alpha1",
+      "text": "github:systemjs/plugin-text@^0.0.4",
+      "three": "github:mrdoob/three.js@master",
+      "three-orbit-controls": "npm:three-orbit-controls@^72.0.0"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}

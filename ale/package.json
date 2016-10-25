@@ -1,0 +1,37 @@
+{
+  "name": "ale",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "budo --dir dist/ src/index.js:js/bundle.js -v --live --open -- -t [ babelify --presets [ es2015 ] ] -t glslify",
+    "build": "browserify -t [ babelify --presets [ es2015 ] ] -t glslify src/index.js | uglifyjs -cm > dist/js/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/username/repository.git"
+  },
+  "bugs": "",
+  "author": "Silvio Paganini",
+  "license": "ISC",
+  "dependencies": {
+    "babel-preset-es2015": "^6.3.13",
+    "babelify": "^7.2.0",
+    "browserify": "^13.0.0",
+    "dat-gui": "^0.5.0",
+    "glsl-noise": "0.0.0",
+    "glslify": "^5.0.2",
+    "stats-js": "^1.0.0-alpha1",
+    "three": "^0.81.2",
+    "three-orbit-controls": "^72.0.0"
+  },
+  "devDependencies": {
+    "budo": "^8.0.3",
+    "uglifyjs": "^2.4.10"
+  },
+  "engines": {
+    "node": ">= 5.6.0",
+    "npm": ">=3.6.0"
+  }
+}
