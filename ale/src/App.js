@@ -117,7 +117,7 @@ class App {
   {
 
     this.video = document.createElement('video');
-    this.video.src = '/static/videos/clip.mp4';
+    this.video.src = 'static/videos/clip.mp4';
     this.video.load();
     this.video.loop = true;
     this.video.play();

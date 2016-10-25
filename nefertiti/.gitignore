@@ -3,4 +3,4 @@ npm-debug.log
 .DS_Store
 jspm_packages
 dist/
-app/model/Nefertiti.obj
+app/model/*
