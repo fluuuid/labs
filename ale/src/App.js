@@ -134,6 +134,10 @@ class App {
 
     this.shader = new THREE.ShaderMaterial({
       uniforms: {
+        delta: {
+          type: 'f',
+          value: 0,
+        },
         color: {
           type: 'c',
           value: new THREE.Color(0xFFFFFF)
@@ -197,6 +201,7 @@ class App {
     this.renderer.clear();
 
     this.shader.uniforms.uTime.value = el;
+    this.shader.uniforms.delta.value = d;
 
     // this.renderer.render(this.scene, this.camera);
     this.composer.render(d);

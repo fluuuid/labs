@@ -22,6 +22,7 @@
     "dat-gui": "^0.5.0",
     "glsl-noise": "0.0.0",
     "glslify": "^5.0.2",
+    "matcap": "0.0.1",
     "stats-js": "^1.0.0-alpha1",
     "three": "^0.81.2",
     "three-orbit-controls": "^72.0.0"
