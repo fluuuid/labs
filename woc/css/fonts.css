@@ -1,0 +1,32 @@
+@font-face {
+	font-family: 'SangBleu BP';
+	src: url('../fonts/SangBleuBP-Light.eot');
+	src: url('../fonts/SangBleuBP-Light.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/SangBleuBP-Light.woff2') format('woff2'),
+		url('../fonts/SangBleuBP-Light.woff') format('woff'),
+		url('../fonts/SangBleuBP-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'GT Sectra Trial';
+	src: url('../fonts/GTSectraTrial-Book.eot');
+	src: url('../fonts/GTSectraTrial-Book.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/GTSectraTrial-Book.woff2') format('woff2'),
+		url('../fonts/GTSectraTrial-Book.woff') format('woff'),
+		url('../fonts/GTSectraTrial-Book.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Castledown';
+	src: url('../fonts/Castledown.eot');
+	src: url('../fonts/Castledown.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/Castledown.woff2') format('woff2'),
+		url('../fonts/Castledown.woff') format('woff'),
+		url('../fonts/Castledown.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
