@@ -31,3 +31,24 @@ void main() {
 
   gl_FragColor = vec4(col, 1.0);
 }
+
+/*
+
+void main() {
+
+  vec3 animatedTopColor = mix(color0, color1, snoise_3d(vPosition * vec3(0.0025) + vec3(time * 0.1)));
+
+  float h = normalize( vWorldPosition + offset ).y;
+
+  float a = max( pow( max( h , 0.0), exponent ), h);
+  vec3 bottom = smoothstep(animatedTopColor, color0, vec3(a));
+
+  // vec3 final = mix( color0, bottom, max( pow( max( h , 0.0), exponent ), 0.0 ) );
+
+  // vec3 final = mix(firstColor, animatedTopColor, snoise_3d(vPosition * vec3(0.0025) + vec3(time * 0.1)));
+  // vec3 final = firstColor * animatedTopColor;
+
+  gl_FragColor = vec4(bottom, 1.0);
+}
+
+ */
