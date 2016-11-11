@@ -2,34 +2,62 @@
 #pragma glslify: snoise2 = require(glsl-noise/simplex/2d)
 
 #define PI 3.14159265359
+#define TWO_PI 6.28318530718
 
 uniform vec3 color;
 uniform float uTime;
 uniform sampler2D map;
 uniform vec2 uResolution;
-uniform vec2 uMouse;
 uniform float delta;
+uniform float mod1;
+uniform float mod2;
+uniform float mod3;
 
 varying vec2 vUv;
 varying vec3 vPosition;
 varying vec3 vNormal;
 
 void main() {
-  vec2 uv = gl_FragCoord.xy / uResolution;
-  float noise = snoise2(uv);
+  //
 
-  vec2 duv = uv;
-  duv.s = uv.t + cos(noise);
-  duv.t = uv.s * sin(noise);
+  // float t = sin(uTime);
+  // vec2 p = vUv - vec2(0.5);
+  //
+  // float r = length(p);
+  // float a = atan(p.y, p.x);
+  //
+  // // distort
+  // r = sqrt(r); // pinch
+  // //r = r*r; // bulge
+  //
+  // // polar to cartesian coordinates
+  // p = r * vec2(cos(a), sin(a));
 
-  duv = smoothstep(duv, uv, vec2(noise));
+  float noise = snoise2(vUv + uTime * mod1);
 
-  vec3 texelDistorted = texture2D(map, duv).xyz;
-  vec3 texel = texture2D(map, uv).xyz;
+  vec2 center = vec2(
+    (0.5 + 0.5 * cos(TWO_PI * (uTime * mod1) * mod2 + vUv.s)),
+    (0.5 + 0.5 * sin(TWO_PI * (uTime * mod1) * mod3 + vUv.t))
+  );
 
-  vec3 col = texelDistorted * texel;
+  // center += noise * 0.01;
+  vec2 dir = normalize( center - vUv );
+  float d = length( center - vUv );
+  float factor = (0.5 + 0.5 * sin(TWO_PI * 0.01));
+  float f = pow( factor * ( d - .5 ), 0.99876 );
+  // f *= f;
+  // f = 0.0;
+  // if( d > .5 ) f = 0.;
+  // if( d > .5 ) f = 0.;
 
-  gl_FragColor = vec4(col, 1.0);
+  vec3 texel1 = texture2D(map, vUv + f * dir).rgb;
+  vec3 texel2 = texture2D(map, vUv).rgb;
+
+  gl_FragColor.xyz = texel1;
+  // gl_FragColor.xyz = texel1 + texel1 * noise;
+  // gl_FragColor.xyz = mix(texel1, texel2, noise);
+  // gl_FragColor.xyz = texel2 * (texel1 * texel2 * noise);
+
 }
 
 /*

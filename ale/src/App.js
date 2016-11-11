@@ -1,10 +1,16 @@
-import dat from 'dat-gui'
+import ControlKit from 'controlkit'
 import Stats from 'stats-js'
 import * as THREE from 'three'
 
 const OrbitControls  = require('three-orbit-controls')(THREE);
 const glslify        = require('glslify');
 require('./post-processing/EffectComposer')(THREE);
+
+const controller = {
+  mod1 : { value: 0.28, range: [0,1], step: 0.0001, label: 'time mod' },
+  mod2 : { value: 0.76, range: [-1,1], step: 0.001, label: 'center X mod' },
+  mod3 : { value: 0.71, range: [-1,1], step: 0.001, label: 'center Y mod' },
+}
 
 class App {
 
@@ -14,7 +20,7 @@ class App {
     this.camera   = null;
     this.scene    = null;
     this.counter  = 0;
-    this.gui      = null;
+    this.controlKit = null;
     this.clock    = new THREE.Clock();
     this.DEBUG    = true;
     this.SIZE     = {
@@ -98,12 +104,17 @@ class App {
 
   createScene()
   {
+    const left = window.innerWidth / -2;
+		const right = window.innerWidth / 2;
+		const top = window.innerHeight / 2;
+		const bottom = window.innerHeight / -2;
+
     // OrthographicCamera
-    // this.camera = new THREE.OrthographicCamera( this.SIZE.w / - 2, this.SIZE.w / 2, this.SIZE.h / 2, this.SIZE.h / - 2, 1, 1000 );
-    this.camera = new THREE.Camera();
+    this.camera = new THREE.OrthographicCamera(left, right, top, bottom, -10, 10);
+    // this.camera = new THREE.Camera();
 
     // this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 4000 );
-    this.camera.position.set(0, 0, 1);
+    // this.camera.position.set(0, 0, 1);
 
     // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     // this.controls.enabled = false;
@@ -146,18 +157,26 @@ class App {
           type: 'f',
           value: 0,
         },
+        mod1: {
+          type: 'f',
+          value: 0,
+        },
+        mod2: {
+          type: 'f',
+          value: 0,
+        },
+        mod3: {
+          type: 'f',
+          value: 0,
+        },
         uResolution: {
           type: 'v2',
-          value: new THREE.Vector2( this.SIZE.w, this.SIZE.h),
+          value: new THREE.Vector2( 1, this.SIZE.h / this.SIZE.w),
         },
         map : {
           type: 't',
           value: this.videoTexture
         },
-        uMouse : {
-          type: 'v2',
-          value: new THREE.Vector2()
-        }
       },
       vertexShader : glslify('./glsl/video_vert.glsl'),
       fragmentShader : glslify('./glsl/video_frag.glsl'),
@@ -169,7 +188,7 @@ class App {
 
     this.shader.needsUpdate = true;
 
-    const planeGeo = new THREE.PlaneBufferGeometry(2, 2, 1);
+    const planeGeo = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight, 1);
     const mesh = new THREE.Mesh(planeGeo, this.shader);
     mesh.rotation.z = -Math.PI;
 
@@ -178,13 +197,17 @@ class App {
 
   startGUI()
   {
-    this.gui = new dat.GUI()
-    this.gui.domElement.style.display = this.DEBUG ? 'block' : 'none';
+    this.controlKit = new ControlKit();
+    const panel = this.controlKit.addPanel();
+    panel.addSlider(controller.mod1, 'value', 'range', {label: controller.mod1.label});
+    panel.addSlider(controller.mod2, 'value', 'range', {label: controller.mod2.label});
+    panel.addSlider(controller.mod3, 'value', 'range', {label: controller.mod3.label});
 
-    let cameraFolder = this.gui.addFolder('Camera');
-    cameraFolder.add(this.camera.position, 'x', -400, 400);
-    cameraFolder.add(this.camera.position, 'y', -400, 400);
-    cameraFolder.add(this.camera.position, 'z', -400, 400);
+    // const range = 1;
+    // let modifiers = this.controlKit.addFolder('Modifiers');
+    // modifiers.add(mod1, 'value', -range, range).step(0.001);
+    // modifiers.add(this.shader.uniforms.mod2, 'value', -range, range).step(0.001);
+    // modifiers.add(this.shader.uniforms.mod3, 'value', -range, range).step(0.001);
 
   }
 
@@ -200,6 +223,9 @@ class App {
 
     this.renderer.clear();
 
+    this.shader.uniforms.mod1.value = controller.mod1.value;
+    this.shader.uniforms.mod2.value = controller.mod2.value;
+    this.shader.uniforms.mod3.value = controller.mod3.value;
     this.shader.uniforms.uTime.value = el;
     this.shader.uniforms.delta.value = d;
 
@@ -223,16 +249,11 @@ class App {
       case 68:
         this.DEBUG = !this.DEBUG;
         if(this.stats)    this.stats.domElement.style.display = !this.DEBUG ? "none" : "block";
-        if(this.gui)      this.gui.domElement.style.display = !this.DEBUG ? "none" : "block";
+        if(this.controlKit)      this.controlKit.domElement.style.display = !this.DEBUG ? "none" : "block";
         // if(this.controls) this.controls.enabled = this.DEBUG;
         if(document.querySelector('.help')) document.querySelector('.help').style.display = this.DEBUG ? "none" : "block";
         break;
     }
-  }
-
-  onMouseMove(e) {
-    this.shader.uniforms.uMouse.value.x = e.screenX;
-    this.shader.uniforms.uMouse.value.y = window.innerHeight - e.screenY;
   }
 
   onResize()
@@ -250,8 +271,8 @@ class App {
 		this.camera.top = this.SIZE.h / 2;
 		this.camera.bottom = this.SIZE.h / - 2;
 
-    this.shader.uniforms.uResolution.value.x = this.SIZE.w;
-    this.shader.uniforms.uResolution.value.y = this.SIZE.h;
+    this.shader.uniforms.uResolution.value.x = 1;
+    this.shader.uniforms.uResolution.value.y = this.SIZE.h / this.SIZE.w;
 
     // this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.SIZE.w, this.SIZE.h);
