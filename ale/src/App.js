@@ -16,7 +16,15 @@ const controller = {
   mod2y : { value: 10, range: [0,100], step: 0.001, label: 'mod2-y' },
   mod3y : { value: 30, range: [0,100], step: 0.001, label: 'mod3-y' },
   
-  mod4 : { value: 0.78, range: [-1,1], step: 0.001, label: 'mod4' },
+  mod1xpower : { value: 0.038, range: [0,1], step: 0.0001, label: 'mod1-xpower' },
+  mod2xpower : { value: 0.010, range: [0,1], step: 0.001, label: 'mod2-xpower' },
+  mod3xpower : { value: 0.05, range: [0,1], step: 0.001, label: 'mod3-xpower' },
+  
+  mod1ypower : { value: 0.1, range: [0,1], step: 0.0001, label: 'mod1-ypower' },
+  mod2ypower : { value: 0.05, range: [0,1], step: 0.001, label: 'mod2-ypower' },
+  mod3ypower : { value: 0.05, range: [0,1], step: 0.001, label: 'mod3-ypower' },
+  
+  mod4 : { value: 0.11, range: [0,1], step: 0.001, label: 'mod4' },
 }
 
 class App {

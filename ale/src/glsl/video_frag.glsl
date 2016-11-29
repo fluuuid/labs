@@ -9,13 +9,22 @@ uniform float uTime;
 uniform sampler2D map;
 uniform vec2 uResolution;
 uniform float delta;
+
 uniform float mod1x;
 uniform float mod2x;
 uniform float mod3x;
 
+uniform float mod1xpower;
+uniform float mod2xpower;
+uniform float mod3xpower;
+
 uniform float mod1y;
 uniform float mod2y;
 uniform float mod3y;
+
+uniform float mod1ypower;
+uniform float mod2ypower;
+uniform float mod3ypower;
 
 uniform float mod4;
 uniform float timeMod;
@@ -69,16 +78,16 @@ void main() {
   
   // vec2 vUv = fragCoord.xy / iResolution.xy;
 	float y = 
-		0.7*sin((vUv.y + (uTime * timeMod)) * mod1x) * 0.038 +
-		0.3*sin((vUv.y + (uTime * timeMod)) * mod2x) * 0.010 +
-		0.05*sin((vUv.y + (uTime * timeMod)) * mod3x) * 0.05;
+		0.7*sin((vUv.y + (uTime * timeMod)) * mod1x) * mod1xpower +
+		0.3*sin((vUv.y + (uTime * timeMod)) * mod2x) * mod2xpower +
+		0.05*sin((vUv.y + (uTime * timeMod)) * mod3x) * mod3xpower;
 
 	float x = 
-		0.5*sin((vUv.y + (uTime * timeMod)) * mod1y) * 0.1 +
-		0.2*sin((vUv.x + (uTime * timeMod)) * mod2y) * 0.05 +
-		0.2*sin((vUv.x + (uTime * timeMod)) * mod3y) * 0.02;
+		0.5*sin((vUv.y + (uTime * timeMod)) * mod1y) * mod1ypower +
+		0.2*sin((vUv.x + (uTime * timeMod)) * mod2y) * mod2ypower +
+		0.2*sin((vUv.x + (uTime * timeMod)) * mod3y) * mod3ypower;
 
-	gl_FragColor = texture2D(map, mod4*(vUv + vec2(y+0.11, x+0.11)));
+	gl_FragColor = texture2D(map, 0.79*(vUv + vec2(y+mod4, x+mod4)));
 
 }
 
