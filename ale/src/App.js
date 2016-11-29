@@ -7,9 +7,16 @@ const glslify        = require('glslify');
 require('./post-processing/EffectComposer')(THREE);
 
 const controller = {
-  mod1 : { value: 0.28, range: [0,1], step: 0.0001, label: 'time mod' },
-  mod2 : { value: 0.76, range: [-1,1], step: 0.001, label: 'center X mod' },
-  mod3 : { value: 0.71, range: [-1,1], step: 0.001, label: 'center Y mod' },
+  timeMod: { value: 0.28, range: [0,5], step: 0.0001, label: 'time scale' },
+  mod1x : { value: 4, range: [0,100], step: 0.0001, label: 'mod1-x' },
+  mod2x : { value: 8, range: [0,100], step: 0.001, label: 'mod2-x' },
+  mod3x : { value: 40, range: [0,100], step: 0.001, label: 'mod3-x' },
+  
+  mod1y : { value: 5, range: [0,100], step: 0.0001, label: 'mod1-y' },
+  mod2y : { value: 10, range: [0,100], step: 0.001, label: 'mod2-y' },
+  mod3y : { value: 30, range: [0,100], step: 0.001, label: 'mod3-y' },
+  
+  mod4 : { value: 0.78, range: [-1,1], step: 0.001, label: 'mod4' },
 }
 
 class App {
@@ -142,42 +149,41 @@ class App {
     this.videoTexture = new THREE.Texture( this.videoCanvas );
     this.videoTexture.minFilter = THREE.LinearFilter;
     this.videoTexture.magFilter = THREE.LinearFilter;
+    
+    const uniforms = {
+      delta: {
+        type: 'f',
+        value: 0,
+      },
+      color: {
+        type: 'c',
+        value: new THREE.Color(0xFFFFFF)
+      },
+      uTime: {
+        type: 'f',
+        value: 0,
+      },
+      uResolution: {
+        type: 'v2',
+        value: new THREE.Vector2( 1, this.SIZE.h / this.SIZE.w),
+      },
+      map : {
+        type: 't',
+        value: this.videoTexture
+      },
+    }
+    
+    for (const mod in controller) {
+      if (controller.hasOwnProperty(mod)) {
+        uniforms[mod] = {
+          type: 'f',
+          value: controller[mod]
+        }
+      }
+    }
 
     this.shader = new THREE.ShaderMaterial({
-      uniforms: {
-        delta: {
-          type: 'f',
-          value: 0,
-        },
-        color: {
-          type: 'c',
-          value: new THREE.Color(0xFFFFFF)
-        },
-        uTime: {
-          type: 'f',
-          value: 0,
-        },
-        mod1: {
-          type: 'f',
-          value: 0,
-        },
-        mod2: {
-          type: 'f',
-          value: 0,
-        },
-        mod3: {
-          type: 'f',
-          value: 0,
-        },
-        uResolution: {
-          type: 'v2',
-          value: new THREE.Vector2( 1, this.SIZE.h / this.SIZE.w),
-        },
-        map : {
-          type: 't',
-          value: this.videoTexture
-        },
-      },
+      uniforms: uniforms,
       vertexShader : glslify('./glsl/video_vert.glsl'),
       fragmentShader : glslify('./glsl/video_frag.glsl'),
       wireframe: false,
@@ -199,9 +205,12 @@ class App {
   {
     this.controlKit = new ControlKit();
     const panel = this.controlKit.addPanel();
-    panel.addSlider(controller.mod1, 'value', 'range', {label: controller.mod1.label});
-    panel.addSlider(controller.mod2, 'value', 'range', {label: controller.mod2.label});
-    panel.addSlider(controller.mod3, 'value', 'range', {label: controller.mod3.label});
+    
+    for (const mod in controller) {
+      if (controller.hasOwnProperty(mod)) {
+        panel.addSlider(controller[mod], 'value', 'range', {label: controller[mod].label});
+      }
+    }
 
     // const range = 1;
     // let modifiers = this.controlKit.addFolder('Modifiers');
@@ -222,10 +231,13 @@ class App {
     let d = this.clock.getDelta();
 
     this.renderer.clear();
+    
+    for (const mod in controller) {
+      if (controller.hasOwnProperty(mod)) {
+        this.shader.uniforms[mod].value = controller[mod].value;
+      }
+    }
 
-    this.shader.uniforms.mod1.value = controller.mod1.value;
-    this.shader.uniforms.mod2.value = controller.mod2.value;
-    this.shader.uniforms.mod3.value = controller.mod3.value;
     this.shader.uniforms.uTime.value = el;
     this.shader.uniforms.delta.value = d;
 
