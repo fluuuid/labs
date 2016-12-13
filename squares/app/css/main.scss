@@ -1,0 +1,49 @@
+@import "../../node_modules/normalize.css/normalize";
+
+body
+{
+    font-family: monospace;
+    position: fixed;
+    overflow: hidden;
+}
+
+.credits
+{
+    font-size: 11px;
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    color: white;
+    text-align: left;
+}
+
+@media screen and (max-width: 600px) {
+    .credits
+    {
+        left: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.help
+{
+    font-size: 11px;
+    position: absolute;
+    display: block;
+    bottom: 0;
+    right: 20px;
+    color: white;
+    text-align: left;
+}
+
+@media screen and (max-width: 600px) {
+    .help {
+        display: none !important;
+    }
+}
+
+a
+{
+    color: white;
+}
