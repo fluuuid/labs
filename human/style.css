@@ -2,17 +2,20 @@ html {
   font-family: sans-serif; /* 1 */
   -ms-text-size-adjust: 100%; /* 2 */
   -webkit-text-size-adjust: 100%; /* 2 */
+  overflow: hidden;
+  position: relative;
+  background-color: rgb(146, 147, 139);
 }
 
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  position: relative;
+  position: fixed;
   height: 100%;
   background-color: rgb(146, 147, 139);
 }
 canvas {
-  /*filter: grayscale(100%)*/
+  filter: grayscale(100%);
+  -webkit-filter: -webkit-grayscale(100%);
   background-color: rgb(146, 147, 139);
 }
