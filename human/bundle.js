@@ -30696,9 +30696,11 @@ var App = function () {
         } else {
           this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1 });
         }
+      } else {
+        this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1 });
       }
 
-      var add = Math.abs(e.wheelDelta) / e.mobile ? 20 : 50;
+      var add = Math.abs(e.wheelDelta) / (e.mobile ? 35 : 50);
 
       if (this.tweenFace) this.tweenFace.kill();
       this.tweenFace = _gsap.TweenMax.to(this.animateFaceProp, 2.5, {
