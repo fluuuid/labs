@@ -4,7 +4,7 @@ html {
   -webkit-text-size-adjust: 100%; /* 2 */
   overflow: hidden;
   position: relative;
-  background-color: rgb(146, 147, 139);
+  background-color: black;
 }
 
 body {
@@ -12,10 +12,10 @@ body {
   padding: 0;
   position: fixed;
   height: 100%;
-  background-color: rgb(146, 147, 139);
+  background-color: black;
 }
 canvas {
   filter: grayscale(100%);
   -webkit-filter: -webkit-grayscale(100%);
-  background-color: rgb(146, 147, 139);
+  background-color: black;
 }

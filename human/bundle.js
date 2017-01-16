@@ -30544,6 +30544,12 @@ var maleProps = {
   total: 46
 };
 
+var opacityParams = {
+  full: 1,
+  half: 0.25,
+  anim: 0.05
+};
+
 var App = function () {
   function App() {
     _classCallCheck(this, App);
@@ -30556,6 +30562,8 @@ var App = function () {
     this.bindTouchEnd = this.onTouchEnd.bind(this);
     this.bindBufferOnLoad = this.onBufferLoad.bind(this);
     this.bindMusicSlow = this.musicSlow.bind(this);
+
+    this.photoOpacity = opacityParams.full;
 
     this.buffer = new Tone.Buffer({
       url: 'audio/music.mp3',
@@ -30631,11 +30639,9 @@ var App = function () {
   }, {
     key: 'animateFaces',
     value: function animateFaces() {
-      var first = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
 
       this.ctx.save();
-      this.ctx.globalAlpha = first ? 1 : .02;
+      this.ctx.globalAlpha = this.photoOpacity;
 
       var w = void 0,
           h = void 0,
@@ -30664,7 +30670,7 @@ var App = function () {
             _this2.createScene();
           }
         };
-        img.src = maleProps.folder + maleProps.namePattern + i + "@3x.png";
+        img.src = maleProps.folder + maleProps.namePattern + i + '@3x.png';
       }
     }
   }, {
@@ -30674,21 +30680,24 @@ var App = function () {
         this.music.start();
       }
 
+      if (this.tweenOpacity) this.tweenOpacity.kill();
+      this.photoOpacity = opacityParams.anim;
+
       clearTimeout(this.intervalStartSlowMusic);
       this.intervalStartSlowMusic = 0;
-      this.intervalStartSlowMusic = setTimeout(this.bindMusicSlow, e.mobile ? 1000 : 100);
+      this.intervalStartSlowMusic = setTimeout(this.bindMusicSlow, e.mobile ? 1000 : 500);
 
       if (!e.mobile) {
         if (this.tweenMusic) {
           if (!this.tweenMusic.isActive()) {
             this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1, ease: _gsap.Power4.easeOut });
-          };
+          }
         } else {
           this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1, ease: _gsap.Power4.easeOut });
         }
       }
 
-      var add = Math.abs(e.wheelDelta) / 20;
+      var add = Math.abs(e.wheelDelta) / e.mobile ? 20 : 50;
 
       if (this.tweenFace) this.tweenFace.kill();
       this.tweenFace = _gsap.TweenMax.to(this.animateFaceProp, 2.5, {
@@ -30701,6 +30710,11 @@ var App = function () {
     key: 'musicSlow',
     value: function musicSlow() {
       if (this.tweenMusic) this.tweenMusic.kill();
+      if (this.tweenOpacity) this.tweenOpacity.kill();
+      this.tweenOpacity = opacityParams.anim;
+      this.tweenOpacity = _gsap.TweenMax.to(this, 3, {
+        photoOpacity: opacityParams.half,
+        ease: _gsap.Power4.easeOut });
       this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 0, ease: _gsap.Power4.easeOut });
     }
   }, {
@@ -30713,7 +30727,8 @@ var App = function () {
     key: 'onResize',
     value: function onResize() {
       this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      this.animateFaces(true);
+      this.photoOpacity = 1;
+      this.animateFaces();
     }
   }]);
 
