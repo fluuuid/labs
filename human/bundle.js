@@ -30596,6 +30596,7 @@ var App = function () {
     value: function createScene() {
       var _this = this;
 
+      document.querySelector('.loader').remove();
       this.canvas = document.createElement('canvas');
       this.canvas.id = 'canvas';
       this.canvas.width = window.innerWidth;
@@ -30604,7 +30605,7 @@ var App = function () {
       this.stageEl.appendChild(this.canvas);
 
       this.currentFace = 0;
-      this.animateFaces(true);
+      this.animateFaces();
       this.music.playbackRate = 0;
       (0, _startaudiocontext2.default)(Tone.context, '#canvas').then(function () {
         _this.music.start();
@@ -30690,10 +30691,10 @@ var App = function () {
       if (!e.mobile) {
         if (this.tweenMusic) {
           if (!this.tweenMusic.isActive()) {
-            this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1, ease: _gsap.Power4.easeOut });
+            this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1 });
           }
         } else {
-          this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1, ease: _gsap.Power4.easeOut });
+          this.tweenMusic = _gsap.TweenMax.to(this.music, 2, { playbackRate: 1 });
         }
       }
 
