@@ -1,0 +1,20 @@
+{
+  "name": "labs",
+  "version": "1.0.0",
+  "description": "#### Collection of experiments by FLUUUID team",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "aws s3 sync . s3://fluuu.id/labs --exclude \"*.git/*\" --exclude \"*/node_modules/*\" --exclude \"npm-debug.log\" --exclude \"*/jspm_packages/*\" --delete" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fluuuid/labs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fluuuid/labs/issues"
+  },
+  "homepage": "https://github.com/fluuuid/labs#readme"
+}
