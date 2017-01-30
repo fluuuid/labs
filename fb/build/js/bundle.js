@@ -20647,9 +20647,11 @@ function _inherits(subClass, superClass) {
   }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 } /* global FB window fb */
 
-var permissions = ['user_hometown', 'public_profile', 'email', 'user_location', 'user_photos', 'user_education_history', 'user_relationships', 'user_relationships_details', 'user_religion_politics', 'user_tagged_places', 'user_videos', 'user_website', 'user_work_history'];
+var permissions = ['user_hometown', 'public_profile', 'email', 'user_location',
+// 'user_photos',
+'user_education_history', 'user_relationships'];
 
-var fields = 'birthday,age_range,currency,devices,education,email,hometown,gender,favorite_teams,cover,work';
+var fields = 'birthday,age_range,currency,devices,education,email,hometown,gender,favorite_teams,cover,name';
 
 var App = function (_Component) {
   _inherits(App, _Component);
@@ -20668,6 +20670,7 @@ var App = function (_Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       user: {}
     }, _this.getFBProfile = function (e) {
+      console.log(e);
       if (e.status !== 'not_authorized' && !e.error) {
         FB.api('/' + e.authResponse.userID, 'get', {
           access_token: e.authResponse.accessToken,
@@ -20675,32 +20678,29 @@ var App = function (_Component) {
         }, _this.profileResponse);
       }
     }, _this.profileResponse = function (e) {
+      console.log(e);
       _this.setState({ user: Object.assign({}, e) });
     }, _this.statusChangeCallback = function () {
       FB.login(_this.getFBProfile, { scope: permissions.join(','), return_scopes: true });
-      // if (response.status === 'not_authorized') {
-      // } else {
-      //   this.getFBProfile();
-      // }
     }, _this.checkLoginState = function () {
       FB.getLoginStatus(_this.statusChangeCallback);
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(App, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.checkLoginState();
-    }
-  }, {
     key: 'render',
     value: function render() {
       if (this.state.user.name) {
         var node = (0, _tableify2.default)(this.state.user);
-        return _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: node } });
+        var cover = this.state.user.cover;
+
+        return _react2.default.createElement('div', { className: 'jumbotron' }, _react2.default.createElement('img', { src: cover.source, alt: 'Cover' }), _react2.default.createElement('div', {
+          className: 'jumbotron',
+          dangerouslySetInnerHTML: { __html: node }
+        }));
       }
 
-      return _react2.default.createElement('div', null, _react2.default.createElement('button', { onClick: this.checkLoginState }, 'Login'));
+      return _react2.default.createElement('div', { className: 'jumbotron' }, _react2.default.createElement('h2', null, 'Login with Facebook'), _react2.default.createElement('p', null, 'To scrap your data'), _react2.default.createElement('button', { onClick: this.checkLoginState }, 'Login'));
     }
   }]);
 

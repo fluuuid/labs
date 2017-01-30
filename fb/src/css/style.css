@@ -9,6 +9,16 @@ body {
   padding: 0;
 }
 
-tr {
-	padding: 10px 0;
+td {
+	padding: 5px;
+}
+
+h2 {
+	margin-top: 10px;
+}
+
+.jumbotron {
+	max-width: 70vw;
+	margin: 20px auto 0;
+	padding: 20px;
 }
