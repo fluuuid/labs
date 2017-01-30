@@ -1,0 +1,53 @@
+{
+  "name": "fb",
+  "version": "0.0.1",
+  "description": "rapid prototyping with es6 and babel, budo as a server",
+  "main": "src/js/index.js",
+  "scripts": {
+    "clean": "rm -rf build && mkdir build && mkdir build/js && mkdir build/css",
+    "start": "budo src/js/index.js:js/bundle.js --dir src --pushstate --base src --live -- -t [ babelify ]",
+    "compile": "browserify -t [ babelify ] src/js/index.js > build/js/bundle.js",
+    "copy": "cp src/index.html build/index.html && cp src/css/style.css build/css/style.css",
+    "build": "npm run clean && npm run compile && npm run copy",
+    "build:run": "npm run build && http-server build/",
+    "lint": "eslint --ext .js ./src --cache",
+    "lint:fix": "eslint --fix --ext .js ./src --cache",
+    "test": "npm run lint"
+  },
+  "author": "Silvio Paganini",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-react-transform": "^2.0.2",
+    "babel-plugin-transform-class-properties": "^6.19.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.22.0",
+    "babel-preset-stage-1": "^6.22.0",
+    "babelify": "^7.3.0",
+    "budo": "^9.2.2",
+    "eslint": "^3.11.1",
+    "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/username/repository.git"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify"
+      ]
+    ]
+  },
+  "bugs": "",
+  "dependencies": {
+    "json-to-html": "^0.1.2",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "tableify": "^1.0.0"
+  }
+}
