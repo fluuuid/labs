@@ -9,8 +9,12 @@ body {
   padding: 0;
 }
 
+tr {
+	border: 1px solid black;
+}
+
 td {
-	padding: 5px;
+	padding: 10px;
 }
 
 h2 {
@@ -21,4 +25,14 @@ h2 {
 	max-width: 70vw;
 	margin: 20px auto 0;
 	padding: 20px;
+}
+
+.photo-gallery {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.photo-gallery > img {
+	width: 30%;
+	height: 100%;
 }

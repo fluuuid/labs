@@ -20625,6 +20625,10 @@ var _tableify = require('tableify');
 
 var _tableify2 = _interopRequireDefault(_tableify);
 
+var _Photo = require('./Photo');
+
+var _Photo2 = _interopRequireDefault(_Photo);
+
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : { default: obj };
 }
@@ -20647,11 +20651,15 @@ function _inherits(subClass, superClass) {
   }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 } /* global FB window fb */
 
-var permissions = ['user_hometown', 'public_profile', 'email', 'user_location',
-// 'user_photos',
-'user_education_history', 'user_relationships'];
+var permissions = ['user_hometown', 'public_profile', 'user_games_activity', 'user_about_me', 'email', 'user_location', 'user_photos', 'user_birthday', 'user_education_history', 'user_relationships',
+// 'user_relationships_details',
+// 'user_religion_politics',
+'user_tagged_places',
+// 'user_videos',
+// 'user_website',
+'user_work_history'];
 
-var fields = 'birthday,age_range,currency,devices,education,email,hometown,gender,favorite_teams,cover,name';
+var fields = 'birthday,age_range,currency,devices,education,email,hometown,gender,photos,cover,name,tagged_places,work,albums';
 
 var App = function (_Component) {
   _inherits(App, _Component);
@@ -20670,7 +20678,6 @@ var App = function (_Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       user: {}
     }, _this.getFBProfile = function (e) {
-      console.log(e);
       if (e.status !== 'not_authorized' && !e.error) {
         FB.api('/' + e.authResponse.userID, 'get', {
           access_token: e.authResponse.accessToken,
@@ -20678,7 +20685,6 @@ var App = function (_Component) {
         }, _this.profileResponse);
       }
     }, _this.profileResponse = function (e) {
-      console.log(e);
       _this.setState({ user: Object.assign({}, e) });
     }, _this.statusChangeCallback = function () {
       FB.login(_this.getFBProfile, { scope: permissions.join(','), return_scopes: true });
@@ -20691,13 +20697,24 @@ var App = function (_Component) {
     key: 'render',
     value: function render() {
       if (this.state.user.name) {
-        var node = (0, _tableify2.default)(this.state.user);
-        var cover = this.state.user.cover;
+        var _state$user = this.state.user,
+            photos = _state$user.photos,
+            cover = _state$user.cover;
 
-        return _react2.default.createElement('div', { className: 'jumbotron' }, _react2.default.createElement('img', { src: cover.source, alt: 'Cover' }), _react2.default.createElement('div', {
+        var whatToShow = Object.assign({}, this.state.user);
+
+        whatToShow.cover = null;
+        whatToShow.photos = null;
+        delete whatToShow.photos;
+        delete whatToShow.cover;
+
+        var node = (0, _tableify2.default)(whatToShow);
+        return _react2.default.createElement('div', { className: 'jumbotron' }, _react2.default.createElement('img', { style: { width: '100%' }, src: cover.source, alt: 'Cover' }), _react2.default.createElement('div', {
           className: 'jumbotron',
           dangerouslySetInnerHTML: { __html: node }
-        }));
+        }), _react2.default.createElement('div', { className: 'photo-gallery' }, photos.data.map(function (e) {
+          return _react2.default.createElement(_Photo2.default, { key: e.id, id: e.id });
+        })));
       }
 
       return _react2.default.createElement('div', { className: 'jumbotron' }, _react2.default.createElement('h2', null, 'Login with Facebook'), _react2.default.createElement('p', null, 'To scrap your data'), _react2.default.createElement('button', { onClick: this.checkLoginState }, 'Login'));
@@ -20709,7 +20726,98 @@ var App = function (_Component) {
 
 exports.default = App;
 
-},{"react":177,"tableify":178}],180:[function(require,module,exports){
+},{"./Photo":180,"react":177,"tableify":178}],180:[function(require,module,exports){
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+}();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+} /* globals FB */
+
+var Photo = function (_Component) {
+  _inherits(Photo, _Component);
+
+  function Photo() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, Photo);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Photo.__proto__ || Object.getPrototypeOf(Photo)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      imgURL: null,
+      id: null
+    }, _this.apiPhotoLoaded = function (e) {
+      _this.setState({ imgURL: e.images[0].source, id: e.id });
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(Photo, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var id = this.props.id;
+
+      FB.api("/" + id + "?fields=images,id", this.apiPhotoLoaded);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (!this.state.imgURL) return null;
+
+      return _react2.default.createElement("img", { className: "img-thumbnail", src: this.state.imgURL, alt: this.state.id });
+    }
+  }]);
+
+  return Photo;
+}(_react.Component);
+
+Photo.propTypes = {
+  id: _react.PropTypes.string.isRequired
+};
+exports.default = Photo;
+
+},{"react":177}],181:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -20733,4 +20841,4 @@ window.start = function () {
   _reactDom2.default.render(_react2.default.createElement(_App2.default, null), main);
 }; /* global document window */
 
-},{"./app/App":179,"react":177,"react-dom":26}]},{},[180]);
+},{"./app/App":179,"react":177,"react-dom":26}]},{},[181]);
