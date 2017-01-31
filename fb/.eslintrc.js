@@ -11,5 +11,8 @@ module.exports = {
     "react/no-danger": 0,
     "arrow-body-style": 0,
     "no-underscore-dangle": 0,
+    "no-restricted-syntax": 0,
+    "no-mixed-operators": 0,
+    "no-bitwise": 0,
   }
 };

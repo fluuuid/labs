@@ -45,6 +45,7 @@
   },
   "bugs": "",
   "dependencies": {
+    "classnames": "^2.2.5",
     "json-to-html": "^0.1.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",

@@ -1,0 +1,25 @@
+import React, { PropTypes } from 'react';
+import classnames from 'classnames';
+import ColourPalette from './ColourPallete';
+import MovieScript from './MovieScript';
+
+const Content = ({ className, content }) => {
+  const classList = classnames(className, 'content');
+  return (
+    <div className={classList}>
+      <ColourPalette index={content} />
+      <MovieScript index={content} />
+    </div>
+  );
+};
+
+Content.propTypes = {
+  className: PropTypes.string,
+  content: PropTypes.number.isRequired,
+};
+
+Content.defaultProps = {
+  className: '',
+};
+
+export default Content;

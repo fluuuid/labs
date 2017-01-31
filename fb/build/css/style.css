@@ -9,7 +9,27 @@ body {
   padding: 0;
 }
 
-tr {
+.content {
+	background-color: rgb(232, 232, 232);
+	height: 100vh;
+}
+
+.slider-row {
+	margin: 30px 0;
+}
+
+.palette {
+	margin-top: 15px;
+	height: 90px;
+	display: flex;
+}
+
+.palette-color {
+	height: 90px;
+}
+
+
+/*tr {
 	border: 1px solid black;
 }
 
@@ -35,4 +55,4 @@ h2 {
 .photo-gallery > img {
 	width: 30%;
 	height: 100%;
-}
+}*/
