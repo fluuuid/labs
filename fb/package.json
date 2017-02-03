@@ -47,8 +47,11 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "json-to-html": "^0.1.2",
+    "lodash": "^4.17.4",
     "react": "^15.4.2",
+    "react-checkbox-group": "^3.1.0",
     "react-dom": "^15.4.2",
+    "react-radio-group": "^3.0.1",
     "tableify": "^1.0.0"
   }
 }

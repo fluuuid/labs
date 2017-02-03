@@ -7,7 +7,7 @@ import Content from './Content';
 export default class App extends Component {
 
   state = {
-    content: 0,
+    content: {},
   }
 
   onChange = (content) => {
@@ -19,7 +19,7 @@ export default class App extends Component {
       <div className="container">
         <div className="row">
           <Sliders onChange={this.onChange} className="col-md-4" />
-          <Content content={this.state.content} className="col-md-8" />
+          <Content content={this.state.content} className="content col-md-8" />
         </div>
       </div>
     );

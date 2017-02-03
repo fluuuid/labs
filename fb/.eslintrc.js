@@ -14,5 +14,7 @@ module.exports = {
     "no-restricted-syntax": 0,
     "no-mixed-operators": 0,
     "no-bitwise": 0,
+    "react/no-array-index-key": 0,
+    "jsx-a11y/label-has-for": 0,
   }
 };
