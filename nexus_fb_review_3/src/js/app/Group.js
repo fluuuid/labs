@@ -32,7 +32,7 @@ export default class Group extends Component {
     const { data, className } = this.props;
     return (
       <div className={className}>
-        <h3>{data.label}</h3>
+        {/* <h3>{data.label}</h3> */}
         <div>
           {data.group.map((s) => {
             this.values[s.id] = 0;

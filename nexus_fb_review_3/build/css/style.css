@@ -25,7 +25,7 @@ hr {
 }
 
 .slider-row {
-	margin: 30px 0;
+	margin: 10px 0 30px;
 }
 
 .group {
@@ -33,11 +33,7 @@ hr {
 }
 
 .timestamp {
-	margin: 60px 0;
-}
-
-.dynamic {
-	color: red;
+	margin: 35px 0;
 }
 
 .timestamp:first-child{

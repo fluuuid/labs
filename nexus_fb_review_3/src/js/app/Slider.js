@@ -46,7 +46,11 @@ export default class Slider extends Component {
       return <h6>{description[this.state.value]}</h6>;
     }
 
-    return <h6>{description} - {JSON.stringify(this.state.value)}</h6>;
+    if (description.length < 1) {
+      return <h6 />;
+    }
+
+    return <h6>{JSON.stringify(this.state.value)} {description}</h6>;
   }
 
   getValue = () => {

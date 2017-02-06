@@ -9,13 +9,39 @@ body {
   padding: 0;
 }
 
+h3 {
+	margin-top: 0;
+}
+
+hr {
+	border-top-width: 2px;
+}
+
 .content {
-	background-color: rgb(232, 232, 232);
 	height: 100vh;
+	/*position: absolute;
+	top: 0;
+	right: 0;*/
 }
 
 .slider-row {
-	margin: 30px 0;
+	margin: 10px 0 30px;
+}
+
+.group {
+	margin-top: 30px;
+}
+
+.timestamp {
+	margin: 35px 0;
+}
+
+.timestamp:first-child{
+	margin-top: 0;
+}
+
+.group .slider-row:last-child {
+	margin-bottom: 0;
 }
 
 .palette {

@@ -41,8 +41,8 @@ export default class Sliders extends Component {
           if (s.group) {
             this.outcomes[id] = '';
             return (
-              <div key={id}>
-                <Group onChange={this.onChange} className="row group" data={s} />
+              <div key={id} className="row">
+                <Group onChange={this.onChange} data={s} />
                 <hr />
               </div>
             );
@@ -50,7 +50,7 @@ export default class Sliders extends Component {
 
           this.outcomes[id] = '';
           return (
-            <div key={id}>
+            <div key={id} className="row">
               <Slider
                 onChange={this.onChange}
                 className="row slider-row"
