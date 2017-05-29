@@ -2,7 +2,7 @@ var THREE    = require('three');
 var TweenMax = require('gsap');
 var perlin   = require('perlin-noise');
 
-var Line = function(y, amp, index, size, startCounter, fftData)
+var Line = function(y, amp, index, size, startCounter, fftData, material)
 {
     this.size              = size;
     this.amp               = amp;
@@ -12,7 +12,7 @@ var Line = function(y, amp, index, size, startCounter, fftData)
     this.geometry          = new THREE.Geometry();
     this.geometry.vertices = this.points;
     
-    this.material          = new THREE.LineBasicMaterial({color: 0xFFFFFF, linewidth: 3});
+    this.material          = material;
     
     this.mesh              = new THREE.Line(this.geometry, this.material);
     this.mesh.position.y   = -20 + (y || 0);

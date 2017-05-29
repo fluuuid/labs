@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Lines @ FLUUUID</title>
     <link rel="stylesheet" type="text/css" href="normalise.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <meta name="robots" content="all" />
     <meta name="description" content="FLUUUID is a collective of developers, designers and creative technologists striving for cutting edge experiences online and offline.">
@@ -42,6 +43,53 @@
         color: white;
         text-align: left;
     }
+    
+    .break {
+      display: none;
+    }
+    
+    p {
+      line-height: 1.2;
+    }
+    
+    .div-bar {
+      display: inline-block;
+    }
+    
+    button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      background: white;
+      color: black;
+      outline: none;
+      border: 0;
+      padding: 0 10px;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+    }
+    
+    .button-loading {
+      pointer-events: none;
+      opacity: .5;
+    }
+    
+    @media screen and (max-width: 600px) {
+        .credits
+        {
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .break {
+          display: block;
+        }
+        
+        .div-bar {
+          display: none;
+        }
+    }
+    
     a
     {
         color: white;
@@ -49,13 +97,15 @@
     </style>
 </head>
 <body>
-    <script src="bundle.js"></script>
     <div class="credits">
-        <p><b>Inspiration: </b>Joy Division - Unknown Pleasures | <a href="http://i.kinja-img.com/gawker-media/image/upload/cuw6y8zco6wzcmoxihky.jpg" target="_blank">Cover Art</a></p>
+        <p><b>Inspiration: </b>Joy Division - Unknown Pleasures <span class="div-bar">|</span> <br class="break"><a href="http://i.kinja-img.com/gawker-media/image/upload/cuw6y8zco6wzcmoxihky.jpg" target="_blank">Cover Art</a></p>
         <p><b>Music: </b>Joy Division | <a href="spotify:album:56hYIca1zSRciffkK6tX2u" target="_blank">Love Will Tear us Apart</a></p>
         <p>by <a href="http://s2paganini.com" target="_blank">@silvio paganini</a> | <a href="http://fluuu.id" target="_blank">FLUUUID</a> | <a href="https://github.com/fluuuid/labs">fork on github</a></p>
         <p>tech stack: <a href="http://threejs.org" target="_blank">three.js</a>, <a href="https://www.npmjs.com/package/web-audio-analyser" target="_blank">web-audio-analyser</a>, <a href="https://www.npmjs.com/package/perlin-noise" target="_blank">perlin-noise</a>
     </div>
+    <button class="button-loading" onclick="javacript: window.onStartClick();">Loading</button>
+    
+    <script src="bundle.js"></script>
 </body>
 
 <script>
