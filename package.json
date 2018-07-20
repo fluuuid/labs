@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "aws s3 sync . s3://fluuu.id/labs --exclude \"*.git/*\" --exclude \"*/node_modules/*\" --exclude \"npm-debug.log\" --exclude \"*/jspm_packages/*\" --delete" 
+    "deploy": "aws s3 sync . s3://fluuu.id/labs --profile fluuuid --exclude \"*.git/*\" --exclude \"*/node_modules/*\" --exclude \"npm-debug.log\" --exclude \"*/jspm_packages/*\" --delete"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/fluuuid/labs/issues"
   },
-  "homepage": "https://github.com/fluuuid/labs#readme"
+  "homepage": "https://github.com/fluuuid/labs#readme",
+  "dependencies": {
+    "aws-sdk": "^2.278.1"
+  }
 }
