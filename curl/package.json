@@ -27,6 +27,7 @@
     "stats-js": "^1.0.0-alpha1",
     "three-orbit-controls": "^69.0.4",
     "three.js": "^0.73.0",
+    "uglify-js": "^3.4.5",
     "uglifyjs": "^2.4.10",
     "watchify": "^3.2.3"
   }
